@@ -13,7 +13,7 @@
  * to license@zend.com so we can send you a copy immediately.
  *
  * @category   Zend
- * @package    Zend_Controller
+ * @package    Zend_XmlRpc
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -25,10 +25,6 @@ namespace Zend\XmlRpc;
  *
  * Container for accessing an XMLRPC return value and creating the XML response.
  *
- * @uses       SimpleXMLElement
- * @uses       \Zend\XmlRpc\Fault
- * @uses       \Zend\XmlRpc\Value
- * @uses       \Zend\XmlRpc\Value\Exception
  * @category   Zend
  * @package    Zend_XmlRpc
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)

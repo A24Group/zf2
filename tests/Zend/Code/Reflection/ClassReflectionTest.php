@@ -115,13 +115,12 @@ class ClassReflectionTest extends \PHPUnit_Framework_TestCase
 
 }
 EOS;
-        $this->assertEquals($target, $reflectionClass->getContents());
+        $contents = $reflectionClass->getContents();
+        $this->assertEquals(trim($target), trim($contents));
     }
 
     public function testStartLine()
     {
-        $this->markTestIncomplete('Line numbers not complete yet');
-
         $reflectionClass = new ClassReflection('ZendTest\Code\Reflection\TestAsset\TestSampleClass5');
 
         $this->assertEquals(16, $reflectionClass->getStartLine());

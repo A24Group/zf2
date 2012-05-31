@@ -19,11 +19,9 @@
  */
 
 namespace Zend\OAuth\Signature;
-use Zend\Crypt\Rsa as RSAEncryption;
+use Zend\Crypt\PublicKey\Rsa as RSAEncryption;
 
 /**
- * @uses       Zend\Crypt\Rsa
- * @uses       Zend\OAuth\Signature\AbstractSignature
  * @category   Zend
  * @package    Zend_OAuth
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)

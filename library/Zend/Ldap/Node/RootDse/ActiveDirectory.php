@@ -21,8 +21,8 @@
 
 namespace Zend\Ldap\Node\RootDse;
 
-use Zend\Ldap,
-    Zend\Ldap\Node;
+use Zend\Ldap;
+use Zend\Ldap\Node;
 
 /**
  * Zend\Ldap\Node\RootDse\ActiveDirectory provides a simple data-container for
@@ -232,7 +232,7 @@ class ActiveDirectory extends Node\RootDse
     /**
      * Returns the schema DN
      *
-     * @return Ldap\Dn
+     * @return \Zend\Ldap\Dn
      */
     public function getSchemaDn()
     {

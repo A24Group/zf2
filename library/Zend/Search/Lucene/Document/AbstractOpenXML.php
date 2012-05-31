@@ -26,7 +26,6 @@ use Zend\Search\Lucene\Document;
 /**
  * OpenXML document.
  *
- * @uses       \Zend\Search\Lucene\Document
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage Document
@@ -73,7 +72,7 @@ abstract class AbstractOpenXML extends Document
     /**
      * Extract metadata from document
      *
-     * @param ZipArchive $package    ZipArchive AbstractOpenXML package
+     * @param \ZipArchive $package    ZipArchive AbstractOpenXML package
      * @return array    Key-value pairs containing document meta data
      */
     protected function extractMetaData(\ZipArchive $package)

@@ -21,17 +21,16 @@
 
 namespace Zend\XmlRpc\Server\Exception;
 
+use Zend\XmlRpc\Exception\ExceptionInterface as Exception;
+
 /**
  * Zend_XmlRpc_Server_Exception
  *
- * @uses       Zend\XmlRpc\Exception\ExceptionInterface
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Server
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-interface ExceptionInterface extends \Zend\XmlRpc\Exception\ExceptionInterface
-{
-}
-
+interface ExceptionInterface extends Exception
+{}

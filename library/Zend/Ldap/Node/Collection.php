@@ -24,7 +24,7 @@ namespace Zend\Ldap\Node;
 use Zend\Ldap;
 
 /**
- * Zend\Ldap\Node\Collection provides a collecion of nodes.
+ * Zend\Ldap\Node\Collection provides a collection of nodes.
  *
  * @category   Zend
  * @package    Zend_Ldap
@@ -38,7 +38,7 @@ class Collection extends Ldap\Collection
      * Creates the data structure for the given entry data
      *
      * @param  array $data
-     * @return Ldap\Node
+     * @return \Zend\Ldap\Node
      */
     protected function createEntry(array $data)
     {

@@ -20,18 +20,11 @@
  */
 
 namespace ZendTest\Search\Lucene;
+
 use Zend\Search\Lucene\Search\Query;
 use Zend\Search\Lucene;
 use Zend\Search\Lucene\Search;
 use Zend\Search\Lucene\Document;
-
-/**
- * Zend_Search_Lucene
- */
-
-/**
- * PHPUnit test case
- */
 
 /**
  * @category   Zend
@@ -146,7 +139,7 @@ class SearchTest extends \PHPUnit_Framework_TestCase
 
         try {
             $query = Search\QueryParser::parse('contents:[business TO by}');
-        } catch (Lucene\Exception $e) {
+        } catch (Lucene\Exception\ExceptionInterface $e) {
             $this->fail('exception raised while parsing a query');
         }
 
@@ -159,7 +152,7 @@ class SearchTest extends \PHPUnit_Framework_TestCase
             $query = Search\QueryParser::parse('contents:[business TO by}');
 
             $this->fail('exception wasn\'t raised while parsing a query');
-        } catch (Lucene\Exception $e) {
+        } catch (Lucene\Exception\ExceptionInterface $e) {
             $this->assertEquals('Syntax error at char position 25.', $e->getMessage());
         }
 
@@ -425,7 +418,7 @@ class SearchTest extends \PHPUnit_Framework_TestCase
         $hit = $hits[0];
 
         $this->assertTrue($hit instanceof Search\QueryHit);
-        $this->assertTrue($hit->getIndex() instanceof Lucene\SearchIndex);
+        $this->assertTrue($hit->getIndex() instanceof Lucene\SearchIndexInterface);
 
         $doc = $hit->getDocument();
         $this->assertTrue($doc instanceof Document);
@@ -443,11 +436,11 @@ class SearchTest extends \PHPUnit_Framework_TestCase
 
         $hit = $hits[0];
         $this->assertTrue($hit instanceof Search\QueryHit);
-        $this->assertTrue($hit->getIndex() instanceof Lucene\SearchIndex);
+        $this->assertTrue($hit->getIndex() instanceof Lucene\SearchIndexInterface);
 
         $doc = $hit->getDocument();
         $this->assertTrue($doc instanceof Document);
-        $this->assertTrue($hit->getIndex() instanceof Lucene\SearchIndex);
+        $this->assertTrue($hit->getIndex() instanceof Lucene\SearchIndexInterface);
 
         $this->assertEquals($doc->path, 'IndexSource/contributing.html');
     }

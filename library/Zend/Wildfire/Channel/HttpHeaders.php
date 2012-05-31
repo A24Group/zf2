@@ -20,6 +20,7 @@
  */
 
 namespace Zend\Wildfire\Channel;
+
 use Zend\Wildfire,
     Zend\Wildfire\Protocol,
     Zend\Controller,
@@ -28,14 +29,6 @@ use Zend\Wildfire,
 /**
  * Implements communication via HTTP request and response headers for Wildfire Protocols.
  *
- * @uses       \Zend\Controller\Front
- * @uses       \Zend\Controller\Plugin\AbstractPlugin
- * @uses       \Zend\Controller\Request\AbstractRequest
- * @uses       \Zend\Controller\Response\AbstractResponse
- * @uses       \Zend\Loader
- * @uses       \Zend\Wildfire\Channel
- * @uses       \Zend\Wildfire\Exception
- * @uses       \Zend\Wildfire\Protocol\JsonStream
  * @category   Zend
  * @package    Zend_Wildfire
  * @subpackage Channel
@@ -54,7 +47,7 @@ class HttpHeaders
 
     /**
      * Singleton instance
-     * @var \Zend\Wildfire\Channel\HttpHeaders
+     * @var HttpHeaders
      */
     protected static $_instance = null;
 
@@ -74,8 +67,8 @@ class HttpHeaders
      * Initialize singleton instance.
      *
      * @param string $class OPTIONAL Subclass of \Zend\Wildfire\Channel\HttpHeaders
-     * @return \Zend\Wildfire\Channel\HttpHeaders Returns the singleton \Zend\Wildfire\Channel\HttpHeaders instance
-     * @throws \Zend\Wildfire\Exception
+     * @return HttpHeaders Returns the singleton \Zend\Wildfire\Channel\HttpHeaders instance
+     * @throws Exception\InvalidArgumentException
      */
     public static function init($class = null)
     {
@@ -105,7 +98,7 @@ class HttpHeaders
      * Get or create singleton instance
      *
      * @param $skipCreate boolean True if an instance should not be created
-     * @return \Zend\Wildfire\Channel\HttpHeaders
+     * @return HttpHeaders
      */
     public static function getInstance($skipCreate=false)
     {
@@ -149,7 +142,7 @@ class HttpHeaders
      *
      * @param string $uri The URI for the protocol to be initialized
      * @return object Returns the new initialized protocol instance
-     * @throws \Zend\Wildfire\Exception
+     * @throws Exception\InvalidArgumentException
      */
     protected function _initProtocol($uri)
     {
@@ -157,7 +150,7 @@ class HttpHeaders
             case Protocol\JsonStream::PROTOCOL_URI;
                 return new Protocol\JsonStream();
         }
-        throw new Channel\InvalidArgumentException('Tyring to initialize unknown protocol for URI "'.$uri.'".');
+        throw new Exception\InvalidArgumentException('Tyring to initialize unknown protocol for URI "'.$uri.'".');
     }
 
 
@@ -293,7 +286,7 @@ class HttpHeaders
      * Get the request object
      *
      * @return \Zend\Controller\Request\AbstractRequest
-     * @throws \Zend\Wildfire\Exception
+     * @throws Exception\RuntimeException
      */
     public function getRequest()
     {
@@ -302,7 +295,7 @@ class HttpHeaders
             $this->setRequest($controller->getRequest());
         }
         if (!$this->_request) {
-            throw new Channel\RuntimeException('Request objects not initialized.');
+            throw new Exception\RuntimeException('Request objects not initialized.');
         }
         return $this->_request;
     }
@@ -311,7 +304,7 @@ class HttpHeaders
      * Get the response object
      *
      * @return \Zend\Controller\Response\AbstractResponse
-     * @throws \Zend\Wildfire\Exception
+     * @throws Exception\RuntimeException
      */
     public function getResponse()
     {
@@ -322,7 +315,7 @@ class HttpHeaders
             }
         }
         if (!$this->_response) {
-            throw new Channel\RuntimeException('Response objects not initialized.');
+            throw new Exception\RuntimeException('Response objects not initialized.');
         }
         return $this->_response;
     }

@@ -22,7 +22,6 @@
 namespace Zend\XmlRpc\Exception;
 
 /**
- * @uses       Zend\XmlRpc\Exception\ExceptionInterface
  * @category   Zend
  * @package    Zend_XmlRpc
  * @subpackage Value
@@ -31,6 +30,5 @@ namespace Zend\XmlRpc\Exception;
  */
 class ValueException
     extends \LogicException
-    implements \Zend\XmlRpc\Exception\ExceptionInterface
+    implements ExceptionInterface
 {}
-

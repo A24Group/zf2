@@ -6,7 +6,7 @@ use Zend\Http\Request as HttpRequest,
     Zend\Uri\Http as HttpUri,
     Zend\Http\Header\Cookie,
     Zend\Stdlib\Parameters,
-    Zend\Stdlib\ParametersDescription;
+    Zend\Stdlib\ParametersInterface;
 
 class Request extends HttpRequest
 {
@@ -31,27 +31,39 @@ class Request extends HttpRequest
      */
     protected $requestUri;
 
+    /**
+     * Construct
+     *
+     * Instantiates request.
+     *
+     * @return void
+     */
     public function __construct()
     {
         $this->setEnv(new Parameters($_ENV));
         $this->setPost(new Parameters($_POST));
         $this->setQuery(new Parameters($_GET));
         $this->setServer(new Parameters($_SERVER));
-
-        if ($_COOKIE) {
-            $this->setCookies($_COOKIE);
-        }
+        $this->setCookies(new Parameters($_COOKIE));
 
         if ($_FILES) {
             $this->setFile(new Parameters($_FILES));
         }
 
-		$requestBody = file_get_contents('php://input');
-		if (strlen($requestBody) > 0){
-			$this->setContent($requestBody);
-		}
+       $requestBody = file_get_contents('php://input');
+        if(strlen($requestBody) > 0){
+            $this->setContent($requestBody);
+        }
     }
 
+    /**
+     * Set cookies
+     *
+     * Instantiate and set cookies.
+     *
+     * @param $cookie
+     * @return Request
+     */
     public function setCookies($cookie)
     {
         $this->headers()->addHeader(new Cookie((array) $cookie));
@@ -138,12 +150,22 @@ class Request extends HttpRequest
      * Provide an alternate Parameter Container implementation for server parameters in this object, (this is NOT the
      * primary API for value setting, for that see server())
      *
-     * @param \Zend\Stdlib\ParametersDescription $server
+     * @param \Zend\Stdlib\ParametersInterface $server
      * @return Request
      */
-    public function setServer(ParametersDescription $server)
+    public function setServer(ParametersInterface $server)
     {
         $this->serverParams = $server;
+
+        // This seems to be the only way to get the Authorization header on Apache
+        if (function_exists('apache_request_headers')) {
+            $apacheRequestHeaders = apache_request_headers();
+            if (isset($apacheRequestHeaders['Authorization'])) {
+                if (!$this->serverParams->get('HTTP_AUTHORIZATION')) {
+                    $this->serverParams->set('HTTP_AUTHORIZATION', $apacheRequestHeaders['Authorization']);
+                }
+            }
+        }
 
         $this->headers()->addHeaders($this->serverToHeaders($this->serverParams));
 
@@ -290,21 +312,10 @@ class Request extends HttpRequest
         } else {
             // Backtrack up the SCRIPT_FILENAME to find the portion
             // matching PHP_SELF.
-            $path = $phpSelf ?: '';
-            if (!isset($path[1]) || $path[1] !== '~') {
-                $segments = array_reverse(explode('/', trim($filename, '/')));
-            } else {
-                $segments = array_reverse(explode('/', trim($path, '/')));
-            }
-            $index    = 0;
-            $last     = count($segments);
-            $baseUrl  = '';
 
-            do {
-                $segment = $segments[$index];
-                $baseUrl = '/' . $segment . $baseUrl;
-                $index++;
-            } while ($last > $index && false !== ($pos = strpos($path, $baseUrl)) && 0 !== $pos);
+            $basename = basename($filename);
+            $path = ($phpSelf ? trim($phpSelf, '/') : '');
+            $baseUrl = '/'. substr($path, 0, strpos($path, $basename)) . $basename;
         }
 
         // Does the base URL have anything in common with the request URI?
@@ -349,8 +360,8 @@ class Request extends HttpRequest
     /**
      * Autodetect the base path of the request
      *
-     * Uses several crtieria to determine the base path of the request.
-     *
+     * Uses several criteria to determine the base path of the request.
+     * 
      * @return string
      */
     protected function detectBasePath()
@@ -365,7 +376,7 @@ class Request extends HttpRequest
 
         // basename() matches the script filename; return the directory
         if (basename($baseUrl) === $filename) {
-            return dirname($baseUrl);
+            return str_replace('\\', '/', dirname($baseUrl));
         }
 
         // Base path is identical to base URL

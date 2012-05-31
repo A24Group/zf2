@@ -246,7 +246,7 @@ class App
         $userAgent = $applicationId . ' Zend_Framework_Gdata/' .
             \Zend\Version::VERSION;
         $client->getRequest()->headers()->addHeaderLine('User-Agent', $userAgent);
-        $client->setConfig(array(
+        $client->setOptions(array(
             'strictredirects' => true
             )
         );
@@ -280,7 +280,7 @@ class App
             $client = new Http\Client();
             $userAgent = 'Zend_Framework_Gdata/' . \Zend\Version::VERSION;
             $client->setHeaders('User-Agent', $userAgent);
-            $client->setConfig(array(
+            $client->setOptions(array(
                 'strictredirects' => true
                 )
             );
@@ -461,7 +461,7 @@ class App
      *
      * @param string $method The HTTP method for the request - 'GET', 'POST',
      *                       'PUT', 'DELETE'
-     * @param string $url The URL to which this request is being performed,
+     * @param string $uri The URL to which this request is being performed,
      *                    or null if found in $data
      * @param array $headers An associative array of HTTP headers for this
      *                       request
@@ -473,7 +473,7 @@ class App
      *               'method', 'url', 'data', 'headers', 'contentType'
      */
     public function prepareRequest($method,
-                                   $url = null,
+                                   $uri = null,
                                    $headers = array(),
                                    $data = null,
                                    $contentTypeOverride = null)
@@ -486,8 +486,8 @@ class App
 
         $rawData = null;
         $finalContentType = null;
-        if ($url == null) {
-            $url = $this->_defaultPostUri;
+        if ($uri == null) {
+            $uri = $this->_defaultPostUri;
         }
 
         if (is_string($data)) {
@@ -506,8 +506,8 @@ class App
             }
             if ($method == 'PUT' || $method == 'DELETE') {
                 $editLink = $data->getEditLink();
-                if ($editLink != null && $url == null) {
-                    $url = $editLink->getHref();
+                if ($editLink != null && $uri == null) {
+                    $uri = $editLink->getHref();
                 }
             }
         } elseif ($data instanceof App\Entry) {
@@ -516,7 +516,7 @@ class App
             if ($method == 'PUT' || $method == 'DELETE') {
                 $editLink = $data->getEditLink();
                 if ($editLink != null) {
-                    $url = $editLink->getHref();
+                    $uri = $editLink->getHref();
                 }
             }
         } elseif ($data instanceof App\MediaSource) {
@@ -556,7 +556,7 @@ class App
             $finalContentType = $contentTypeOverride;
         }
 
-        return array('method' => $method, 'url' => $url,
+        return array('method' => $method, 'url' => $uri,
             'data' => $rawData, 'headers' => $headers,
             'contentType' => $finalContentType);
     }
@@ -566,7 +566,7 @@ class App
      *
      * @param string $method The HTTP method for the request - 'GET', 'POST',
      *                       'PUT', 'DELETE'
-     * @param string $url The URL to which this request is being performed
+     * @param string $uri The URL to which this request is being performed
      * @param array $headers An associative array of HTTP headers
      *                       for this request
      * @param string $body The body of the HTTP request
@@ -576,7 +576,7 @@ class App
      *                              s results in one
      * @return \Zend\Http\Response The response object
      */
-    public function performHttpRequest($method, $url, $headers = null,
+    public function performHttpRequest($method, $uri, $headers = null,
         $body = null, $contentType = null, $remainingRedirects = null)
     {
         if ($remainingRedirects === null) {
@@ -602,7 +602,7 @@ class App
                         'You must specify the data to post as either a ' .
                         'string or a child of Zend\GData\App\Entry');
         }
-        if ($url === null) {
+        if ($uri === null) {
             throw new App\InvalidArgumentException(
                 'You must specify an URI to which to post.');
         }
@@ -628,16 +628,14 @@ class App
 
         // Set the params for the new request to be performed
         $this->_httpClient->setHeaders($headers);
-        $urlObj = Uri\UriFactory::factory($url);
-        preg_match("/^(.*?)(\?.*)?$/", $url, $matches);
+        $uriObj = Uri\UriFactory::factory($uri);
+        preg_match("/^(.*?)(\?.*)?$/", $uri, $matches);
         $this->_httpClient->setUri($matches[1]);
-        $queryArray = $urlObj->getQueryAsArray();
-        foreach ($queryArray as $name => $value) {
-          $this->_httpClient->setParameterGet($name, $value);
-        }
+        $queryArray = $uriObj->getQueryAsArray();
+        $this->_httpClient->setParameterGet($queryArray);
 
 
-        $this->_httpClient->setConfig(array('maxredirects' => 0));
+        $this->_httpClient->setOptions(array('maxredirects' => 0));
 
         // Set the proper adapter if we are handling a streaming upload
         $usingMimeStream = false;
@@ -665,7 +663,7 @@ class App
             if ($usingMimeStream) {
                 $this->_httpClient->setAdapter($oldHttpAdapter);
             }
-        } catch (\Zend\Http\Client\Exception $e) {
+        } catch (\Zend\Http\Client\Exception\ExceptionInterface $e) {
             // reset adapter
             if ($usingMimeStream) {
                 $this->_httpClient->setAdapter($oldHttpAdapter);
@@ -757,7 +755,7 @@ class App
         $header = $response->headers()->get('GData-Version');
         $majorProtocolVersion = null;
         $minorProtocolVersion = null;
-        if ($header instanceof Http\Header\HeaderDescription) {
+        if ($header instanceof Http\Header\HeaderInterface) {
             $protocolVersionStr = $header->getFieldValue();
             // Extract protocol major and minor version from header
             $delimiterPos = strpos($protocolVersionStr, '.');
@@ -1099,7 +1097,7 @@ class App
      */
     public function enableRequestDebugLogging($logfile)
     {
-        $this->_httpClient->setConfig(array(
+        $this->_httpClient->setOptions(array(
             'adapter' => 'Zend\GData\App\LoggingHttpClientAdapterSocket',
             'logfile' => $logfile
             ));

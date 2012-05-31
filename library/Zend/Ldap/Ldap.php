@@ -88,8 +88,7 @@ class Ldap
      * Constructor.
      *
      * @param  array|Traversable $options Options used in connecting, binding, etc.
-     * @return void
-     * @throws Exception\LdapException if ext/ldap is not installed
+     * @throws Exception\LdapException
      */
     public function __construct($options = array())
     {
@@ -175,9 +174,8 @@ class Ldap
         $message = '';
         if ($errorCode > 0) {
             $message = '0x' . dechex($errorCode) . ' ';
-        } else {
-            $message = '';
         }
+
         if (count($errorMessages) > 0) {
             $message .= '(' . implode('; ', $errorMessages) . ')';
         } else {
@@ -194,7 +192,7 @@ class Ldap
      * NULL if there has been an anonymous bind
      * username of the currently bound user
      *
-     * @return false|null|string
+     * @return bool|null|string
      */
     public function getBoundUser()
     {
@@ -452,14 +450,13 @@ class Ldap
     }
 
     /**
-     * @param  strint $acctname
+     * @param  string $acctname
      * @return string The LDAP search filter for matching directory accounts
      */
     protected function getAccountFilter($acctname)
     {
         $dname = '';
         $aname = '';
-
         $this->splitName($acctname, $dname, $aname);
         $accountFilterFormat = $this->getAccountFilterFormat();
         $aname               = Filter\AbstractFilter::escapeValue($aname);
@@ -849,6 +846,8 @@ class Ldap
      * - attributes
      * - sort
      * - collectionClass
+     * - sizelimit
+     * - timelimit
      *
      * @param  string|Filter\AbstractFilter|array $filter
      * @param  string|Dn|null                     $basedn
@@ -856,12 +855,13 @@ class Ldap
      * @param  array                              $attributes
      * @param  string|null                        $sort
      * @param  string|null                        $collectionClass
+     * @param  integer                            $sizelimit
+     * @param  integer                            $timelimit
      * @return Collection
      * @throws Exception\LdapException
      */
-    public function search(
-        $filter, $basedn = null, $scope = self::SEARCH_SCOPE_SUB,
-        array $attributes = array(), $sort = null, $collectionClass = null
+    public function search($filter, $basedn = null, $scope = self::SEARCH_SCOPE_SUB, array $attributes = array(),
+                           $sort = null, $collectionClass = null, $sizelimit = 0, $timelimit = 0
     )
     {
         if (is_array($filter)) {
@@ -882,6 +882,10 @@ class Ldap
                     case 'collectionclass':
                         $collectionClass = $value;
                         break;
+                    case 'sizelimit':
+                    case 'timelimit':
+                        $$key = (int)$value;
+                        break;
                 }
             }
         }
@@ -898,14 +902,14 @@ class Ldap
 
         switch ($scope) {
             case self::SEARCH_SCOPE_ONE:
-                $search = @ldap_list($this->getResource(), $basedn, $filter, $attributes);
+                $search = @ldap_list($this->getResource(), $basedn, $filter, $attributes, 0, $sizelimit, $timelimit);
                 break;
             case self::SEARCH_SCOPE_BASE:
-                $search = @ldap_read($this->getResource(), $basedn, $filter, $attributes);
+                $search = @ldap_read($this->getResource(), $basedn, $filter, $attributes, 0, $sizelimit, $timelimit);
                 break;
             case self::SEARCH_SCOPE_SUB:
             default:
-                $search = @ldap_search($this->getResource(), $basedn, $filter, $attributes);
+                $search = @ldap_search($this->getResource(), $basedn, $filter, $attributes, 0, $sizelimit, $timelimit);
                 break;
         }
 
@@ -1010,6 +1014,8 @@ class Ldap
      * - attributes
      * - sort
      * - reverseSort
+     * - sizelimit
+     * - timelimit
      *
      * @param  string|Filter\AbstractFilter|array $filter
      * @param  string|Dn|null                     $basedn
@@ -1017,13 +1023,15 @@ class Ldap
      * @param  array                              $attributes
      * @param  string|null                        $sort
      * @param  boolean                            $reverseSort
+     * @param  integer                            $sizelimit
+     * @param  integer                            $timelimit
      * @return array
      * @throws Exception\LdapException
      */
-    public function searchEntries(
-        $filter, $basedn = null, $scope = self::SEARCH_SCOPE_SUB,
-        array $attributes = array(), $sort = null, $reverseSort = false
-    ) {
+    public function searchEntries($filter, $basedn = null, $scope = self::SEARCH_SCOPE_SUB,
+                                  array $attributes = array(), $sort = null, $reverseSort = false, $sizelimit = 0,
+                                  $timelimit = 0)
+    {
         if (is_array($filter)) {
             $filter = array_change_key_case($filter, CASE_LOWER);
             if (isset($filter['collectionclass'])) {
@@ -1034,7 +1042,7 @@ class Ldap
                 unset($filter['reversesort']);
             }
         }
-        $result = $this->search($filter, $basedn, $scope, $attributes, $sort);
+        $result = $this->search($filter, $basedn, $scope, $attributes, $sort, null, $sizelimit, $timelimit);
         $items  = $result->toArray();
         if ((bool)$reverseSort === true) {
             $items = array_reverse($items, false);
@@ -1074,8 +1082,8 @@ class Ldap
      * Prepares an ldap data entry array for insert/update operation
      *
      * @param  array $entry
+     * @throws Exception\InvalidArgumentException
      * @return void
-     * @throws InvalidArgumentException\LdapException
      */
     public static function prepareLdapEntryArray(array &$entry)
     {
@@ -1263,6 +1271,7 @@ class Ldap
      * or {@see copy()}
      *
      * @param  string|Dn $parentDn
+     * @throws Exception\LdapException
      * @return array of DNs
      */
     protected function getChildrenDns($parentDn)
@@ -1338,7 +1347,7 @@ class Ldap
     /**
      * Renames a LDAP entry from one DN to another DN.
      *
-     * This method implicitely moves the entry to another location within the tree.
+     * This method implicitly moves the entry to another location within the tree.
      *
      * @param  string|Dn $from
      * @param  string|Dn $to

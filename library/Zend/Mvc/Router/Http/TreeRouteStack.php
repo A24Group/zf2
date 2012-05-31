@@ -25,9 +25,9 @@ use Zend\Mvc\Router\Exception,
     Traversable,
     Zend\Stdlib\ArrayUtils,
     Zend\Mvc\Router\SimpleRouteStack,
-    Zend\Mvc\Router\Route as BaseRoute,
-    Zend\Mvc\Router\Http\Route,
-    Zend\Stdlib\RequestDescription as Request,
+    Zend\Mvc\Router\RouteInterface as BaseRoute,
+    Zend\Mvc\Router\Http\RouteInterface,
+    Zend\Stdlib\RequestInterface as Request,
     Zend\Uri\Http as HttpUri;
 
 /**
@@ -58,7 +58,6 @@ class TreeRouteStack extends SimpleRouteStack
      * init(): defined by SimpleRouteStack.
      *
      * @see    SimpleRouteStack::init()
-     * @return void
      */
     protected function init()
     {
@@ -71,21 +70,22 @@ class TreeRouteStack extends SimpleRouteStack
             'segment'  => __NAMESPACE__ . '\Segment',
             'wildcard' => __NAMESPACE__ . '\Wildcard',
             'query'    => __NAMESPACE__ . '\Query',
+            'method'   => __NAMESPACE__ . '\Method',
         ));
     }
 
     /**
-     * addRoute(): defined by RouteStack interface.
+     * addRoute(): defined by RouteStackInterface interface.
      *
      * @see    RouteStack::addRoute()
      * @param  string  $name
      * @param  mixed   $route
      * @param  integer $priority
-     * @return RouteStack
+     * @return TreeRouteStack
      */
     public function addRoute($name, $route, $priority = null)
     {
-        if (!$route instanceof Route) {
+        if (!$route instanceof RouteInterface) {
             $route = $this->routeFromArray($route);
         }
 
@@ -97,7 +97,7 @@ class TreeRouteStack extends SimpleRouteStack
      *
      * @see    SimpleRouteStack::routeFromArray()
      * @param  array|\Traversable $specs
-     * @return Route
+     * @return RouteInterface
      */
     protected function routeFromArray($specs)
     {
@@ -109,7 +109,7 @@ class TreeRouteStack extends SimpleRouteStack
 
         $route = parent::routeFromArray($specs);
 
-        if (!$route instanceof Route) {
+        if (!$route instanceof RouteInterface) {
             throw new Exception\RuntimeException('Given route does not implement HTTP route interface');
         }
 
@@ -178,12 +178,13 @@ class TreeRouteStack extends SimpleRouteStack
     }
 
     /**
-     * assemble(): defined by Route interface.
+     * assemble(): defined by RouteInterface interface.
      *
      * @see    BaseRoute::assemble()
      * @param  array $params
      * @param  array $options
      * @return mixed
+     * @throws Exception\ExceptionInterface
      */
     public function assemble(array $params = array(), array $options = array())
     {
@@ -234,6 +235,8 @@ class TreeRouteStack extends SimpleRouteStack
                     $uri->setScheme($this->requestUri->getScheme());
                 }
 
+                return $uri->setPath($path)->toString();
+            } elseif (!$uri->isAbsolute() && $uri->isValidRelative()) {
                 return $uri->setPath($path)->toString();
             }
         }

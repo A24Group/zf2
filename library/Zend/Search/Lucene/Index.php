@@ -24,31 +24,21 @@ use Zend\Search\Lucene\Search\Similarity,
 	Zend\Search\Lucene\Storage\Directory,
 	Zend\Search\Lucene\Exception\InvalidArgumentException,
 	Zend\Search\Lucene\Exception\RuntimeException,
-	Zend\Search\Lucene\Exception\InvalidFileFormatException;
+	Zend\Search\Lucene\Exception\InvalidFileFormatException,
+    Zend\Search\Lucene\Exception\OutOfRangeException;
 
 /**
- * @uses       \Zend\Search\Lucene\Document
- * @uses       \Zend\Search\Lucene\Exception\InvalidArgumentException
- * @uses       \Zend\Search\Lucene\Exception\InvalidFileFormatException
- * @uses       \Zend\Search\Lucene\Exception\RuntimeException
- * @uses       \Zend\Search\Lucene\Index
- * @uses       \Zend\Search\Lucene\SearchIndex
- * @uses       \Zend\Search\Lucene\LockManager
- * @uses       \Zend\Search\Lucene\Search
- * @uses       \Zend\Search\Lucene\Search\Similarity
- * @uses       \Zend\Search\Lucene\Storage\Directory
- * @uses       \Zend\Search\Lucene\TermStreamsPriorityQueue
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Index implements SearchIndex
+class Index implements SearchIndexInterface
 {
     /**
      * File system adapter.
      *
-     * @var \Zend\Search\Lucene\Storage\Directory
+     * @var Directory\DirectoryInterface
      */
     private $_directory = null;
 
@@ -69,7 +59,7 @@ class Index implements SearchIndex
     /**
      * Array of Zend_Search_Lucene_Index_SegmentInfo objects for current version of index.
      *
-     * @var array \Zend\Search\Lucene\Index\SegmentInfo
+     * @var array|\Zend\Search\Lucene\Index\SegmentInfo
      */
     private $_segmentInfos = array();
 
@@ -119,11 +109,11 @@ class Index implements SearchIndex
      * 0 means pre-2.1 index format
      * -1 means there are no segments files.
      *
-     * @param \Zend\Search\Lucene\Storage\Directory $directory
+     * @param \Zend\Search\Lucene\Storage\Directory\DirectoryInterface $directory
      * @throws \Zend\Search\Lucene\Exception\RuntimeException
      * @return integer
      */
-    public static function getActualGeneration(Directory $directory)
+    public static function getActualGeneration(Directory\DirectoryInterface $directory)
     {
         /**
          * Zend_Search_Lucene uses segments.gen file to retrieve current generation number
@@ -482,7 +472,7 @@ class Index implements SearchIndex
     /**
      * Returns the Zend_Search_Lucene_Storage_Directory instance for this index.
      *
-     * @return \Zend\Search\Lucene\Storage\Directory
+     * @return \Zend\Search\Lucene\Storage\Directory\DirectoryInterface
      */
     public function getDirectory()
     {
@@ -670,7 +660,7 @@ class Index implements SearchIndex
      * Input is a string or Zend_Search_Lucene_Search_Query.
      *
      * @param \Zend\Search\Lucene\Search\QueryParser|string $query
-     * @return array \Zend\Search\Lucene\Search\QueryHit
+     * @return array|\Zend\Search\Lucene\Search\QueryHit
      * @throws \Zend\Search\Lucene\Exception\InvalidArgumentException
      * @throws \Zend\Search\Lucene\Exception\RuntimeException
      */
@@ -852,7 +842,7 @@ class Index implements SearchIndex
     public function getDocument($id)
     {
         if ($id instanceof Search\QueryHit) {
-            /* @var $id Zend\Search\Lucene\Search\QueryHit */
+            /* @var $id \Zend\Search\Lucene\Search\QueryHit */
             $id = $id->id;
         }
 
@@ -1123,7 +1113,7 @@ class Index implements SearchIndex
     public function delete($id)
     {
         if ($id instanceof Search\QueryHit) {
-            /* @var $id Zend\Search\Lucene\Search\QueryHit */
+            /* @var $id \Zend\Search\Lucene\Search\QueryHit */
             $id = $id->id;
         }
 

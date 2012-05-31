@@ -24,7 +24,6 @@ namespace Zend\Rest\Client\Exception;
 /**
  * REST client result exception
  *
- * @uses       Zend\Rest\Client\Exception
  * @package    Zend_Rest
  * @subpackage Client
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
@@ -32,5 +31,5 @@ namespace Zend\Rest\Client\Exception;
  */
 class ResultException 
     extends \Exception
-    implements \Zend\Rest\Client\Exception
+    implements ExceptionInterface
 {}

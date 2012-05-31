@@ -21,17 +21,17 @@
 
 namespace Zend\Mvc\View;
 
-use Zend\EventManager\EventCollection as Events,
-    Zend\EventManager\ListenerAggregate,
+use Zend\EventManager\EventManagerInterface as Events,
+    Zend\EventManager\ListenerAggregateInterface,
     Zend\Filter\Word\CamelCaseToDash as CamelCaseToDashFilter,
     Zend\Mvc\MvcEvent,
     Zend\Mvc\Router\RouteMatch,
-    Zend\View\Model as ViewModel;
+    Zend\View\Model\ModelInterface as ViewModel;
 
-class InjectTemplateListener implements ListenerAggregate
+class InjectTemplateListener implements ListenerAggregateInterface
 {
     /**
-     * Filter/inflector used to normalize names for use as template identifiers
+     * FilterInterface/inflector used to normalize names for use as template identifiers
      *
      * @var mixed
      */
@@ -92,9 +92,22 @@ class InjectTemplateListener implements ListenerAggregate
         }
 
         $routeMatch = $e->getRouteMatch();
-        $controller = $routeMatch->getParam('controller', 'index');
+        $controller = $e->getTarget();
+        if (is_object($controller)) {
+            $controller = get_class($controller);
+        }
+        if (!$controller) {
+            $controller = $routeMatch->getParam('controller', '');
+        }
+
+        $module     = $this->deriveModuleNamespace($controller);
         $controller = $this->deriveControllerClass($controller);
-        $template   = $this->inflectName($controller);
+
+        $template   = $this->inflectName($module);
+        if (!empty($template)) {
+            $template .= '/';
+        }
+        $template  .= $this->inflectName($controller);
 
         $action     = $routeMatch->getParam('action');
         if (null !== $action) {
@@ -116,6 +129,21 @@ class InjectTemplateListener implements ListenerAggregate
         }
         $name = $this->inflector->filter($name);
         return strtolower($name);
+    }
+
+    /**
+     * Determine the top-level namespace of the controller
+     * 
+     * @param  string $controller 
+     * @return string
+     */
+    protected function deriveModuleNamespace($controller)
+    {
+        if (!strstr($controller, '\\')) {
+            return '';
+        }
+        $module = substr($controller, 0, strpos($controller, '\\'));
+        return $module;
     }
 
     /**

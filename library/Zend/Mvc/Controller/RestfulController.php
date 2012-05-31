@@ -1,34 +1,90 @@
 <?php
+/**
+ * Zend Framework
+ *
+ * LICENSE
+ *
+ * This source file is subject to the new BSD license that is bundled
+ * with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://framework.zend.com/license/new-bsd
+ * If you did not receive a copy of the license and are unable to
+ * obtain it through the world-wide-web, please send an email
+ * to license@zend.com so we can send you a copy immediately.
+ *
+ * @category   Zend
+ * @package    Zend_Mvc
+ * @subpackage Controller
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ */
 
 namespace Zend\Mvc\Controller;
 
-use Zend\Di\Locator,
-    Zend\EventManager\EventCollection,
-    Zend\EventManager\EventDescription as Event,
-    Zend\EventManager\EventManager,
-    Zend\EventManager\EventManagerAware,
-    Zend\Http\Request as HttpRequest,
-    Zend\Http\PhpEnvironment\Response as HttpResponse,
-    Zend\Loader\Broker,
-    Zend\Loader\Pluggable,
-    Zend\Stdlib\Dispatchable,
-    Zend\Stdlib\RequestDescription as Request,
-    Zend\Stdlib\ResponseDescription as Response,
-    Zend\Mvc\Exception,
-    Zend\Mvc\InjectApplicationEvent,
-    Zend\Mvc\LocatorAware,
-    Zend\Mvc\MvcEvent;
+use Zend\EventManager\EventManagerInterface;
+use Zend\EventManager\EventInterface as Event;
+use Zend\EventManager\EventManager;
+use Zend\EventManager\EventManagerAwareInterface;
+use Zend\EventManager\EventsCapableInterface;
+use Zend\Http\Request as HttpRequest;
+use Zend\Http\PhpEnvironment\Response as HttpResponse;
+use Zend\Loader\Broker;
+use Zend\Loader\Pluggable;
+use Zend\Mvc\Exception;
+use Zend\Mvc\InjectApplicationEventInterface;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\ServiceLocatorAwareInterface;
+use Zend\ServiceManager\ServiceLocatorInterface;
+use Zend\Stdlib\DispatchableInterface as Dispatchable;
+use Zend\Stdlib\RequestInterface as Request;
+use Zend\Stdlib\ResponseInterface as Response;
 
 /**
  * Abstract RESTful controller
+ *
+ * @category   Zend
+ * @package    Zend_Mvc
+ * @subpackage Controller
+ * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-abstract class RestfulController implements Dispatchable, EventManagerAware, InjectApplicationEvent, LocatorAware, Pluggable
+abstract class RestfulController implements 
+    Dispatchable,
+    EventManagerAwareInterface,
+    EventsCapableInterface,
+    InjectApplicationEventInterface,
+    ServiceLocatorAwareInterface,
+    Pluggable
 {
+    /**
+     * @var Broker
+     */
     protected $broker;
+
+    /**
+     * @var Request
+     */
     protected $request;
+
+    /**
+     * @var Response
+     */
     protected $response;
+
+    /**
+     * @var Event
+     */
     protected $event;
+
+    /**
+     * @var EventCollection
+     */
     protected $events;
+
+    /**
+     * @var Locator
+     */
+    protected $locator;
 
     /**
      * Return list of resources
@@ -215,13 +271,13 @@ abstract class RestfulController implements Dispatchable, EventManagerAware, Inj
     /**
      * Set the event manager instance used by this context
      *
-     * @param  EventCollection $events
-     * @return AppContext
+     * @param  EventManagerInterface $events
+     * @return RestfulController
      */
-    public function setEventManager(EventCollection $events)
+    public function setEventManager(EventManagerInterface $events)
     {
         $events->setIdentifiers(array(
-            'Zend\Stdlib\Dispatchable',
+            'Zend\Stdlib\DispatchableInterface',
             __CLASS__,
             get_class($this)
         ));
@@ -235,7 +291,7 @@ abstract class RestfulController implements Dispatchable, EventManagerAware, Inj
      *
      * Lazy-loads an EventManager instance if none registered.
      *
-     * @return EventCollection
+     * @return EventManagerInterface
      */
     public function events()
     {
@@ -282,10 +338,10 @@ abstract class RestfulController implements Dispatchable, EventManagerAware, Inj
     /**
      * Set locator instance
      *
-     * @param  Locator $locator
+     * @param  ServiceLocatorInterface $locator
      * @return void
      */
-    public function setLocator(Locator $locator)
+    public function setServiceLocator(ServiceLocatorInterface $locator)
     {
         $this->locator = $locator;
     }
@@ -293,9 +349,9 @@ abstract class RestfulController implements Dispatchable, EventManagerAware, Inj
     /**
      * Retrieve locator instance
      *
-     * @return Locator
+     * @return ServiceLocatorInterface
      */
-    public function getLocator()
+    public function getServiceLocator()
     {
         return $this->locator;
     }

@@ -17,6 +17,11 @@ class AnnotationManager
      */
     protected $annotations = array();
 
+    /**
+     * Constructor
+     *
+     * @param array $annotations
+     */
     public function __construct(array $annotations = array())
     {
         if ($annotations) {
@@ -26,7 +31,13 @@ class AnnotationManager
         }
     }
 
-    public function registerAnnotation(Annotation $annotation)
+    /**
+     * Register annotations
+     *
+     * @param AnnotationInterface $annotation
+     * @throws \Zend\Code\Exception\InvalidArgumentException
+     */
+    public function registerAnnotation(AnnotationInterface $annotation)
     {
         $class = get_class($annotation);
 
@@ -34,23 +45,37 @@ class AnnotationManager
             throw new Exception\InvalidArgumentException('An annotation for this class ' . $class . ' already exists');
         }
 
-        $this->annotations[] = $annotation;
+        $this->annotations[]     = $annotation;
         $this->annotationNames[] = $class;
     }
 
+    /**
+     * Checks if the manager has annotations for a class
+     *
+     * @param $class
+     * @return bool
+     */
     public function hasAnnotation($class)
     {
         // otherwise, only if its name exists as a key
         return in_array($class, $this->annotationNames);
     }
 
+    /**
+     * Create Annotation
+     *
+     * @param string $class
+     * @param        $content
+     * @throws \Zend\Code\Exception\RuntimeException
+     * @return AnnotationInterface
+     */
     public function createAnnotation($class, $content = null)
     {
         if (!$this->hasAnnotation($class)) {
             throw new Exception\RuntimeException('This annotation class is not supported by this annotation manager');
         }
 
-        $index = array_search($class, $this->annotationNames);
+        $index      = array_search($class, $this->annotationNames);
         $annotation = $this->annotations[$index];
 
         $newAnnotation = clone $annotation;

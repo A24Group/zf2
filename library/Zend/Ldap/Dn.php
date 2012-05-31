@@ -148,6 +148,7 @@ class Dn implements \ArrayAccess
      * Get the parent DN $levelUp levels up the tree
      *
      * @param  int $levelUp
+     * @throws Exception\LdapException
      * @return Dn
      */
     public function getParentDn($levelUp = 1)
@@ -495,7 +496,7 @@ class Dn implements \ArrayAccess
                 array('\\', ',', '+', '"', '<', '>', ';', '#', '=',),
                 array('\\\\', '\,', '\+', '\"', '\<', '\>', '\;', '\#', '\='), $val
             );
-            $val = Converter::ascToHex32($val);
+            $val = Converter\Converter::ascToHex32($val);
 
             // Convert all leading and trailing spaces to sequences of \20.
             if (preg_match('/^(\s*)(.+?)(\s*)$/', $val, $matches)) {
@@ -538,7 +539,7 @@ class Dn implements \ArrayAccess
                 array('\\\\', '\,', '\+', '\"', '\<', '\>', '\;', '\#', '\='),
                 array('\\', ',', '+', '"', '<', '>', ';', '#', '=',), $val
             );
-            $values[$key] = Converter::hex32ToAsc($val);
+            $values[$key] = Converter\Converter::hex32ToAsc($val);
         }
         return (count($values) == 1) ? $values[0] : $values;
     }

@@ -23,9 +23,6 @@ namespace Zend\Search\Lucene\Storage\File;
 use Zend\Search\Lucene;
 
 /**
- * @uses       \Zend\Search\Lucene\Exception\RuntimeException
- * @uses       \Zend\Search\Lucene\Exception\InvalidArgumentException
- * @uses       \Zend\Search\Lucene\Storage\File
  * @category   Zend
  * @package    Zend_Search_Lucene
  * @subpackage Storage
@@ -90,7 +87,7 @@ class Memory extends AbstractFile
      * @param integer $whence
      * @return integer
      */
-    public function seek($offset, $whence=\SEEK\SET)
+    public function seek($offset, $whence=SEEK_SET)
     {
         switch ($whence) {
             case SEEK_SET:

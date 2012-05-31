@@ -21,8 +21,9 @@
 
 namespace Zend\Ldap\Node\Schema;
 
-use Zend\Ldap,
-    Zend\Ldap\Node;
+use Zend\Ldap;
+use Zend\Ldap\Converter;
+use Zend\Ldap\Node;
 
 /**
  * Zend\Ldap\Node\Schema\OpenLDAP provides a simple data-container for the Schema node of
@@ -74,9 +75,9 @@ class OpenLdap extends Node\Schema
     /**
      * Parses the schema
      *
-     * @param  Ldap\Dn      $dn
-     * @param  Ldap\Ldap    $ldap
-     * @return Schema Provides a fluid interface
+     * @param \Zend\Ldap\Dn   $dn
+     * @param \Zend\Ldap\Ldap $ldap
+     * @return OpenLdap Provides a fluid interface
      */
     protected function parseSchema(Ldap\Dn $dn, Ldap\Ldap $ldap)
     {
@@ -461,12 +462,12 @@ class OpenLdap extends Node\Schema
                             break;
                         }
                         if ($tmp != '$') {
-                            $data[$token][] = Ldap\Attribute::convertFromLdapValue($tmp);
+                            $data[$token][] = Converter\Converter::fromLdap($tmp);
                         }
                         $tmp = array_shift($tokens);
                     }
                 } else {
-                    $data[$token] = Ldap\Attribute::convertFromLdapValue($data[$token]);
+                    $data[$token] = Converter\Converter::fromLdap($data[$token]);
                 }
                 // create a array if the value should be multivalued but was not
                 if (in_array($token, $multiValue) && !is_array($data[$token])) {

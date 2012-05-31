@@ -20,13 +20,10 @@
  */
 
 namespace ZendTest\Search\Lucene;
+
 use Zend\Search\Lucene;
 use Zend\Search\Lucene\Document;
 use Zend\Search\Lucene\Index;
-
-/**
- * Zend_Search_Lucene
- */
 
 /**
  * @category   Zend
@@ -49,7 +46,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase
             return;
         }
 
-        // remove files from temporary direcytory
+        // remove files from temporary directory
         $dir = opendir($dirName);
         while (($file = readdir($dir)) !== false) {
             if (!is_dir($dirName . '/' . $file)) {
@@ -63,21 +60,21 @@ class IndexTest extends \PHPUnit_Framework_TestCase
     {
         $index = Lucene\Lucene::create(__DIR__ . '/_index/_files');
 
-        $this->assertTrue($index instanceof Lucene\SearchIndex);
+        $this->assertTrue($index instanceof Lucene\SearchIndexInterface);
     }
 
     public function testOpen()
     {
         $index = Lucene\Lucene::open(__DIR__ . '/_indexSample/_files');
 
-        $this->assertTrue($index instanceof Lucene\SearchIndex);
+        $this->assertTrue($index instanceof Lucene\SearchIndexInterface);
     }
 
     public function testOpenNonCompound()
     {
         $index = Lucene\Lucene::open(__DIR__ . '/_indexSample/_nonCompoundIndexFiles');
 
-        $this->assertTrue($index instanceof Lucene\SearchIndex);
+        $this->assertTrue($index instanceof Lucene\SearchIndexInterface);
     }
 
     public function testDefaultSearchField()
@@ -311,7 +308,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase
         unset($index);
 
         $index1 = Lucene\Lucene::open(__DIR__ . '/_index/_files');
-        $this->assertTrue($index1 instanceof Lucene\SearchIndex);
+        $this->assertTrue($index1 instanceof Lucene\SearchIndexInterface);
     }
 
     public function testOptimize()
@@ -354,7 +351,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase
         unset($index);
 
         $index1 = Lucene\Lucene::open(__DIR__ . '/_index/_files');
-        $this->assertTrue($index1 instanceof Lucene\SearchIndex);
+        $this->assertTrue($index1 instanceof Lucene\SearchIndexInterface);
         $pathTerm = new Index\Term('IndexSource/contributing.html', 'path');
         $contributingDocs = $index1->termDocs($pathTerm);
         foreach ($contributingDocs as $id) {
@@ -364,7 +361,7 @@ class IndexTest extends \PHPUnit_Framework_TestCase
         unset($index1);
 
         $index2 = Lucene\Lucene::open(__DIR__ . '/_index/_files');
-        $this->assertTrue($index2 instanceof Lucene\SearchIndex);
+        $this->assertTrue($index2 instanceof Lucene\SearchIndexInterface);
 
         $hits = $index2->find('submitting');
         $this->assertEquals(count($hits), 3);

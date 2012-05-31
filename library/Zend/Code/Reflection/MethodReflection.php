@@ -20,24 +20,19 @@
 
 namespace Zend\Code\Reflection;
 
-use ReflectionMethod as PhpReflectionMethod,
-    Zend\Code\Reflection,
-    Zend\Code\Annotation,
-    Zend\Code\Scanner\CachingFileScanner,
-    Zend\Code\Scanner\AnnotationScanner;
+use ReflectionMethod as PhpReflectionMethod;
+use Zend\Code\Annotation\AnnotationCollection;
+use Zend\Code\Annotation\AnnotationManager;
+use Zend\Code\Scanner\CachingFileScanner;
+use Zend\Code\Scanner\AnnotationScanner;
 
 /**
- * @uses       ReflectionMethod
- * @uses       Zend\Code\Reflection\ReflectionClass
- * @uses       Zend_Reflection_Docblock
- * @uses       Zend\Code\Reflection\Exception
- * @uses       Zend\Code\Reflection\ReflectionParameter
  * @category   Zend
  * @package    Zend_Reflection
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class MethodReflection extends PhpReflectionMethod implements Reflection
+class MethodReflection extends PhpReflectionMethod implements ReflectionInterface
 {
 
     /**
@@ -46,7 +41,7 @@ class MethodReflection extends PhpReflectionMethod implements Reflection
     protected $annotations = null;
 
     /**
-     * Retrieve method docblock reflection
+     * Retrieve method DocBlock reflection
      *
      * @return DocBlockReflection|false
      */
@@ -61,10 +56,10 @@ class MethodReflection extends PhpReflectionMethod implements Reflection
     }
 
     /**
-     * @param \Zend\Code\Annotation\AnnotationManager $annotationManager
-     * @return \Zend\Code\Annotation\AnnotationCollection
+     * @param AnnotationManager $annotationManager
+     * @return AnnotationCollection
      */
-    public function getAnnotations(Annotation\AnnotationManager $annotationManager)
+    public function getAnnotations(AnnotationManager $annotationManager)
     {
         if (($docComment = $this->getDocComment()) == '') {
             return false;
@@ -72,7 +67,7 @@ class MethodReflection extends PhpReflectionMethod implements Reflection
 
         if (!$this->annotations) {
             $cachingFileScanner = new CachingFileScanner($this->getFileName());
-            $nameInformation = $cachingFileScanner->getClassNameInformation($this->getDeclaringClass()->getName());
+            $nameInformation    = $cachingFileScanner->getClassNameInformation($this->getDeclaringClass()->getName());
 
             $this->annotations = new AnnotationScanner($annotationManager, $docComment, $nameInformation);
         }
@@ -90,7 +85,7 @@ class MethodReflection extends PhpReflectionMethod implements Reflection
     {
         if ($includeDocComment) {
             if ($this->getDocComment() != '') {
-                return $this->getDocblock()->getStartLine();
+                return $this->getDocBlock()->getStartLine();
             }
         }
 
@@ -100,7 +95,6 @@ class MethodReflection extends PhpReflectionMethod implements Reflection
     /**
      * Get reflection of declaring class
      *
-     * @param  string $reflectionClass Name of reflection class to use
      * @return ClassReflection
      */
     public function getDeclaringClass()
@@ -114,15 +108,15 @@ class MethodReflection extends PhpReflectionMethod implements Reflection
     /**
      * Get all method parameter reflection objects
      *
-     * @param  string $reflectionClass Name of reflection class to use
-     * @return array of \Zend\Code\Reflection\ReflectionParameter objects
+     * @return ReflectionParameter[]
      */
     public function getParameters()
     {
         $phpReflections  = parent::getParameters();
         $zendReflections = array();
         while ($phpReflections && ($phpReflection = array_shift($phpReflections))) {
-            $instance = new ParameterReflection(array($this->getDeclaringClass()->getName(), $this->getName()), $phpReflection->getName());
+            $instance          = new ParameterReflection(array($this->getDeclaringClass()->getName(),
+                                                               $this->getName()), $phpReflection->getName());
             $zendReflections[] = $instance;
             unset($phpReflection);
         }
@@ -133,14 +127,14 @@ class MethodReflection extends PhpReflectionMethod implements Reflection
     /**
      * Get method contents
      *
-     * @param  bool $includeDocblock
+     * @param  bool $includeDocBlock
      * @return string
      */
-    public function getContents($includeDocblock = true)
+    public function getContents($includeDocBlock = true)
     {
         $fileContents = file($this->getFileName());
-        $startNum = $this->getStartLine($includeDocblock);
-        $endNum = ($this->getEndLine() - $this->getStartLine());
+        $startNum     = $this->getStartLine($includeDocBlock);
+        $endNum       = ($this->getEndLine() - $this->getStartLine());
 
         return implode("\n", array_splice($fileContents, $startNum, $endNum, true));
     }
