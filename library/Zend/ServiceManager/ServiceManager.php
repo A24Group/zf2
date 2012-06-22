@@ -361,6 +361,26 @@ class ServiceManager implements ServiceLocatorInterface
         }
 
         if (!$instance && !empty($this->abstractFactories)) {
+
+            /*
+             * I implemented this workaround because the DiAbstractServiceFactory
+             * was being called before the DaoAbstractFactory and ends up
+             * throwing an exception. This is a temporary work around because
+             * when a second custom abstract factory is loaded then the same
+             * CircularDependencyFoundException ends up being thrown before all
+             * custom abstract factories are consulted.
+             * 
+             * @author Ronny Srnka <ronny.srnka@a24group.com>
+             * @since 22 June 2012
+             */
+            if ((is_string($this->abstractFactories[0]) && $this->abstractFactories[0] == 'Zend\ServiceManager\Di\DiAbstractServiceFactory')
+                || (!is_string($this->abstractFactories[0]) && get_class($this->abstractFactories[0]) == 'Zend\ServiceManager\Di\DiAbstractServiceFactory'))
+            {
+                $abstractFactory = array_shift($this->abstractFactories);
+                array_push($this->abstractFactories, $abstractFactory);
+            }
+            /* END OF WORKAROUND */
+
             foreach ($this->abstractFactories as $index => $abstractFactory) {
                 // support factories as strings
                 if (is_string($abstractFactory) && class_exists($abstractFactory, true)) {
