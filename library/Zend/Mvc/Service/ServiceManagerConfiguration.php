@@ -174,7 +174,15 @@ class ServiceManagerConfiguration implements ConfigurationInterface
 
         $serviceManager->addInitializer(function ($instance) use ($serviceManager) {
             if ($instance instanceof ServiceManagerAwareInterface) {
-                $instance->setServiceManager($instance);
+                /**
+                 * This is obviously a bug becasuse the service manager aware
+                 * interface defines that a service manager must be passed to
+                 * the set service manager method.
+                 * 
+                 * @author Ronny Srnka <ronny.srnka@a24group.com>
+                 * @since 25 June 2012
+                 */
+                $instance->setServiceManager($serviceManager);
             }
         });
 
