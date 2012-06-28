@@ -21,12 +21,7 @@
 
 namespace ZendTest\Validator;
 
-use Zend\Validator,
-    ReflectionClass;
-
-/**
- * Test helper
- */
+use Zend\Validator\Float as FloatValidator;
 
 /**
  * @category   Zend
@@ -39,41 +34,31 @@ use Zend\Validator,
 class FloatTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Zend_Validator_Float object
-     *
-     * @var \Zend\Validator\Float
+     * @var FloatValidator
      */
-    protected $_validator;
+    protected $validator;
 
-    /**
-     * Creates a new Zend_Validator_Float object for each test method
-     *
-     * @return void
-     */
+    /** @var string */
+    protected $locale;
     public function setUp()
     {
-        $this->_locale = setlocale(LC_ALL, 0); //backup locale
-
-        if (\Zend\Registry::isRegistered('Zend_Locale')) {
-            \Zend\Registry::getInstance()->offsetUnset('Zend_Locale');
-        }
-
-        $this->_validator = new Validator\Float();
+        $this->locale    = setlocale(LC_ALL, 0); //backup locale
+        $this->validator = new FloatValidator();
     }
 
     public function tearDown()
     {
         //restore locale
-        if (is_string($this->_locale) && strpos($this->_locale, ';')) {
+        if (is_string($this->locale) && strpos($this->locale, ';')) {
             $locales = array();
-            foreach (explode(';', $this->_locale) as $l) {
+            foreach (explode(';', $this->locale) as $l) {
                 $tmp = explode('=', $l);
                 $locales[$tmp[0]] = $tmp[1];
             }
             setlocale(LC_ALL, $locales);
             return;
         }
-        setlocale(LC_ALL, $this->_locale);
+        setlocale(LC_ALL, $this->locale);
     }
 
     /**
@@ -84,11 +69,12 @@ class FloatTest extends \PHPUnit_Framework_TestCase
      */
     public function testBasic($value, $expected)
     {
-        $this->assertEquals($expected, $this->_validator->isValid($value),
+        $this->assertEquals($expected, $this->validator->isValid($value),
                             'Failed expecting ' . $value . ' being ' . ($expected ? 'true' : 'false'));
     }
 
-    public function basicProvider() {
+    public function basicProvider()
+    {
         return array(
             array(1.00, true),
             array(0.01, true),
@@ -105,7 +91,7 @@ class FloatTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetMessages()
     {
-        $this->assertEquals(array(), $this->_validator->getMessages());
+        $this->assertEquals(array(), $this->validator->getMessages());
     }
 
     /**
@@ -113,27 +99,17 @@ class FloatTest extends \PHPUnit_Framework_TestCase
      */
     public function testSettingLocales()
     {
-        $this->_validator->setLocale('de');
-        $this->assertEquals('de', $this->_validator->getLocale());
-        $this->assertEquals(true, $this->_validator->isValid('10,5'));
+        $this->validator->setLocale('de');
+        $this->assertEquals('de', $this->validator->getLocale());
+        $this->assertEquals(true, $this->validator->isValid('10,5'));
     }
 
     /**
-     * @ZF-4352
+     * @group ZF-4352
      */
     public function testNonStringValidation()
     {
-        $this->assertFalse($this->_validator->isValid(array(1 => 1)));
-    }
-
-    /**
-     * @ZF-7489
-     */
-    public function testUsingApplicationLocale()
-    {
-        \Zend\Registry::set('Zend_Locale', new \Zend\Locale\Locale('de'));
-        $valid = new Validator\Float();
-        $this->assertTrue($valid->isValid('123,456'));
+        $this->assertFalse($this->validator->isValid(array(1 => 1)));
     }
 
     /**
@@ -142,7 +118,7 @@ class FloatTest extends \PHPUnit_Framework_TestCase
     public function testNoZendLocaleButPhpLocale()
     {
         setlocale(LC_ALL, 'de');
-        $valid = new Validator\Float();
+        $valid = new FloatValidator();
         $this->assertTrue($valid->isValid(123,456));
         $this->assertTrue($valid->isValid('123,456'));
     }
@@ -152,9 +128,9 @@ class FloatTest extends \PHPUnit_Framework_TestCase
      */
     public function testLocaleDeFloatType()
     {
-        $this->_validator->setLocale('de');
-        $this->assertEquals('de', $this->_validator->getLocale());
-        $this->assertEquals(true, $this->_validator->isValid(10.5));
+        $this->validator->setLocale('de');
+        $this->assertEquals('de', $this->validator->getLocale());
+        $this->assertEquals(true, $this->validator->isValid(10.5));
     }
 
     /**
@@ -163,7 +139,7 @@ class FloatTest extends \PHPUnit_Framework_TestCase
     public function testPhpLocaleDeFloatType()
     {
         setlocale(LC_ALL, 'de');
-        $valid = new Validator\Float();
+        $valid = new FloatValidator();
         $this->assertTrue($valid->isValid(10.5));
     }
 
@@ -173,7 +149,7 @@ class FloatTest extends \PHPUnit_Framework_TestCase
     public function testPhpLocaleFrFloatType()
     {
         setlocale(LC_ALL, 'fr');
-        $valid = new Validator\Float();
+        $valid = new FloatValidator();
         $this->assertTrue($valid->isValid(10.5));
     }
 
@@ -184,7 +160,7 @@ class FloatTest extends \PHPUnit_Framework_TestCase
     {
         setlocale(LC_ALL, 'de_AT');
         setlocale(LC_NUMERIC, 'de_AT');
-        $valid = new Validator\Float('de_AT');
+        $valid = new FloatValidator('de_AT');
         $this->assertTrue($valid->isValid('1,3'));
         $this->assertTrue($valid->isValid('1000,3'));
         $this->assertTrue($valid->isValid('1.000,3'));
@@ -198,7 +174,7 @@ class FloatTest extends \PHPUnit_Framework_TestCase
      */
     public function testPhpLocaleFrStringType()
     {
-        $valid = new Validator\Float('fr_FR');
+        $valid = new FloatValidator('fr_FR');
         $this->assertTrue($valid->isValid('1,3'));
         $this->assertTrue($valid->isValid('1000,3'));
         $this->assertTrue($valid->isValid('1 000,3'));
@@ -212,7 +188,7 @@ class FloatTest extends \PHPUnit_Framework_TestCase
      */
     public function testPhpLocaleEnStringType()
     {
-        $valid = new Validator\Float('en_US');
+        $valid = new FloatValidator('en_US');
         $this->assertTrue($valid->isValid('1.3'));
         $this->assertTrue($valid->isValid('1000.3'));
         $this->assertTrue($valid->isValid('1,000.3'));
@@ -220,40 +196,11 @@ class FloatTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($valid->isValid('1000,3'));
         $this->assertFalse($valid->isValid('1.000,3'));
     }
-    
+
     public function testEqualsMessageTemplates()
     {
-        $validator = $this->_validator;
-        $reflection = new ReflectionClass($validator);
-        
-        if(!$reflection->hasProperty('_messageTemplates')) {
-            return;
-        }
-        
-        $property = $reflection->getProperty('_messageTemplates');
-        $property->setAccessible(true);
-
-        $this->assertEquals(
-            $property->getValue($validator),
-            $validator->getOption('messageTemplates')
-        );
-    }
-    
-    public function testEqualsMessageVariables()
-    {
-        $validator = $this->_validator;
-        $reflection = new ReflectionClass($validator);
-        
-        if(!$reflection->hasProperty('_messageVariables')) {
-            return;
-        }
-        
-        $property = $reflection->getProperty('_messageVariables');
-        $property->setAccessible(true);
-
-        $this->assertEquals(
-            $property->getValue($validator),
-            $validator->getOption('messageVariables')
-        );
+        $validator = $this->validator;
+        $this->assertAttributeEquals($validator->getOption('messageTemplates'),
+                                     'messageTemplates', $validator);
     }
 }

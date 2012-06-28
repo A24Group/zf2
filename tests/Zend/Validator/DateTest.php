@@ -21,18 +21,8 @@
 
 namespace ZendTest\Validator;
 
-use Zend\Validator,
-    Zend\Date,
-    Zend\Registry,
-    ReflectionClass;
-
-/**
- * Test helper
- */
-
-/**
- * @see Zend_Validator_Date
- */
+use Zend\Validator\Date as DateValidator;
+use Zend\Date;
 
 /**
  * @category   Zend
@@ -45,29 +35,21 @@ use Zend\Validator,
 class DateTest extends \PHPUnit_Framework_TestCase
 {
     /**
-     * Zend_Validator_Date object
-     *
-     * @var Zend_Validator_Date
+     * @var DateValidator
      */
-    protected $_validator;
+    protected $validator;
 
     /**
      * Whether an error occurred
      *
      * @var boolean
      */
-    protected $_errorOccurred = false;
+    protected $errorOccurred = false;
 
-    /**
-     * Creates a new Zend_Validator_Date object for each test method
-     *
-     * @return void
-     */
     public function setUp()
     {
-        Registry::_unsetInstance();
-        $this->_errorOccurred = false;
-        $this->_validator     = new Validator\Date();
+        $this->errorOccurred = false;
+        $this->validator     = new DateValidator();
     }
 
     /**
@@ -92,7 +74,7 @@ class DateTest extends \PHPUnit_Framework_TestCase
             'sdgsdg'     => false
             );
         foreach ($valuesExpected as $input => $result) {
-            $this->assertEquals($result, $this->_validator->isValid($input),
+            $this->assertEquals($result, $this->validator->isValid($input),
                                 "'$input' expected to be " . ($result ? '' : 'in') . 'valid');
         }
     }
@@ -107,8 +89,8 @@ class DateTest extends \PHPUnit_Framework_TestCase
     {
         $dateValid = '2007-08-02';
         $charactersTrailing = 'something';
-        $this->assertTrue($this->_validator->isValid($dateValid));
-        $this->assertFalse($this->_validator->isValid($dateValid . $charactersTrailing));
+        $this->assertTrue($this->validator->isValid($dateValid));
+        $this->assertFalse($this->validator->isValid($dateValid . $charactersTrailing));
     }
 
     /**
@@ -121,8 +103,8 @@ class DateTest extends \PHPUnit_Framework_TestCase
     {
         $dateValid = '2007-08-02';
         $charactersLeading = 'something';
-        $this->assertTrue($this->_validator->isValid($dateValid));
-        $this->assertFalse($this->_validator->isValid($charactersLeading . $dateValid));
+        $this->assertTrue($this->validator->isValid($dateValid));
+        $this->assertFalse($this->validator->isValid($charactersLeading . $dateValid));
     }
 
     /**
@@ -132,7 +114,7 @@ class DateTest extends \PHPUnit_Framework_TestCase
      */
     public function testGetMessages()
     {
-        $this->assertEquals(array(), $this->_validator->getMessages());
+        $this->assertEquals(array(), $this->validator->getMessages());
     }
 
     /**
@@ -143,14 +125,14 @@ class DateTest extends \PHPUnit_Framework_TestCase
      */
     public function testUseManualFormat()
     {
-        $this->assertTrue($this->_validator->setFormat('dd.MM.YYYY')->isValid('10.01.2008'));
-        $this->assertEquals('dd.MM.YYYY', $this->_validator->getFormat());
+        $this->assertTrue($this->validator->setFormat('dd.MM.YYYY')->isValid('10.01.2008'));
+        $this->assertEquals('dd.MM.YYYY', $this->validator->getFormat());
 
-        $this->assertTrue($this->_validator->setFormat('MM yyyy')->isValid('01 2010'));
-        $this->assertFalse($this->_validator->setFormat('dd/MM/yyyy')->isValid('2008/10/22'));
-        $this->assertTrue($this->_validator->setFormat('dd/MM/yy')->isValid('22/10/08'));
-        $this->assertFalse($this->_validator->setFormat('dd/MM/yy')->isValid('22/10'));
-        $this->assertFalse($this->_validator->setFormat('s')->isValid(0));
+        $this->assertTrue($this->validator->setFormat('MM yyyy')->isValid('01 2010'));
+        $this->assertFalse($this->validator->setFormat('dd/MM/yyyy')->isValid('2008/10/22'));
+        $this->assertTrue($this->validator->setFormat('dd/MM/yy')->isValid('22/10/08'));
+        $this->assertFalse($this->validator->setFormat('dd/MM/yy')->isValid('22/10'));
+        $this->assertFalse($this->validator->setFormat('s')->isValid(0));
     }
 
     /**
@@ -175,16 +157,16 @@ class DateTest extends \PHPUnit_Framework_TestCase
             'Jan 1 2007' => false
             );
         foreach ($valuesExpected as $input => $resultExpected) {
-            $resultActual = $this->_validator->setLocale('de_AT')->isValid($input);
-            if (!$this->_errorOccurred) {
+            $resultActual = $this->validator->setLocale('de_AT')->isValid($input);
+            if (!$this->errorOccurred) {
                 $this->assertEquals($resultExpected, $resultActual, "'$input' expected to be "
                     . ($resultExpected ? '' : 'in') . 'valid');
             } else {
                 $errorOccurredLocal = true;
             }
-            $this->_errorOccurred = false;
+            $this->errorOccurred = false;
         }
-        $this->assertEquals('de_AT', $this->_validator->getLocale());
+        $this->assertEquals('de_AT', $this->validator->getLocale());
         restore_error_handler();
         if ($errorOccurredLocal) {
             $this->markTestSkipped('Affected by bug described in ZF-2789');
@@ -200,7 +182,7 @@ class DateTest extends \PHPUnit_Framework_TestCase
     public function testLocaleContructor()
     {
         set_error_handler(array($this, 'errorHandlerIgnore'));
-        $valid = new Validator\Date('dd.MM.YYYY', 'de');
+        $valid = new DateValidator('dd.MM.YYYY', 'de');
         $this->assertTrue($valid->isValid('10.April.2008'));
 
         restore_error_handler();
@@ -211,7 +193,7 @@ class DateTest extends \PHPUnit_Framework_TestCase
      */
     public function testNonStringValidation()
     {
-        $this->assertFalse($this->_validator->isValid(array(1 => 1)));
+        $this->assertFalse($this->validator->isValid(array(1 => 1)));
     }
 
     /**
@@ -219,19 +201,18 @@ class DateTest extends \PHPUnit_Framework_TestCase
      */
     public function testUsingApplicationLocale()
     {
-        \Zend\Registry::set('Zend_Locale', new \Zend\Locale\Locale('de'));
-        $valid = new Validator\Date();
+        $this->markTestSkipped('Depends on system-specific locale');
+        $valid = new DateValidator();
         $this->assertTrue($valid->isValid('10.April.2008'));
     }
 
     /**
-     * @group  fml
-     * ZF-7630
+     * @group ZF-7630
      */
     public function testDateObjectVerification()
     {
         $date = new Date\Date();
-        $this->assertTrue($this->_validator->isValid($date), "'$date' expected to be valid");
+        $this->assertTrue($this->validator->isValid($date), "'$date' expected to be valid");
     }
 
     /**
@@ -241,7 +222,7 @@ class DateTest extends \PHPUnit_Framework_TestCase
     {
         $date  = new Date\Date();
         $array = $date->toArray();
-        $this->assertTrue($this->_validator->isValid($array), "array expected to be valid");
+        $this->assertTrue($this->validator->isValid($array), "array expected to be valid");
     }
 
     /**
@@ -257,42 +238,20 @@ class DateTest extends \PHPUnit_Framework_TestCase
      */
     public function errorHandlerIgnore($errno, $errstr, $errfile, $errline, array $errcontext)
     {
-        $this->_errorOccurred = true;
+        $this->errorOccurred = true;
     }
-    
+
     public function testEqualsMessageTemplates()
     {
-        $validator = $this->_validator;
-        $reflection = new ReflectionClass($validator);
-        
-        if(!$reflection->hasProperty('_messageTemplates')) {
-            return;
-        }
-        
-        $property = $reflection->getProperty('_messageTemplates');
-        $property->setAccessible(true);
-
-        $this->assertEquals(
-            $property->getValue($validator),
-            $validator->getOption('messageTemplates')
-        );
+        $validator = $this->validator;
+        $this->assertAttributeEquals($validator->getOption('messageTemplates'),
+                                     'messageTemplates', $validator);
     }
-    
+
     public function testEqualsMessageVariables()
     {
-        $validator = $this->_validator;
-        $reflection = new ReflectionClass($validator);
-        
-        if(!$reflection->hasProperty('_messageVariables')) {
-            return;
-        }
-        
-        $property = $reflection->getProperty('_messageVariables');
-        $property->setAccessible(true);
-
-        $this->assertEquals(
-            $property->getValue($validator),
-            $validator->getOption('messageVariables')
-        );
+        $validator = $this->validator;
+        $this->assertAttributeEquals($validator->getOption('messageVariables'),
+                                     'messageVariables', $validator);
     }
 }

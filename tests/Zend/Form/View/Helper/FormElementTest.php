@@ -24,9 +24,8 @@ namespace ZendTest\Form\View\Helper;
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Captcha;
 use Zend\Form\Element;
-use Zend\Form\View\HelperLoader;
+use Zend\Form\View\HelperConfiguration;
 use Zend\Form\View\Helper\FormElement as FormElementHelper;
-use Zend\Registry;
 use Zend\View\Helper\Doctype;
 use Zend\View\Renderer\PhpRenderer;
 
@@ -46,16 +45,13 @@ class FormElementTest extends TestCase
     {
         $this->helper = new FormElementHelper();
         
-        $regKey = 'Zend_View_Helper_Doctype';
-        if (Registry::isRegistered($regKey)) {
-            $registry = Registry::getInstance();
-            unset($registry[$regKey]);
-        }
+        Doctype::unsetDoctypeRegistry();
 
         $this->renderer = new PhpRenderer;
-        $broker = $this->renderer->getBroker();
-        $loader = $broker->getClassLoader();
-        $loader->registerPlugins(new HelperLoader());
+        $helpers = $this->renderer->getHelperPluginManager();
+        $config  = new HelperConfiguration();
+        $config->configureServiceManager($helpers);
+
         $this->helper->setView($this->renderer);
     }
 
@@ -106,7 +102,7 @@ class FormElementTest extends TestCase
     {
         return array(
             array('radio', 'input', 'type="radio"'),
-            array('checkbox', 'input', 'type="checkbox"'),
+            array('multi_checkbox', 'input', 'type="checkbox"'),
             array('select', 'option', '<select'),
         );
     }
@@ -166,5 +162,11 @@ class FormElementTest extends TestCase
 
         $this->assertContains('<textarea', $markup);
         $this->assertContains('>Initial content<', $markup);
+    }
+
+    public function testInvokeWithNoElementChainsHelper()
+    {
+        $element = new Element('foo');
+        $this->assertSame($this->helper, $this->helper->__invoke());
     }
 }

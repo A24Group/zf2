@@ -40,7 +40,7 @@ class HeadLink extends Placeholder\Container\Standalone
      *
      * @var array
      */
-    protected $_itemKeys = array('charset', 'href', 'hreflang', 'media', 'rel', 'rev', 'type', 'title', 'extras');
+    protected $_itemKeys = array('charset', 'href', 'hreflang', 'id', 'media', 'rel', 'rev', 'type', 'title', 'extras');
 
     /**
      * @var string registry key
@@ -286,7 +286,7 @@ class HeadLink extends Placeholder\Container\Standalone
             }
         }
 
-        if ($this->view instanceof \Zend\Loader\Pluggable) {
+        if (method_exists($this->view, 'plugin')) {
             $link .= ($this->view->plugin('doctype')->isXhtml()) ? '/>' : '>';
         } else {
             $link .= '/>';

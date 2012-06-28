@@ -192,6 +192,7 @@ class Result implements \Iterator, ResultInterface
         }
 
         if (($r = $this->resource->fetch()) === null) {
+            $this->resource->close();
             return false;
         } elseif ($r === false) {
             throw new Exception\RuntimeException($this->resource->error);
@@ -293,6 +294,14 @@ class Result implements \Iterator, ResultInterface
             throw new Exception\RuntimeException('Row count is not availabe in unbuffered result sets.');
         }
         return $this->resource->num_rows;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFieldCount()
+    {
+        return $this->resource->field_count;
     }
 
     /**

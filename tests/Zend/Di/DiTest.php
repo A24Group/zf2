@@ -640,4 +640,49 @@ class DiTest extends \PHPUnit_Framework_TestCase
         $b = $di->get('b_alias');
         $this->assertInstanceOf('ZendTest\Di\TestAsset\SetterInjection\A', $b->a);
     }
+
+    /*
+     * @group SetterInjection
+     * @group SupertypeResolution
+     */
+    public function testInjectionForSetterInjectionWillNotUseSupertypeWhenChildParamIsExplicitlyDefined()
+    {
+        $di = new Di();
+        // for setter injection, the dependency is not required, thus it must be forced
+        $di->instanceManager()->setParameters(
+            'ZendTest\Di\TestAsset\InheritanceClasses\B',
+            array('test' => 'b')
+        );
+        $di->instanceManager()->setParameters(
+            'ZendTest\Di\TestAsset\InheritanceClasses\A',
+            array('test' => 'a')
+        );
+
+        $b = $di->get('ZendTest\Di\TestAsset\InheritanceClasses\B');
+        $this->assertEquals('b', $b->test);
+
+        $c = $di->get('ZendTest\Di\TestAsset\InheritanceClasses\C');
+        $this->assertEquals('b', $c->test);
+    }
+
+    /**
+     * @group ZF2-260
+     */
+    public function testDiWillInjectClassNameAsStringAtCallTime()
+    {
+        $di = new Di;
+
+        $classDef = new Definition\ClassDefinition('ZendTest\Di\TestAsset\SetterInjection\D');
+        $classDef->addMethod('setA', true);
+        $classDef->addMethodParameter('setA', 'a', array('type' => false, 'required' => true));
+        $di->definitions()->addDefinition($classDef, false);
+
+        $d = $di->get(
+            'ZendTest\Di\TestAsset\SetterInjection\D',
+            array('a' => 'ZendTest\Di\TestAsset\SetterInjection\A')
+        );
+
+        $this->assertSame($d->a, 'ZendTest\Di\TestAsset\SetterInjection\A');
+    }
+
 }

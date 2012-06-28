@@ -20,8 +20,7 @@
  */
 
 namespace ZendTest\View\Helper;
-use Zend\Registry,
-    Zend\View\Helper\Placeholder\Registry as PlaceholderRegistry,
+use Zend\View\Helper\Placeholder\Registry as PlaceholderRegistry,
     Zend\View\Helper,
     Zend\View\Renderer\PhpRenderer as View,
     Zend\View\Exception\ExceptionInterface as ViewException;
@@ -57,15 +56,11 @@ class HeadLinkTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        foreach (array(PlaceholderRegistry::REGISTRY_KEY, 'Zend_View_Helper_Doctype') as $key) {
-            if (Registry::isRegistered($key)) {
-                $registry = Registry::getInstance();
-                unset($registry[$key]);
-            }
-        }
+        PlaceholderRegistry::unsetRegistry();
+        Helper\Doctype::unsetDoctypeRegistry();
         $this->basePath = __DIR__ . '/_files/modules';
-        $this->view = new View();
-        $this->helper = new Helper\HeadLink();
+        $this->view     = new View();
+        $this->helper   = new Helper\HeadLink();
         $this->helper->setView($this->view);
     }
 
@@ -416,6 +411,15 @@ class HeadLinkTest extends \PHPUnit_Framework_TestCase
                   . '<link href="/test3.css" media="screen" rel="stylesheet" type="text/css" >';
 
         $this->assertEquals($expected, $test);
+    }
+
+    /**
+     * @issue ZF-10345
+     */
+    public function testIdAttributeIsSupported()
+    {
+        $this->helper->appendStylesheet(array('href' => '/bar/baz', 'id' => 'foo'));
+        $this->assertContains('id="foo"', $this->helper->toString());
     }
 }
 

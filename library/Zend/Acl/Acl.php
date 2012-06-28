@@ -119,9 +119,7 @@ class Acl
     {
         if (is_string($role)) {
             $role = new Role\GenericRole($role);
-        }
-
-        if (!$role instanceof Role\RoleInterface) {
+        } elseif (!$role instanceof Role\RoleInterface) {
             throw new Exception\InvalidArgumentException('addRole() expects $role to be of type Zend\Acl\Role\RoleInterface');
         }
 
@@ -248,9 +246,7 @@ class Acl
     {
         if (is_string($resource)) {
             $resource = new Resource\GenericResource($resource);
-        }
-
-        if (!$resource instanceof Resource\ResourceInterface) {
+        } elseif (!$resource instanceof Resource\ResourceInterface) {
             throw new Exception\InvalidArgumentException('addResource() expects $resource to be of type Zend\Acl\Resource\ResourceInterface');
         }
 
@@ -348,7 +344,7 @@ class Acl
         try {
             $resourceId = $this->getResource($resource)->getResourceId();
             $inheritId  = $this->getResource($inherit)->getResourceId();
-        } catch (Exception $e) {
+        } catch (Exception\ExceptionInterface $e) {
             throw new Exception\InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -386,7 +382,7 @@ class Acl
     {
         try {
             $resourceId = $this->getResource($resource)->getResourceId();
-        } catch (Exception $e) {
+        } catch (Exception\ExceptionInterface $e) {
             throw new Exception\InvalidArgumentException($e->getMessage(), $e->getCode(), $e);
         }
 
@@ -476,9 +472,9 @@ class Acl
     /**
      * Removes "deny" restrictions from the ACL
      *
-     * @param  Role|string|array     $roles
-     * @param  Resource|string|array $resources
-     * @param  string|array          $privileges
+     * @param  Role\RoleInterface|string|array         $roles
+     * @param  Resource\ResourceInterface|string|array $resources
+     * @param  string|array                            $privileges
      * @return Acl Provides a fluent interface
      */
     public function removeDeny($roles = null, $resources = null, $privileges = null)
@@ -532,7 +528,7 @@ class Acl
      * @param  Role\RoleInterface|string|array          $roles
      * @param  Resource\ResourceInterface|string|array  $resources
      * @param  string|array                             $privileges
-     * @param  Assertion\AssertionInterface                       $assert
+     * @param  Assertion\AssertionInterface             $assert
      * @throws Exception\InvalidArgumentException
      * @return Acl Provides a fluent interface
      */
@@ -1001,8 +997,8 @@ class Acl
      * If the $create parameter is true, then a rule set is first created and then returned to the caller.
      *
      * @param  Resource\ResourceInterface $resource
-     * @param  Role\RoleInterface     $role
-     * @param  boolean  $create
+     * @param  Role\RoleInterface         $role
+     * @param  boolean                    $create
      * @return array|null
      */
     protected function &_getRules(Resource\ResourceInterface $resource = null, Role\RoleInterface $role = null, $create = false)

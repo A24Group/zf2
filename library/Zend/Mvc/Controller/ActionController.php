@@ -25,10 +25,7 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventInterface as Event;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventsCapableInterface;
 use Zend\Http\PhpEnvironment\Response as HttpResponse;
-use Zend\Loader\Broker;
-use Zend\Loader\Pluggable;
 use Zend\Mvc\Exception;
 use Zend\Mvc\InjectApplicationEventInterface;
 use Zend\Mvc\MvcEvent;
@@ -51,17 +48,15 @@ use Zend\View\Model\ViewModel;
 abstract class ActionController implements 
     Dispatchable, 
     EventManagerAwareInterface, 
-    EventsCapableInterface,
     InjectApplicationEventInterface, 
-    ServiceLocatorAwareInterface, 
-    Pluggable
+    ServiceLocatorAwareInterface
 {
     //use \Zend\EventManager\ProvidesEvents;
 
-    protected $broker;
     protected $event;
     protected $events;
     protected $locator;
+    protected $plugins;
     protected $request;
     protected $response;
 
@@ -132,6 +127,7 @@ abstract class ActionController implements
      *
      * @param  MvcEvent $e
      * @return mixed
+     * @throws Exception\DomainException
      */
     public function execute(MvcEvent $e)
     {
@@ -141,7 +137,7 @@ abstract class ActionController implements
              * @todo Determine requirements for when route match is missing.
              *       Potentially allow pulling directly from request metadata?
              */
-            throw new \DomainException('Missing route matches; unsure how to retrieve action');
+            throw new Exception\DomainException('Missing route matches; unsure how to retrieve action');
         }
 
         $action = $routeMatch->getParam('action', 'not-found');
@@ -191,8 +187,8 @@ abstract class ActionController implements
         $events->setIdentifiers(array(
             'Zend\Stdlib\DispatchableInterface',
             __CLASS__,
-            get_class($this),
-            substr(get_class($this), 0, strpos(get_class($this), '\\'))
+            get_called_class(),
+            substr(get_called_class(), 0, strpos(get_called_class(), '\\'))
         ));
         $this->events = $events;
         $this->attachDefaultListeners();
@@ -270,32 +266,30 @@ abstract class ActionController implements
     }
 
     /**
-     * Get plugin broker instance
+     * Get plugin manager
      *
-     * @return Zend\Loader\Broker
+     * @return PluginManager
      */
-    public function getBroker()
+    public function getPluginManager()
     {
-        if (!$this->broker) {
-            $this->setBroker(new PluginBroker());
+        if (!$this->plugins) {
+            $this->setPluginManager(new PluginManager());
         }
-        return $this->broker;
+        return $this->plugins;
     }
 
     /**
-     * Set plugin broker instance
+     * Set plugin manager
      *
-     * @param  string|Broker $broker Plugin broker to load plugins
-     * @return Zend\Loader\Pluggable
+     * @param  string|PluginManager $plugins 
+     * @return ActionController
+     * @throws Exception\InvalidArgumentException
      */
-    public function setBroker($broker)
+    public function setPluginManager(PluginManager $plugins)
     {
-        if (!$broker instanceof Broker) {
-            throw new Exception\InvalidArgumentException('Broker must implement Zend\Loader\Broker');
-        }
-        $this->broker = $broker;
-        if (method_exists($broker, 'setController')) {
-            $this->broker->setController($this);
+        $this->plugins = $plugins;
+        if (method_exists($plugins, 'setController')) {
+            $this->plugins->setController($this);
         }
         return $this;
     }
@@ -303,13 +297,13 @@ abstract class ActionController implements
     /**
      * Get plugin instance
      *
-     * @param  string     $plugin  Name of plugin to return
+     * @param  string     $name    Name of plugin to return
      * @param  null|array $options Options to pass to plugin constructor (if not already instantiated)
      * @return mixed
      */
     public function plugin($name, array $options = null)
     {
-        return $this->getBroker()->load($name, $options);
+        return $this->getPluginManager()->get($name, $options);
     }
 
     /**

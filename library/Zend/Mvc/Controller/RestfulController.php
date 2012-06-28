@@ -25,11 +25,8 @@ use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\EventInterface as Event;
 use Zend\EventManager\EventManager;
 use Zend\EventManager\EventManagerAwareInterface;
-use Zend\EventManager\EventsCapableInterface;
 use Zend\Http\Request as HttpRequest;
 use Zend\Http\PhpEnvironment\Response as HttpResponse;
-use Zend\Loader\Broker;
-use Zend\Loader\Pluggable;
 use Zend\Mvc\Exception;
 use Zend\Mvc\InjectApplicationEventInterface;
 use Zend\Mvc\MvcEvent;
@@ -51,15 +48,13 @@ use Zend\Stdlib\ResponseInterface as Response;
 abstract class RestfulController implements 
     Dispatchable,
     EventManagerAwareInterface,
-    EventsCapableInterface,
     InjectApplicationEventInterface,
-    ServiceLocatorAwareInterface,
-    Pluggable
+    ServiceLocatorAwareInterface
 {
     /**
-     * @var Broker
+     * @var PluginManager
      */
-    protected $broker;
+    protected $plugins;
 
     /**
      * @var Request
@@ -77,7 +72,7 @@ abstract class RestfulController implements
     protected $event;
 
     /**
-     * @var EventCollection
+     * @var EventManagerInterface
      */
     protected $events;
 
@@ -148,11 +143,12 @@ abstract class RestfulController implements
      * @param  Request $request
      * @param  null|Response $response
      * @return mixed|Response
+     * @throws Exception\InvalidArgumentException
      */
     public function dispatch(Request $request, Response $response = null)
     {
         if (!$request instanceof HttpRequest) {
-            throw new \InvalidArgumentException('Expected an HTTP request');
+            throw new Exception\InvalidArgumentException('Expected an HTTP request');
         }
         $this->request = $request;
         if (!$response) {
@@ -200,16 +196,20 @@ abstract class RestfulController implements
             switch (strtolower($request->getMethod())) {
                 case 'get':
                     if (null !== $id = $routeMatch->getParam('id')) {
+                        $action = 'get';
                         $return = $this->get($id);
                         break;
                     }
                     if (null !== $id = $request->query()->get('id')) {
+                        $action = 'get';
                         $return = $this->get($id);
                         break;
                     }
+                    $action = 'getList';
                     $return = $this->getList();
                     break;
                 case 'post':
+                    $action = 'create';
                     $return = $this->create($request->post()->toArray());
                     break;
                 case 'put':
@@ -220,6 +220,7 @@ abstract class RestfulController implements
                     }
                     $content = $request->getContent();
                     parse_str($content, $parsedParams);
+                    $action = 'update';
                     $return = $this->update($id, $parsedParams);
                     break;
                 case 'delete':
@@ -228,11 +229,14 @@ abstract class RestfulController implements
                             throw new \DomainException('Missing identifier');
                         }
                     }
+                    $action = 'delete';
                     $return = $this->delete($id);
                     break;
                 default:
                     throw new \DomainException('Invalid HTTP method!');
             }
+
+            $routeMatch->setParam('action', $action);
         }
 
         // Emit post-dispatch signal, passing:
@@ -279,7 +283,7 @@ abstract class RestfulController implements
         $events->setIdentifiers(array(
             'Zend\Stdlib\DispatchableInterface',
             __CLASS__,
-            get_class($this)
+            get_called_class()
         ));
         $this->events = $events;
         $this->attachDefaultListeners();
@@ -357,32 +361,30 @@ abstract class RestfulController implements
     }
 
     /**
-     * Get plugin broker instance
+     * Get plugin manager
      *
-     * @return Zend\Loader\Broker
+     * @return PluginManager
      */
-    public function getBroker()
+    public function getPluginManager()
     {
-        if (!$this->broker) {
-            $this->setBroker(new PluginBroker());
+        if (!$this->plugins) {
+            $this->setPluginManager(new PluginManager());
         }
-        return $this->broker;
+        return $this->plugins;
     }
 
     /**
-     * Set plugin broker instance
+     * Set plugin manager
      *
-     * @param  string|Broker $broker Plugin broker to load plugins
-     * @return Zend\Loader\Pluggable
+     * @param  string|PluginManager $plugins 
+     * @return RestfulController
+     * @throws Exception\InvalidArgumentException
      */
-    public function setBroker($broker)
+    public function setPluginManager(PluginManager $plugins)
     {
-        if (!$broker instanceof Broker) {
-            throw new Exception\InvalidArgumentException('Broker must implement Zend\Loader\Broker');
-        }
-        $this->broker = $broker;
-        if (method_exists($broker, 'setController')) {
-            $this->broker->setController($this);
+        $this->plugins = $plugins;
+        if (method_exists($plugins, 'setController')) {
+            $this->plugins->setController($this);
         }
         return $this;
     }
@@ -390,13 +392,13 @@ abstract class RestfulController implements
     /**
      * Get plugin instance
      *
-     * @param  string     $plugin  Name of plugin to return
+     * @param  string     $name    Name of plugin to return
      * @param  null|array $options Options to pass to plugin constructor (if not already instantiated)
      * @return mixed
      */
     public function plugin($name, array $options = null)
     {
-        return $this->getBroker()->load($name, $options);
+        return $this->getPluginManager()->get($name, $options);
     }
 
     /**

@@ -22,6 +22,7 @@
 namespace ZendTest\Crypt;
 
 use Zend\Crypt\PublicKey\Rsa;
+use Zend\Crypt\PublicKey\RsaOptions;
 use Zend\Crypt\PublicKey\Rsa\Exception;
 
 /**
@@ -34,18 +35,33 @@ use Zend\Crypt\PublicKey\Rsa\Exception;
  */
 class RsaTest extends \PHPUnit_Framework_TestCase
 {
+    /** @var string */
+    protected $testPemString = null;
 
-    protected $_testPemString = null;
+    /** @var string */
+    protected $testPemFile = null;
 
-    protected $_testPemPath = null;
     /** @var string */
-    public $openSslConf;
+    protected $testPemStringPublic;
+
     /** @var string */
-    public $_testPemStringPublic;
+    protected $testCertificateString;
+
     /** @var string */
-    public $_testCertificateString;
+    protected $testCertificateFile;
+
     /** @var string */
-    public $_testCertificatePath;
+    protected $openSslConf;
+
+    /** @var string */
+    protected $userOpenSslConf;
+
+
+    /** @var Rsa */
+    protected $rsa;
+    
+    /** @var Rsa */
+    protected $rsaBase64Out;
 
     public function setUp()
     {
@@ -60,16 +76,16 @@ class RsaTest extends \PHPUnit_Framework_TestCase
         $this->openSslConf = $openSslConf;
 
         try {
-            $math = new Rsa();
-        } catch (Exception\RuntimeException $e) {
-            if (strpos($e->getMessage(), 'requires openssl extention') !== false) {
+            $rsa = new Rsa();
+        } catch (Rsa\Exception\RuntimeException $e) {
+            if (strpos($e->getMessage(), 'requires openssl extension') !== false) {
                 $this->markTestSkipped($e->getMessage());
             } else {
                 throw $e;
             }
         }
 
-        $this->_testPemString = <<<RSAKEY
+        $this->testPemString = <<<RSAKEY
 -----BEGIN RSA PRIVATE KEY-----
 MIIBOgIBAAJBANDiE2+Xi/WnO+s120NiiJhNyIButVu6zxqlVzz0wy2j4kQVUC4Z
 RZD80IY+4wIiX2YxKBZKGnd2TtPkcJ/ljkUCAwEAAQJAL151ZeMKHEU2c1qdRKS9
@@ -82,14 +98,14 @@ I2SvDkQ5CmrzkW5qPaE2oO7BSqAhRZxiYpZFb5CI
 
 RSAKEY;
 
-        $this->_testPemStringPublic   = <<<RSAKEY
+        $this->testPemStringPublic   = <<<RSAKEY
 -----BEGIN PUBLIC KEY-----
 MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBANDiE2+Xi/WnO+s120NiiJhNyIButVu6
 zxqlVzz0wy2j4kQVUC4ZRZD80IY+4wIiX2YxKBZKGnd2TtPkcJ/ljkUCAwEAAQ==
 -----END PUBLIC KEY-----
 
 RSAKEY;
-        $this->_testCertificateString = <<<CERT
+        $this->testCertificateString = <<<CERT
 -----BEGIN CERTIFICATE-----
 MIIC6TCCApOgAwIBAgIBADANBgkqhkiG9w0BAQQFADCBhzELMAkGA1UEBhMCSUUx
 DzANBgNVBAgTBkR1YmxpbjEPMA0GA1UEBxMGRHVibGluMQ4wDAYDVQQKEwVHcm91
@@ -111,272 +127,307 @@ l9Nwj3KnPKFdqzJchujP2TLNwSYoQnxgyoMxdho=
 
 CERT;
 
-        $this->_testPemPath = __DIR__ . '/../_files/test.pem';
+        $this->testPemFile = realpath(__DIR__ . '/../_files/test.pem');
 
-        $this->_testCertificatePath = __DIR__ . '/../_files/test.cert';
+        $this->testCertificateFile = realpath(__DIR__ . '/../_files/test.cert');
+
+        $this->userOpenSslConf = realpath(__DIR__ . '/../_files/openssl.cnf');
+
+        $rsaOptions = new RsaOptions(array(
+            'private_key'   => new Rsa\PrivateKey($this->testPemString),
+        ));
+        $this->rsa = new Rsa($rsaOptions);
+
+        $rsaOptions = new RsaOptions(array(
+            'private_key'   => new Rsa\PrivateKey($this->testPemString),
+            'binary_output' => false
+        ));
+        $this->rsaBase64Out = new Rsa($rsaOptions);
     }
 
-    public function testConstructorSetsPemString()
+    public function testFacrotyCreatesInstance()
     {
-        $rsa = new RSA(array('pemString'=> $this->_testPemString));
-        $this->assertEquals($this->_testPemString, $rsa->getPemString());
+        $rsa = Rsa::factory(array(
+            'hash_algorithm' => 'sha1',
+            'binary_output'  => false,
+            'private_key'    => $this->testPemString
+        ));
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa', $rsa);
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\RsaOptions', $rsa->getOptions());
+    }    
+
+    public function testFacrotyCreatesKeys()
+    {
+        $rsa = Rsa::factory(array(
+            'private_key'    => $this->testPemString,
+            'public_key'     => $this->testCertificateString,
+        ));
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PrivateKey', $rsa->getOptions()->getPrivateKey());
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PublicKey', $rsa->getOptions()->getPublicKey());
     }
 
-    public function testConstructorSetsPemPath()
+    public function testFacrotyCreatesKeysFromFiles()
     {
-        $rsa = new RSA(array('pemPath'=> $this->_testPemPath));
-        $this->assertEquals($this->_testPemPath, $rsa->getPemPath());
+        $rsa = Rsa::factory(array(
+            'private_key'    => $this->testPemFile,
+        ));
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PrivateKey', $rsa->getOptions()->getPrivateKey());
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PublicKey', $rsa->getOptions()->getPublicKey());
     }
 
-    public function testSetPemPathLoadsPemString()
+    public function testFacrotyCreatesJustPublicKey()
     {
-        $rsa = new RSA(array('pemPath'=> $this->_testPemPath));
-        $this->assertEquals($this->_testPemString, $rsa->getPemString());
+        $rsa = Rsa::factory(array(
+            'public_key'     => $this->testCertificateString,
+        ));
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PublicKey', $rsa->getOptions()->getPublicKey());
+        $this->assertNull($rsa->getOptions()->getPrivateKey());
     }
 
-    public function testConstructorSetsCertificateString()
+    public function testConstructorCreatesInstanceWithDefaultOptions()
     {
-        $rsa = new RSA(array('certificateString'=> $this->_testCertificateString));
-        $this->assertEquals($this->_testCertificateString, $rsa->getCertificateString());
+        $rsa = new Rsa();
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa', $rsa);
+        $this->assertEquals('sha1', $rsa->getOptions()->getHashAlgorithm());
+        $this->assertEquals(OPENSSL_ALGO_SHA1, $rsa->getOptions()->getOpensslSignatureAlgorithm());
+        $this->assertTrue($rsa->getOptions()->getBinaryOutput());
     }
 
-    public function testConstructorSetsCertificatePath()
+    public function testPrivateKeyInstanceCreation()
     {
-        $rsa = new RSA(array('certificatePath'=> $this->_testCertificatePath));
-        $this->assertEquals($this->_testCertificatePath, $rsa->getCertificatePath());
+        $privateKey = Rsa\PrivateKey::fromFile($this->testPemFile);
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PrivateKey', $privateKey);
+
+        $privateKey = new Rsa\PrivateKey($this->testPemString);
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PrivateKey', $privateKey);
     }
 
-    public function testSetCertificatePathLoadsCertificateString()
+    public function testPublicKeyInstanceCreation()
     {
-        $rsa = new RSA(array('certificatePath'=> $this->_testCertificatePath));
-        $this->assertEquals($this->_testCertificateString, $rsa->getCertificateString());
-    }
+        $publicKey = new Rsa\PublicKey($this->testPemStringPublic);
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PublicKey', $publicKey);
 
-    public function testConstructorSetsHashOption()
-    {
-        $rsa = new RSA(array('hashAlgorithm'=> 'md5'));
-        $this->assertEquals(OPENSSL_ALGO_MD5, $rsa->getHashAlgorithm());
-    }
+        $publicKey = Rsa\PublicKey::fromFile($this->testCertificateFile);
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PublicKey', $publicKey);
 
-    public function testSetPemStringParsesPemForPrivateKey()
-    {
-        $rsa = new RSA(array('pemString'=> $this->_testPemString));
-        $this->assertInstanceOf('Zend\\Crypt\\PublicKey\\RSA\\PrivateKey', $rsa->getPrivateKey());
-    }
-
-    public function testSetPemStringParsesPemForPublicKey()
-    {
-        $rsa = new RSA(array('pemString'=> $this->_testPemString));
-        $this->assertInstanceOf('Zend\\Crypt\\PublicKey\\RSA\\PublicKey', $rsa->getPublicKey());
-    }
-
-    public function testSetCertificateStringParsesCertificateForNullPrivateKey()
-    {
-        $rsa = new RSA(array('certificateString'=> $this->_testCertificateString));
-        $this->assertEquals(null, $rsa->getPrivateKey());
-    }
-
-    public function testSetCertificateStringParsesCertificateForPublicKey()
-    {
-        $rsa = new RSA(array('certificateString'=> $this->_testCertificateString));
-        $this->assertInstanceOf('Zend\\Crypt\\PublicKey\\RSA\\PublicKey', $rsa->getPublicKey());
+        $publicKey = new Rsa\PublicKey($this->testCertificateString);
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PublicKey', $publicKey);
     }
 
     public function testSignGeneratesExpectedBinarySignature()
     {
-        $rsa       = new RSA(array('pemString'=> $this->_testPemString));
-        $signature = $rsa->sign('1234567890');
+        $signature = $this->rsa->sign('1234567890');
         $this->assertEquals(
             'sMHpp3u6DNecIm5RIkDD3xyKaH6qqP8roUWDs215iOGHehfK1ypqwoETKNP7NaksGS2C1Up813ixlGXkipPVbQ==',
-            base64_encode($signature));
+            base64_encode($signature)
+        );
     }
 
     public function testSignGeneratesExpectedBinarySignatureUsingExternalKey()
     {
-        $privateKey = new Rsa\PrivateKey($this->_testPemString);
-        $rsa        = new Rsa(array('certificateString'=> $this->_testCertificateString));
+        $rsaOptions = new RsaOptions(array(
+            'public_key'    => new Rsa\PublicKey($this->testCertificateString),
+            'binary_output' => true, // output as binary
+        ));
+
+        $rsa        = new Rsa($rsaOptions);
+        $privateKey = new Rsa\PrivateKey($this->testPemString);
         $signature  = $rsa->sign('1234567890', $privateKey);
         $this->assertEquals(
             'sMHpp3u6DNecIm5RIkDD3xyKaH6qqP8roUWDs215iOGHehfK1ypqwoETKNP7NaksGS2C1Up813ixlGXkipPVbQ==',
-            base64_encode($signature));
+            base64_encode($signature)
+        );
     }
 
     public function testSignGeneratesExpectedBase64Signature()
     {
-        $rsa       = new Rsa(array('pemString'=> $this->_testPemString));
-        $signature = $rsa->sign('1234567890', null, Rsa::BASE64);
+        $signature = $this->rsaBase64Out->sign('1234567890');
         $this->assertEquals(
             'sMHpp3u6DNecIm5RIkDD3xyKaH6qqP8roUWDs215iOGHehfK1ypqwoETKNP7NaksGS2C1Up813ixlGXkipPVbQ==',
-            $signature);
+            $signature
+        );
     }
 
     public function testVerifyVerifiesBinarySignatures()
     {
-        $rsa       = new Rsa(array('pemString'=> $this->_testPemString));
-        $signature = $rsa->sign('1234567890');
-        $result    = $rsa->verifySignature('1234567890', $signature);
-        $this->assertEquals(1, $result);
+        $signature = $this->rsa->sign('1234567890');
+        $result    = $this->rsa->verify('1234567890', $signature);
+
+        $this->assertTrue($result);
     }
 
     public function testVerifyVerifiesBinarySignaturesUsingCertificate()
     {
-        $privateKey = new Rsa\PrivateKey($this->_testPemString);
-        $rsa        = new Rsa(array('certificateString'=> $this->_testCertificateString));
+        $rsaOptions = new RsaOptions(array(
+            'public_key'   => new Rsa\PublicKey($this->testCertificateString),
+            'binary_output' => true,
+        ));
+
+        $rsa        = new Rsa($rsaOptions);
+        $privateKey = new Rsa\PrivateKey($this->testPemString);
         $signature  = $rsa->sign('1234567890', $privateKey);
-        $result     = $rsa->verifySignature('1234567890', $signature);
-        $this->assertEquals(1, $result);
+        $result     = $rsa->verify('1234567890', $signature);
+
+        $this->assertTrue($result);
     }
 
     public function testVerifyVerifiesBase64Signatures()
     {
-        $rsa       = new Rsa(array('pemString'=> $this->_testPemString));
-        $signature = $rsa->sign('1234567890', null, Rsa::BASE64);
-        $result    = $rsa->verifySignature('1234567890', $signature, Rsa::BASE64);
-        $this->assertEquals(1, $result);
+        $signature = $this->rsaBase64Out->sign('1234567890');
+        $result    = $this->rsaBase64Out->verify('1234567890', base64_decode($signature));
+
+        $this->assertSame(true, $result);
+    }
+
+    public function testEncryptionWithPublicKey()
+    {
+        $publicKey  = new Rsa\PublicKey($this->testCertificateString);
+        $privateKey = new Rsa\PrivateKey($this->testPemString);
+        $encrypted  = $publicKey->encrypt('1234567890');
+
+        $this->assertEquals('1234567890', $privateKey->decrypt($encrypted));
+    }
+
+    public function testEncryptionWithPrivateKey()
+    {
+        $publicKey  = new Rsa\PublicKey($this->testCertificateString);
+        $privateKey = new Rsa\PrivateKey($this->testPemString);
+        $encrypted  = $privateKey->encrypt('1234567890');
+
+        $this->assertEquals('1234567890', $publicKey->decrypt($encrypted));
+    }
+
+    public function testEncryptionWithOwnKeys()
+    {
+        $encrypted = $this->rsa->encrypt('1234567890');
+
+        $this->assertEquals('1234567890', $this->rsa->decrypt($encrypted));
     }
 
     public function testEncryptionUsingPublicKeyEncryption()
     {
-        $rsa       = new Rsa(array('pemString'=> $this->_testPemString));
-        $encrypted = $rsa->encrypt('1234567890', $rsa->getPublicKey());
+        $encrypted = $this->rsa->encrypt('1234567890', $this->rsa->getOptions()->getPublicKey());
+
         $this->assertEquals(
             '1234567890',
-            $rsa->decrypt($encrypted, $rsa->getPrivateKey())
+            $this->rsa->decrypt($encrypted, $this->rsa->getOptions()->getPrivateKey())
         );
     }
 
     public function testEncryptionUsingPublicKeyBase64Encryption()
     {
-        $rsa       = new Rsa(array('pemString'=> $this->_testPemString));
-        $encrypted = $rsa->encrypt('1234567890', $rsa->getPublicKey(), Rsa::BASE64);
+        $encrypted = $this->rsaBase64Out->encrypt('1234567890', $this->rsaBase64Out->getOptions()->getPublicKey());
+
         $this->assertEquals(
             '1234567890',
-            $rsa->decrypt($encrypted, $rsa->getPrivateKey(), Rsa::BASE64)
+            $this->rsaBase64Out->decrypt(
+                base64_decode($encrypted),
+                $this->rsaBase64Out->getOptions()->getPrivateKey()
+            )
         );
     }
 
     public function testBase64EncryptionUsingCertificatePublicKeyEncryption()
     {
-        $rsa       = new Rsa(array('certificateString'=> $this->_testCertificateString));
-        $encrypted = $rsa->encrypt('1234567890', $rsa->getPublicKey(), Rsa::BASE64);
-        $rsa2      = new Rsa(array('pemString'=> $this->_testPemString));
+        $rsa1 = new Rsa(new RsaOptions(array(
+            'public_key'    => new Rsa\PublicKey($this->testCertificateString),
+            'binary_output' => false, // output as base 64
+        )));
+
+        $rsa2 = new Rsa(new RsaOptions(array(
+            'private_key'   => new Rsa\PrivateKey($this->testPemString),
+            'binary_output' => false, // output as base 64
+        )));
+
+        $encrypted = $rsa1->encrypt('1234567890', $rsa1->getOptions()->getPublicKey());
+
         $this->assertEquals(
             '1234567890',
-            $rsa->decrypt($encrypted, $rsa2->getPrivateKey(), Rsa::BASE64)
+            $rsa1->decrypt(base64_decode($encrypted), $rsa2->getOptions()->getPrivateKey())
         );
     }
 
     public function testEncryptionUsingPrivateKeyEncryption()
     {
-        $rsa       = new Rsa(array('pemString'=> $this->_testPemString));
-        $encrypted = $rsa->encrypt('1234567890', $rsa->getPrivateKey());
-        $this->assertEquals(
-            '1234567890',
-            $rsa->decrypt($encrypted, $rsa->getPublicKey())
-        );
+        $encrypted = $this->rsa->encrypt('1234567890', $this->rsa->getOptions()->getPrivateKey());
+        $decrypted = $this->rsa->decrypt($encrypted, $this->rsa->getOptions()->getPublicKey());
+
+        $this->assertEquals('1234567890', $decrypted);
     }
 
     public function testEncryptionUsingPrivateKeyBase64Encryption()
     {
-        $rsa       = new Rsa(array('pemString'=> $this->_testPemString));
-        $encrypted = $rsa->encrypt('1234567890', $rsa->getPrivateKey(), Rsa::BASE64);
-        $this->assertEquals(
-            '1234567890',
-            $rsa->decrypt($encrypted, $rsa->getPublicKey(), Rsa::BASE64)
+        $encrypted = $this->rsaBase64Out->encrypt('1234567890', $this->rsaBase64Out->getOptions()->getPrivateKey());
+        $decrypted = $this->rsaBase64Out->decrypt(
+            base64_decode($encrypted),
+            $this->rsaBase64Out->getOptions()->getPublicKey()
         );
+
+        $this->assertEquals('1234567890', $decrypted);
     }
 
-    public function testKeyGenerationCreatesArrayObjectResult()
+    public function testKeyGenerationWithDefaults()
     {
         if (!$this->openSslConf) {
             $this->markTestSkipped('No openssl.cnf found or defined; cannot generate keys');
         }
-        $rsa  = new Rsa;
-        $keys = $rsa->generateKeys(array(
-                                        'config'           => $this->openSslConf,
-                                        'private_key_bits' => 512,
-                                   ));
-        $this->assertInstanceOf('ArrayObject', $keys);
+
+        $rsa = new Rsa();
+        $rsa->getOptions()->generateKeys();
+
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PrivateKey', $rsa->getOptions()->getPrivateKey());
+        $this->assertInstanceOf('Zend\Crypt\PublicKey\Rsa\PublicKey', $rsa->getOptions()->getPublicKey());
     }
 
-    public function testKeyGenerationCreatesPrivateKeyInArrayObject()
+    public function testKeyGenerationWithUserOpensslConfig()
     {
-        if (!$this->openSslConf) {
-            $this->markTestSkipped('No openssl.cnf found or defined; cannot generate keys');
-        }
-        $rsa  = new Rsa;
-        $keys = $rsa->generateKeys(array(
-                                        'config'           => $this->openSslConf,
-                                        'private_key_bits' => 512,
-                                   ));
-        $this->assertInstanceOf('Zend\\Crypt\\PublicKey\\Rsa\\PrivateKey', $keys->privateKey);
-    }
+        $rsaOptions  = new RsaOptions();
+        $rsaOptions->generateKeys(array(
+            'config'           => $this->userOpenSslConf,
+            'private_key_bits' => 512,
+        ));
 
-    public function testKeyGenerationCreatesPublicKeyInArrayObject()
-    {
-        if (!$this->openSslConf) {
-            $this->markTestSkipped('No openssl.cnf found or defined; cannot generate keys');
-        }
-        $rsa  = new Rsa;
-        $keys = $rsa->generateKeys(array(
-                                        'config'         => $this->openSslConf,
-                                        'privateKeyBits' => 512,
-                                   ));
-        $this->assertInstanceOf('Zend\\Crypt\\PublicKey\\Rsa\\PublicKey', $keys->publicKey);
+        $this->assertInstanceOf('Zend\\Crypt\\PublicKey\\Rsa\\PrivateKey', $rsaOptions->getPrivateKey());
+        $this->assertInstanceOf('Zend\\Crypt\\PublicKey\\Rsa\\PublicKey', $rsaOptions->getPublicKey());
     }
 
     public function testKeyGenerationCreatesPassphrasedPrivateKey()
     {
-        if (!$this->openSslConf) {
-            $this->markTestSkipped('No openssl.cnf found or defined; cannot generate keys');
-        }
-        $rsa    = new Rsa;
-        $config = array(
-            'config'         => $this->openSslConf,
-            'privateKeyBits' => 512,
-            'passPhrase'     => '0987654321'
-        );
-        $keys   = $rsa->generateKeys($config);
+        $rsaOptions  = new RsaOptions(array(
+            'pass_phrase' => '0987654321'
+        ));
+        $rsaOptions->generateKeys(array(
+            'config'           => $this->userOpenSslConf,
+            'private_key_bits' => 512,
+        ));
+
         try {
-            $rsa = new Rsa(array(
-                                'passPhrase' => '1234567890',
-                                'pemString'  => $keys->privateKey->toString()
-                           ));
-            $this->fail('Expected exception not thrown');
-        } catch (Exception\ExceptionInterface $e) {
+            $rsa = Rsa::factory(array(
+                'pass_phrase' => '1234567890',
+                'private_key' => $rsaOptions->getPrivateKey()->toString()
+            ));
+            $this->fail('Expected passphrase mismatch exception not thrown');
+        } catch (Exception\RuntimeException $e) {
         }
     }
 
-    public function testConstructorLoadsPassphrasedKeys()
+    public function testRsaLoadsPassphrasedKeys()
     {
-        if (!$this->openSslConf) {
-            $this->markTestSkipped('No openssl.cnf found or defined; cannot generate keys');
-        }
-        $rsa    = new Rsa;
-        $config = array(
-            'config'         => $this->openSslConf,
-            'privateKeyBits' => 512,
-            'passPhrase'     => '0987654321'
-        );
-        $keys   = $rsa->generateKeys($config);
-        try {
-            $rsa = new Rsa(array(
-                                'passPhrase' => '0987654321',
-                                'pemString'  => $keys->privateKey->toString()
-                           ));
-        } catch (Exception\ExceptionInterface $e) {
-            $this->fail('Passphrase loading failed of a private key');
-        }
-    }
+        $rsaOptions  = new RsaOptions(array(
+            'pass_phrase' => '0987654321'
+        ));
+        $rsaOptions->generateKeys(array(
+            'config'           => $this->userOpenSslConf,
+            'private_key_bits' => 512,
+        ));
 
-    /**
-     * @group ZF-8846
-     */
-    /*
-    public function testLoadsPublicKeyFromPEMWithoutPrivateKeyAndThrowsNoException()
-    {
-        $rsa = new Rsa;
-        $rsa->setPemString($this->_testPemStringPublic);
+        try {
+            $rsa = Rsa::factory(array(
+                'pass_phrase' => '0987654321',
+                'private_key' => $rsaOptions->getPrivateKey()->toString(),
+            ));
+        } catch (Exception\RuntimeException $e) {
+            $this->fail('Passphrase loading of a private key failed');
+        }
     }
-     */
 }

@@ -44,15 +44,6 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
      */
     public $helper;
 
-    public function clearRegistry()
-    {
-        $regKey = 'Zend_Currency';
-        if (\Zend\Registry::isRegistered($regKey)) {
-            $registry = \Zend\Registry::getInstance();
-            unset($registry[$regKey]);
-        }
-    }
-
     /**
      * Sets up the fixture, for example, open a network connection.
      * This method is called before a test is executed.
@@ -61,10 +52,8 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
      */
     public function setUp()
     {
-        $this->clearRegistry();
-
-        $this->_cache = CacheFactory::adapterFactory('memory', array('memory_limit' => 0));
-        Currency\Currency::setCache($this->_cache);
+        $cache = CacheFactory::adapterFactory('memory', array('memory_limit' => 0));
+        Currency\Currency::setCache($cache);
 
         $this->helper = new Helper\Currency('de_AT');
     }
@@ -78,8 +67,6 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
     public function tearDown()
     {
         unset($this->helper);
-        $this->_cache->clear(CacheAdapter::MATCH_ALL);
-        $this->clearRegistry();
     }
 
     public function testCurrencyObjectPassedToConstructor()
@@ -98,13 +85,6 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
         $this->helper->setCurrency($curr);
         $this->assertEquals('€ 1.234,56', $this->helper->__invoke(1234.56));
         $this->assertEquals('€ 0,12', $this->helper->__invoke(0.123));
-    }
-
-    public function testCurrencyObjectInRegistryUsedInAbsenceOfLocalCurrencyObject()
-    {
-        $curr = new Currency\Currency('de_AT');
-        \Zend\Registry::set('Zend_Currency', $curr);
-        $this->assertEquals('€ 1.234,56', $this->helper->__invoke(1234.56));
     }
 
     public function testPassingNonNullNonCurrencyObjectToConstructorThrowsException()
@@ -144,20 +124,6 @@ class CurrencyTest extends \PHPUnit_Framework_TestCase
     public function testCurrencyObjectNullByDefault()
     {
         $this->assertNotNull($this->helper->getCurrency());
-    }
-
-    public function testLocalCurrencyObjectIsPreferredOverRegistry()
-    {
-        $currReg = new Currency\Currency('de_AT');
-        \Zend\Registry::set('Zend_Currency', $currReg);
-
-        $this->helper = new Helper\Currency();
-        $this->assertSame($currReg, $this->helper->getCurrency());
-
-        $currLoc = new Currency\Currency('en_US');
-        $this->helper->setCurrency($currLoc);
-        $this->assertSame($currLoc, $this->helper->getCurrency());
-        $this->assertNotSame($currLoc, $currReg);
     }
 
     public function testHelperObjectReturnedWhenNoArgumentsPassed()

@@ -25,7 +25,7 @@ use Zend\Locale\Locale,
     Zend\Locale\Exception\InvalidArgumentException,
     Zend\Locale\Exception\UnexpectedValueException,
     Zend\Cache\StorageFactory as CacheFactory,
-    Zend\Cache\Storage\Adapter\AdapterInterface as CacheAdapter;
+    Zend\Cache\Storage\StorageInterface as CacheStorage;
 
 /**
  * @category   Zend
@@ -54,10 +54,6 @@ class LocaleTest extends \PHPUnit_Framework_TestCase
 
     public function tearDown()
     {
-        if ($this->_cache instanceof CacheAdapter) {
-            $this->_cache->clear(CacheAdapter::MATCH_ALL);
-        }
-
         if (is_string($this->_locale) && strpos($this->_locale, ';')) {
             $locales = array();
             foreach (explode(';', $this->_locale) as $l) {
@@ -699,10 +695,7 @@ class LocaleTest extends \PHPUnit_Framework_TestCase
     public function testCaching()
     {
         $cache = LocaleTestHelper::getCache();
-        $this->assertTrue($cache instanceof CacheAdapter);
-        $this->assertTrue(LocaleTestHelper::hasCache());
-
-        LocaleTestHelper::clearCache();
+        $this->assertTrue($cache instanceof CacheStorage);
         $this->assertTrue(LocaleTestHelper::hasCache());
 
         LocaleTestHelper::removeCache();
@@ -724,9 +717,6 @@ class LocaleTest extends \PHPUnit_Framework_TestCase
         } catch (InvalidArgumentException $e) {
             $this->assertContains('is no known locale', $e->getMessage());
         }
-
-        \Zend\Registry::set('Zend_Locale', 'de');
-        $this->assertEquals('de', LocaleTestHelper::findLocale());
     }
 
     /**

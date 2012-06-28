@@ -48,12 +48,6 @@ class Currency extends AbstractHelper
      */
     public function __construct($currency = null)
     {
-        if ($currency === null) {
-            if (\Zend\Registry::isRegistered('Zend_Currency')) {
-                $currency = \Zend\Registry::get('Zend_Currency');
-            }
-        }
-
         $this->setCurrency($currency);
     }
 
@@ -61,7 +55,7 @@ class Currency extends AbstractHelper
      * Output a formatted currency
      *
      * @param  integer|float                    $value    Currency value to output
-     * @param  string|\Zend\Locale\Locale|\Zend\Currency\Currency $currency OPTIONAL Currency to use for this call
+     * @param  string|\Zend\Locale\Locale|array $currency OPTIONAL Currency to use for this call
      * @return string Formatted currency
      */
     public function __invoke($value = null, $currency = null)

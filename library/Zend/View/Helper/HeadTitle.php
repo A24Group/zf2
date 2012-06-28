@@ -64,16 +64,16 @@ class HeadTitle extends Placeholder\Container\Standalone
      *
      * @param  string $title
      * @param  string $setType
-     * @param  string $separator
      * @return \Zend\View\Helper\HeadTitle
      */
     public function __invoke($title = null, $setType = null)
     {
-        if ($setType === null && $this->getDefaultAttachOrder() === null) {
-            $setType = Placeholder\Container\AbstractContainer::APPEND;
-        } elseif ($setType === null && $this->getDefaultAttachOrder() !== null) {
-            $setType = $this->getDefaultAttachOrder();
+        if (null === $setType) {
+            $setType = (null === $this->getDefaultAttachOrder())
+                     ? Placeholder\Container\AbstractContainer::APPEND
+                     : $this->getDefaultAttachOrder();
         }
+
         $title = (string) $title;
         if ($title !== '') {
             if ($setType == Placeholder\Container\AbstractContainer::SET) {
@@ -107,6 +107,8 @@ class HeadTitle extends Placeholder\Container\Standalone
             );
         }
         $this->_defaultAttachOrder = $setType;
+
+        return $this;
     }
 
     /**
@@ -140,7 +142,7 @@ class HeadTitle extends Placeholder\Container\Standalone
         return $this;
     }
 
-    /*
+    /**
      * Retrieve translation object
      *
      * If none is currently registered, attempts to pull it from the registry
@@ -150,11 +152,6 @@ class HeadTitle extends Placeholder\Container\Standalone
      */
     public function getTranslator()
     {
-        if (null === $this->_translator) {
-            if (\Zend\Registry::isRegistered('Zend_Translator')) {
-                $this->setTranslator(\Zend\Registry::get('Zend_Translator'));
-            }
-        }
         return $this->_translator;
     }
 
