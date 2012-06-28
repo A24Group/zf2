@@ -304,7 +304,7 @@ class ConfigListener extends AbstractListener implements
                 break;
 
             case self::GLOB_PATH:
-                $config = ConfigFactory::fromFiles(Glob::glob($path['path'], Glob::GLOB_BRACE));
+                $config = ConfigFactory::fromFiles(Glob::globStatic($path['path'], Glob::GLOB_BRACE));
                 break;
         }
         $this->mergeTraversableConfig($config);
