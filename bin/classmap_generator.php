@@ -55,7 +55,7 @@ if (is_dir($zfLibraryPath)) {
 $libraryPath = getcwd();
 
 // Setup autoloading
-$loader = new StandardAutoloader();
+$loader = new StandardAutoloader(array('autoregister_zf' => true));
 $loader->register();
 
 $rules = array(
