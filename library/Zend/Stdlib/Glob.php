@@ -51,7 +51,7 @@ abstract class Glob
      * @param  boolean $forceFallback
      * @return array|false
      */
-    public static function glob($pattern, $flags, $forceFallback = false)
+    public static function globStatic($pattern, $flags, $forceFallback = false)
     {
         if (!defined('GLOB_BRACE') || $forceFallback) {
             return self::fallbackGlob($pattern, $flags);

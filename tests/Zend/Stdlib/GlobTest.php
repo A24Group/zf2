@@ -35,7 +35,7 @@ class GlobTest extends TestCase
         
         $this->assertEquals(
             glob(__DIR__ . '/_files/{alph,bet}a', GLOB_BRACE),
-            Glob::glob(__DIR__ . '/_files/{alph,bet}a', Glob::GLOB_BRACE, true)
+            Glob::globStatic(__DIR__ . '/_files/{alph,bet}a', Glob::GLOB_BRACE, true)
         );
     }
 }
