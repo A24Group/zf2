@@ -59,6 +59,19 @@ class Login extends Smtp
      */
     public function __construct($host = '127.0.0.1', $port = null, $config = null)
     {
+        /*
+         * This is a tempoarty fix that orders the parmeters correctly. An array
+         * is being passed in the first parameter when it should be split over
+         * the three parameters, it look like call_user_func() is being used
+         * instead of call_user_func_array().
+         * 
+         * @author Ronny Srnka <ronny.srnka@gmail.com>
+         * @since 5 July 2012
+         */
+        $port = $host[1];
+        $config = $host[2];
+        $host = $host[0];
+
         // Did we receive a configuration array?
         $origConfig = $config;
         if (is_array($host)) {
