@@ -674,9 +674,6 @@ class ServiceManager implements ServiceLocatorInterface
                 $e
             );
         }
-        if ($instance === null) {
-            throw new Exception\ServiceNotCreatedException('The factory was called but did not return an instance.');
-        }
 
         return $instance;
     }
@@ -761,6 +758,9 @@ class ServiceManager implements ServiceLocatorInterface
                 $canonicalName,
                 ($requestedName ? '(alias: ' . $requestedName . ')' : '')
             ));
+        }
+        if ($instance === null) {
+            throw new Exception\ServiceNotCreatedException('The factory was called but did not return an instance.');
         }
         return $instance;
     }
