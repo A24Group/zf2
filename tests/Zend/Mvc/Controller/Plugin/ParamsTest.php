@@ -76,10 +76,15 @@ class ParamsTest extends TestCase
         $this->assertEquals($value, 'post:1234');
     }
 
+    public function testInvokeWithNoArgumentsReturnsInstance()
+    {
+        $this->assertSame($this->plugin, $this->plugin->__invoke());
+    }
+
     protected function setQuery()
     {
         $this->request->setMethod(Request::METHOD_GET);
-        $this->request->query()->set('value', 'query:1234');
+        $this->request->getQuery()->set('value', 'query:1234');
 
         $this->controller->dispatch($this->request);
     }
@@ -87,7 +92,7 @@ class ParamsTest extends TestCase
     protected function setPost()
     {
         $this->request->setMethod(Request::METHOD_POST);
-        $this->request->post()->set('value', 'post:1234');
+        $this->request->getPost()->set('value', 'post:1234');
 
         $this->controller->dispatch($this->request);
     }

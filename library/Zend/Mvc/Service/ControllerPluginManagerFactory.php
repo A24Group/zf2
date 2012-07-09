@@ -21,12 +21,7 @@
 
 namespace Zend\Mvc\Service;
 
-use Zend\Mvc\Controller\PluginManager as ControllerPluginManager;
-use Zend\Mvc\Exception;
-use Zend\ServiceManager\ConfigurationInterface;
-use Zend\ServiceManager\FactoryInterface;
 use Zend\ServiceManager\ServiceLocatorInterface;
-use Zend\ServiceManager\ServiceManager;
 
 /**
  * @category   Zend
@@ -35,45 +30,19 @@ use Zend\ServiceManager\ServiceManager;
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class ControllerPluginManagerFactory implements FactoryInterface
+class ControllerPluginManagerFactory extends AbstractPluginManagerFactory
 {
+    const PLUGIN_MANAGER_CLASS = 'Zend\Mvc\Controller\PluginManager';
+
     /**
      * Create and return the MVC controller plugin manager
-     * 
-     * @param  ServiceLocatorInterface $serviceLocator 
+     *
+     * @param  ServiceLocatorInterface $serviceLocator
      * @return ControllerPluginManager
      */
     public function createService(ServiceLocatorInterface $serviceLocator)
     {
-        $plugins = new ControllerPluginManager();
-
-        // Configure additional plugins
-        $config = $serviceLocator->get('Configuration');
-        $map    = (isset($config['controller']) && isset($config['controller']['map'])) 
-                ? $config['controller']['map']
-                : array();
-        foreach ($map as $key => $service) {
-            if ((!is_string($key) || is_numeric($key))
-                && class_exists($service)
-            ) {
-                $config = new $service;
-                if (!$config instanceof ConfigurationInterface) {
-                    throw new Exception\RuntimeException(sprintf(
-                        'Invalid controller plugin configuration map provided; received "%s", expected class implementing %s',
-                        $service, 
-                        'Zend\ServiceManager\ConfigurationInterface'
-                    ));
-                }
-                $config->configureServiceManager($plugins);
-                continue;
-            }
-            $plugins->setInvokableClass($key, $service);
-        }
-
-        if ($serviceLocator instanceof ServiceManager) {
-            $plugins->addPeeringServiceManager($serviceLocator);
-        }
-
+        $plugins = parent::createService($serviceLocator);
         return $plugins;
     }
 }

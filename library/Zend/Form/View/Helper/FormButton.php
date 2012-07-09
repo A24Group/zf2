@@ -143,7 +143,9 @@ class FormButton extends FormInput
             $buttonContent = $content;
         }
 
-        return $openTag . $buttonContent . $this->closeTag();
+        $escape = $this->getEscapeHtmlHelper();
+
+        return $openTag . $escape($buttonContent) . $this->closeTag();
     }
 
     /**
@@ -153,7 +155,7 @@ class FormButton extends FormInput
      *
      * @param  ElementInterface|null $element
      * @param  null|string $buttonContent
-     * @return string
+     * @return string|FormButton
      */
     public function __invoke(ElementInterface $element = null, $buttonContent = null)
     {

@@ -36,6 +36,8 @@ use Zend\View\Renderer\PhpRenderer as ViewPhpRenderer;
 use Zend\View\Resolver as ViewResolver;
 use Zend\View\Strategy\PhpRendererStrategy;
 use Zend\View\View;
+use Zend\View\Helper as ViewHelper;
+use Zend\Mvc\Router\RouteMatch;
 
 /**
  * Prepares the view layer
@@ -105,7 +107,7 @@ class ViewManager implements ListenerAggregateInterface
      */
     public function attach(EventManagerInterface $events)
     {
-        $this->listeners[] = $events->attach('bootstrap', array($this, 'onBootstrap'), 10000);
+        $this->listeners[] = $events->attach(MvcEvent::EVENT_BOOTSTRAP, array($this, 'onBootstrap'), 10000);
     }
 
     /**
@@ -134,7 +136,7 @@ class ViewManager implements ListenerAggregateInterface
         $application  = $event->getApplication();
         $services     = $application->getServiceManager();
         $config       = $services->get('Configuration');
-        $events       = $application->events();
+        $events       = $application->getEventManager();
         $sharedEvents = $events->getSharedManager();
 
         $this->config   = isset($config['view_manager']) && (is_array($config['view_manager']) || $config['view_manager'] instanceof ArrayAccess)
@@ -176,77 +178,7 @@ class ViewManager implements ListenerAggregateInterface
             return $this->helperManager;
         }
 
-        $this->helperManager = new ViewHelperManager();
-
-        // Setup additional helpers
-        $map = array();
-        if (isset($this->config['helper_map'])) {
-            $map = $this->config['helper_map'];
-        }
-        if (!in_array('Zend\Form\View\HelperConfiguration', $map)) {
-            array_unshift($map, 'Zend\Form\View\HelperConfiguration');
-        }
-        foreach ($map as $key => $service) {
-            if ((!is_string($key) || is_numeric($key))
-                && class_exists($service)
-            ) {
-                $config = new $service;
-                if (!$config instanceof ConfigurationInterface) {
-                    throw new Exception\RuntimeException(sprintf(
-                        'Invalid helper configuration map provided; received "%s", expected class implementing %s',
-                        $service,
-                        'Zend\ServiceManager\ConfigurationInterface'
-                    ));
-                }
-                $config->configureServiceManager($this->helperManager);
-                continue;
-            }
-            $this->helperManager->setInvokableClass($key, $service);
-        }
-
-        // Seed with service manager
-        if ($this->services instanceof ServiceManager) {
-            $this->helperManager->addPeeringServiceManager($this->services, ServiceManager::SCOPE_PARENT);
-        }
-
-        // Configure URL view helper with router
-        $this->helperManager->setFactory('Zend\View\Helper\Url', function($sm) {
-            $urlHelper = new \Zend\View\Helper\Url;
-            $urlHelper->setRouter($sm->get('Router'));
-            return $urlHelper;
-        });
-        $this->helperManager->setAlias('url', 'Zend\View\Helper\Url');
-
-        $config = $this->config;
-
-        // Configure basePath view helper with base path from configuration, if available
-        $this->helperManager->setFactory('Zend\View\Helper\BasePath', function($sm) use($config) {
-            $basePathHelper = new \Zend\View\Helper\BasePath;
-            if (isset($config['base_path'])) {
-                $basePath = $config['base_path'];
-            } else {
-                $basePath = $sm->get('Request')->getBasePath();
-            }
-            $basePathHelper->setBasePath($basePath);
-            return $basePathHelper;
-        });
-        $this->helperManager->setAlias('basepath', 'Zend\View\Helper\BasePath');
-
-        // Configure doctype view helper with doctype from configuration, if available
-        $this->helperManager->setFactory('Zend\View\Helper\Doctype', function($sm) use($config) {
-            $doctypeHelper = new \Zend\View\Helper\Doctype;
-            if (isset($config['doctype'])) {
-                $doctypeHelper->setDoctype($config['doctype']);
-            }
-            return $doctypeHelper;
-        });
-        $this->helperManager->setAlias('doctype', 'Zend\View\Helper\Doctype');
-
-        $this->services->setService('ViewHelperManager', $this->helperManager);
-        $this->services->setAlias('ViewHelperBroker', 'ViewHelperManager');
-        $this->services->setAlias('Zend\View\HelperPluginManager', 'ViewHelperManager');
-
-        return $this->helperManager;
+        return $this->helperManager = $this->services->get('ViewHelperManager');
     }
 
     /**
@@ -349,7 +281,7 @@ class ViewManager implements ListenerAggregateInterface
 
         $this->view = new View();
         $this->view->setEventManager($this->services->get('EventManager'));
-        $this->view->events()->attach($this->getRendererStrategy());
+        $this->view->getEventManager()->attach($this->getRendererStrategy());
 
         $this->services->setService('View', $this->view);
         $this->services->setAlias('Zend\View\View', 'View');
@@ -540,7 +472,7 @@ class ViewManager implements ListenerAggregateInterface
 
             $listener = $this->services->get($strategy);
             if ($listener instanceof ListenerAggregateInterface) {
-                $view->events()->attach($listener, 100);
+                $view->getEventManager()->attach($listener, 100);
             }
         }
     }

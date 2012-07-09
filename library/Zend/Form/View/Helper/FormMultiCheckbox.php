@@ -91,6 +91,7 @@ class FormMultiCheckbox extends FormInput
             ));
         }
         $this->labelPosition = $labelPosition;
+
         return $this;
     }
 
@@ -202,8 +203,8 @@ class FormMultiCheckbox extends FormInput
      */
     public function render(ElementInterface $element)
     {
-        $name   = static::getName($element);
-        if (empty($name)) {
+        $name = static::getName($element);
+        if ($name === null || $name === '') {
             throw new Exception\DomainException(sprintf(
                 '%s requires that the element has an assigned name; none discovered',
                 __METHOD__
@@ -221,54 +222,113 @@ class FormMultiCheckbox extends FormInput
             ));
         }
 
-        if (isset($attributes['labelAttributes'])) {
-            $labelAttributes = $attributes['labelAttributes'];
-            unset($attributes['labelAttributes']);
-        } else {
-            $labelAttributes = $this->labelAttributes;
-        }
-
         $options = $attributes['options'];
         unset($attributes['options']);
 
         $attributes['name'] = $name;
         $attributes['type'] = $this->getInputType();
 
-        $values = array();
+        $selectedOptions = array();
         if (isset($attributes['value'])) {
-            $values = (array) $attributes['value'];
+            $selectedOptions = (array) $attributes['value'];
             unset($attributes['value']);
         }
 
-        $inputHelper    = $this->getInputHelper();
-        $escapeHelper   = $this->getEscapeHelper();
-        $labelHelper    = $this->getLabelHelper();
-        $labelOpen      = $labelHelper->openTag($labelAttributes);
-        $labelClose     = $labelHelper->closeTag();
-        $labelPosition  = $this->getLabelPosition();
-        $closingBracket = $this->getInlineClosingBracket();
-        $template       = $labelOpen . '%s%s' . $labelClose;
+        $rendered = $this->renderOptions($element, $options, $selectedOptions, $attributes);
+
+        // Render hidden element
+        $useHiddenElement = method_exists($element, 'useHiddenElement') && $element->useHiddenElement()
+            ? $element->useHiddenElement()
+            : $this->useHiddenElement;
+
+        if ($useHiddenElement) {
+            $rendered = $this->renderHiddenElement($element, $attributes) . $rendered;
+        }
+
+        return $rendered;
+    }
+
+    /**
+     * Render options
+     *
+     * @param ElementInterface $element
+     * @param array            $options
+     * @param array            $selectedOptions
+     * @param array            $attributes
+     * @return string
+     */
+    protected function renderOptions(ElementInterface $element, array $options, array $selectedOptions,
+                                     array $attributes)
+    {
+        $escapeHtmlHelper = $this->getEscapeHtmlHelper();
+        $labelHelper      = $this->getLabelHelper();
+        $labelClose       = $labelHelper->closeTag();
+        $labelPosition    = $this->getLabelPosition();
+        $globalLabelAttributes = $element->getLabelAttributes();
+        $closingBracket   = $this->getInlineClosingBracket();
+
+        if (empty($globalLabelAttributes)) {
+            $globalLabelAttributes = $this->labelAttributes;
+        }
+
         $combinedMarkup = array();
         $count          = 0;
 
-        foreach ($options as $label => $value) {
+        foreach ($options as $key => $optionSpec) {
             $count++;
             if ($count > 1 && array_key_exists('id', $attributes)) {
                 unset($attributes['id']);
             }
-            $attributes['value']   = $value;
-            $attributes['checked'] = '';
-            if (in_array($value, $values, true)) {
-                $attributes['checked'] = 'checked';
+
+            $value           = '';
+            $label           = $key;
+            $selected        = false;
+            $disabled        = false;
+            $inputAttributes = $attributes;
+            $labelAttributes = $globalLabelAttributes;
+
+            if (is_string($optionSpec) || is_numeric($optionSpec) || is_bool($optionSpec)) {
+                $optionSpec = array('value' => (string) $optionSpec);
             }
 
-            $label = $escapeHelper($label);
+            if (isset($optionSpec['value'])) {
+                $value = $optionSpec['value'];
+            }
+            if (isset($optionSpec['label'])) {
+                $label = $optionSpec['label'];
+            }
+            if (isset($optionSpec['selected'])) {
+                $selected = $optionSpec['selected'];
+            }
+            if (isset($optionSpec['disabled'])) {
+                $disabled = $optionSpec['disabled'];
+            }
+            if (isset($optionSpec['label_attributes'])) {
+                $labelAttributes = (isset($labelAttributes))
+                    ? array_merge($labelAttributes, $optionSpec['label_attributes'])
+                    : $optionSpec['label_attributes'];
+            }
+            if (isset($optionSpec['attributes'])) {
+                $inputAttributes = array_merge($inputAttributes, $optionSpec['attributes']);
+            }
+
+            if (in_array($value, $selectedOptions, true)) {
+                $selected = true;
+            }
+
+            $inputAttributes['value']    = $value;
+            $inputAttributes['checked']  = $selected;
+            $inputAttributes['disabled'] = $disabled;
+
             $input = sprintf(
                 '<input %s%s',
-                $this->createAttributesString($attributes),
+                $this->createAttributesString($inputAttributes),
                 $closingBracket
             );
 
+            $label     = $escapeHtmlHelper($label);
+            $labelOpen = $labelHelper->openTag($labelAttributes);
+            $template  = $labelOpen . '%s%s' . $labelClose;
             switch ($labelPosition) {
                 case self::LABEL_PREPEND:
                     $markup = sprintf($template, $label, $input);
@@ -282,30 +342,34 @@ class FormMultiCheckbox extends FormInput
             $combinedMarkup[] = $markup;
         }
 
-        $rendered = implode($this->getSeparator(), $combinedMarkup);
+        return implode($this->getSeparator(), $combinedMarkup);
+    }
 
-        $useHiddenElement = isset($attributes['useHiddenElement'])
-            ? (bool) $attributes['useHiddenElement']
-            : $this->useHiddenElement;
+    /**
+     * Render a hidden element for empty/unchecked value
+     *
+     * @param  ElementInterface $element
+     * @param  array $attributes
+     * @return string
+     */
+    protected function renderHiddenElement(ElementInterface $element, array $attributes)
+    {
+        $closingBracket = $this->getInlineClosingBracket();
 
-        if ($useHiddenElement) {
-            $uncheckedValue = isset($attributes['uncheckedValue'])
-                ? $attributes['uncheckedValue']
+        $uncheckedValue = $element->getUncheckedValue()
+                ? $element->getUncheckedValue()
                 : $this->uncheckedValue;
 
-            $hiddenAttributes = array(
-                'name'  => $element->getName(),
-                'value' => $uncheckedValue,
-            );
+        $hiddenAttributes = array(
+            'name'  => $element->getName(),
+            'value' => $uncheckedValue,
+        );
 
-            $rendered = sprintf(
-                '<input type="hidden" %s%s',
-                $this->createAttributesString($hiddenAttributes),
-                $closingBracket
-            ) . $rendered;
-        }
-
-        return $rendered;
+        return sprintf(
+            '<input type="hidden" %s%s',
+            $this->createAttributesString($hiddenAttributes),
+            $closingBracket
+        );
     }
 
     /**
@@ -314,12 +378,17 @@ class FormMultiCheckbox extends FormInput
      * Proxies to {@link render()}.
      *
      * @param  ElementInterface|null $element
-     * @return string
+     * @param  null|string           $labelPosition
+     * @return string|FormMultiCheckbox
      */
-    public function __invoke(ElementInterface $element = null)
+    public function __invoke(ElementInterface $element = null, $labelPosition = null)
     {
         if (!$element) {
             return $this;
+        }
+
+        if ($labelPosition !== null) {
+            $this->setLabelPosition($labelPosition);
         }
 
         return $this->render($element);

@@ -20,11 +20,11 @@
 
 namespace Zend\Mvc\Router;
 
-use ArrayAccess,
-    ArrayIterator,
-    Traversable,
-    Zend\Stdlib\ArrayUtils,
-    Zend\Stdlib\RequestInterface as Request;
+use ArrayAccess;
+use ArrayIterator;
+use Traversable;
+use Zend\Stdlib\ArrayUtils;
+use Zend\Stdlib\RequestInterface as Request;
 
 /**
  * Simple route stack implementation.
@@ -126,7 +126,7 @@ class SimpleRouteStack implements RouteStackInterface
      *
      * @return RoutePluginManager
      */
-    public function routePluginManager()
+    public function getRoutePluginManager()
     {
         return $this->routePluginManager;
     }
@@ -233,6 +233,7 @@ class SimpleRouteStack implements RouteStackInterface
      *
      * @param  array|\Traversable $specs
      * @return SimpleRouteStack
+     * @throws Exception\InvalidArgumentException
      */
     protected function routeFromArray($specs)
     {
@@ -248,7 +249,7 @@ class SimpleRouteStack implements RouteStackInterface
             $specs['options'] = array();
         }
 
-        $route = $this->routePluginManager()->get($specs['type'], $specs['options']);
+        $route = $this->getRoutePluginManager()->get($specs['type'], $specs['options']);
 
         if (isset($specs['priority'])) {
             $route->priority = $specs['priority'];
@@ -290,6 +291,8 @@ class SimpleRouteStack implements RouteStackInterface
      * @param  array $params
      * @param  array $options
      * @return mixed
+     * @throws Exception\InvalidArgumentException
+     * @throws Exception\RuntimeException
      */
     public function assemble(array $params = array(), array $options = array())
     {

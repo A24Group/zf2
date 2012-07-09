@@ -57,7 +57,9 @@ class Request extends HttpRequest
         $this->setPost(new Parameters($_POST));
         $this->setQuery(new Parameters($_GET));
         $this->setServer(new Parameters($_SERVER));
-        $this->setCookies(new Parameters($_COOKIE));
+        if ($_COOKIE) {
+            $this->setCookies(new Parameters($_COOKIE));
+        }
 
         if ($_FILES) {
             $this->setFile(new Parameters($_FILES));
@@ -79,7 +81,7 @@ class Request extends HttpRequest
      */
     public function setCookies($cookie)
     {
-        $this->headers()->addHeader(new Cookie((array) $cookie));
+        $this->getHeaders()->addHeader(new Cookie((array) $cookie));
         return $this;
     }
 
@@ -180,7 +182,7 @@ class Request extends HttpRequest
             }
         }
 
-        $this->headers()->addHeaders($this->serverToHeaders($this->serverParams));
+        $this->getHeaders()->addHeaders($this->serverToHeaders($this->serverParams));
 
         if (isset($this->serverParams['REQUEST_METHOD'])) {
             $this->setMethod($this->serverParams['REQUEST_METHOD']);
@@ -203,14 +205,13 @@ class Request extends HttpRequest
             $uri->setQuery($this->serverParams['QUERY_STRING']);
         }
 
-        if ($this->headers()->get('host')) {
+        if ($this->getHeaders()->get('host')) {
             //TODO handle IPv6 with port
-            if (preg_match('|^([^:]+):([^:]+)$|', $this->headers()->get('host')->getFieldValue(), $match)) {
+            if (preg_match('|^([^:]+):([^:]+)$|', $this->getHeaders()->get('host')->getFieldValue(), $match)) {
                 $uri->setHost($match[1]);
                 $uri->setPort($match[2]);
-            }
-            else {
-                $uri->setHost($this->headers()->get('host')->getFieldValue());
+            } else {
+                $uri->setHost($this->getHeaders()->get('host')->getFieldValue());
             }
         } elseif (isset($this->serverParams['SERVER_NAME'])) {
             $uri->setHost($this->serverParams['SERVER_NAME']);
@@ -237,6 +238,10 @@ class Request extends HttpRequest
 
         foreach ($server as $key => $value) {
             if ($value && strpos($key, 'HTTP_') === 0) {
+                if (strpos($key, 'HTTP_COOKIE') === 0) {
+                    // Cookies are handled using the $_COOKIE superglobal
+                    continue;
+                }
                 $name = strtr(substr($key, 5), '_', ' ');
                 $name = strtr(ucwords(strtolower($name)), ' ', '-');
             } elseif ($value && strpos($key, 'CONTENT_') === 0) {
@@ -265,21 +270,21 @@ class Request extends HttpRequest
         $requestUri = null;
 
         // Check this first so IIS will catch.
-        $httpXRewriteUrl = $this->server()->get('HTTP_X_REWRITE_URL');
+        $httpXRewriteUrl = $this->getServer()->get('HTTP_X_REWRITE_URL');
         if ($httpXRewriteUrl !== null) {
             $requestUri = $httpXRewriteUrl;
         }
-       
+
         // Check for IIS 7.0 or later with ISAPI_Rewrite
-        $httpXOriginalUrl = $this->server()->get('HTTP_X_ORIGINAL_URL');
+        $httpXOriginalUrl = $this->getServer()->get('HTTP_X_ORIGINAL_URL');
         if ($httpXOriginalUrl !== null) {
             $requestUri = $httpXOriginalUrl;
         }
-       
+
         // IIS7 with URL Rewrite: make sure we get the unencoded url
         // (double slash problem).
-        $iisUrlRewritten = $this->server()->get('IIS_WasUrlRewritten');
-        $unencodedUrl    = $this->server()->get('UNENCODED_URL', '');
+        $iisUrlRewritten = $this->getServer()->get('IIS_WasUrlRewritten');
+        $unencodedUrl    = $this->getServer()->get('UNENCODED_URL', '');
         if ('1' == $iisUrlRewritten && '' !== $unencodedUrl) {
             return $unencodedUrl;
         }
@@ -287,10 +292,10 @@ class Request extends HttpRequest
         // HTTP proxy requests setup request URI with scheme and host
         // [and port] + the URL path, only use URL path.
         if (!$httpXRewriteUrl) {
-            $requestUri = $this->server()->get('REQUEST_URI');
+            $requestUri = $this->getServer()->get('REQUEST_URI');
         }
         if ($requestUri !== null) {
-            $schemeAndHttpHost = $this->uri()->getScheme() . '://' . $this->uri()->getHost();
+            $schemeAndHttpHost = $this->getUri()->getScheme() . '://' . $this->getUri()->getHost();
 
             if (strpos($requestUri, $schemeAndHttpHost) === 0) {
                 $requestUri = substr($requestUri, strlen($schemeAndHttpHost));
@@ -299,9 +304,9 @@ class Request extends HttpRequest
         }
 
         // IIS 5.0, PHP as CGI.
-        $origPathInfo = $this->server()->get('ORIG_PATH_INFO');
+        $origPathInfo = $this->getServer()->get('ORIG_PATH_INFO');
         if ($origPathInfo !== null) {
-            $queryString = $this->server()->get('QUERY_STRING', '');
+            $queryString = $this->getServer()->get('QUERY_STRING', '');
             if ($queryString !== '') {
                 $origPathInfo .= '?' . $queryString;
             }
@@ -324,10 +329,10 @@ class Request extends HttpRequest
     protected function detectBaseUrl()
     {
         $baseUrl        = '';
-        $filename       = $this->server()->get('SCRIPT_FILENAME', '');
-        $scriptName     = $this->server()->get('SCRIPT_NAME');
-        $phpSelf        = $this->server()->get('PHP_SELF');
-        $origScriptName = $this->server()->get('ORIG_SCRIPT_NAME');
+        $filename       = $this->getServer()->get('SCRIPT_FILENAME', '');
+        $scriptName     = $this->getServer()->get('SCRIPT_NAME');
+        $phpSelf        = $this->getServer()->get('PHP_SELF');
+        $origScriptName = $this->getServer()->get('ORIG_SCRIPT_NAME');
 
         if ($scriptName !== null && basename($scriptName) === $filename) {
             $baseUrl = $scriptName;
@@ -388,12 +393,12 @@ class Request extends HttpRequest
      * Autodetect the base path of the request
      *
      * Uses several criteria to determine the base path of the request.
-     * 
+     *
      * @return string
      */
     protected function detectBasePath()
     {
-        $filename = basename($this->server()->get('SCRIPT_FILENAME', ''));
+        $filename = basename($this->getServer()->get('SCRIPT_FILENAME', ''));
         $baseUrl  = $this->getBaseUrl();
 
         // Empty base url detected
