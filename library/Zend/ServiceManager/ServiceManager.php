@@ -762,6 +762,7 @@ class ServiceManager implements ServiceLocatorInterface
         if ($instance === null) {
             throw new Exception\ServiceNotCreatedException('The factory was called but did not return an instance.');
         }
+        
         return $instance;
     }
 
@@ -788,7 +789,7 @@ class ServiceManager implements ServiceLocatorInterface
          */
         if ((is_string($this->abstractFactories[0]) && $this->abstractFactories[0] == 'Zend\ServiceManager\Di\DiAbstractServiceFactory')
             || (!is_string($this->abstractFactories[0]) && get_class($this->abstractFactories[0]) == 'Zend\ServiceManager\Di\DiAbstractServiceFactory'))
-        {
+        {       
             $abstractFactory = array_shift($this->abstractFactories);
             array_push($this->abstractFactories, $abstractFactory);
         }
