@@ -32,12 +32,12 @@ class ValidatorPluginManager extends AbstractPluginManager
 {
     /**
      * Default set of validators
-     * 
+     *
      * @var array
      */
     protected $invokableClasses = array(
-        'alnum'                    => 'Zend\Validator\Alnum',
-        'alpha'                    => 'Zend\Validator\Alpha',
+        'alnum'                    => 'Zend\I18n\Validator\Alnum',
+        'alpha'                    => 'Zend\I18n\Validator\Alpha',
         'barcodecode25interleaved' => 'Zend\Validator\Barcode\Code25interleaved',
         'barcodecode25'            => 'Zend\Validator\Barcode\Code25',
         'barcodecode39ext'         => 'Zend\Validator\Barcode\Code39ext',
@@ -71,6 +71,7 @@ class ValidatorPluginManager extends AbstractPluginManager
         'creditcard'               => 'Zend\Validator\CreditCard',
         'csrf'                     => 'Zend\Validator\Csrf',
         'date'                     => 'Zend\Validator\Date',
+        'datestep'                 => 'Zend\Validator\DateStep',
         'dbnorecordexists'         => 'Zend\Validator\Db\NoRecordExists',
         'dbrecordexists'           => 'Zend\Validator\Db\RecordExists',
         'digits'                   => 'Zend\Validator\Digits',
@@ -94,33 +95,34 @@ class ValidatorPluginManager extends AbstractPluginManager
         'filesize'                 => 'Zend\Validator\File\Size',
         'fileupload'               => 'Zend\Validator\File\Upload',
         'filewordcount'            => 'Zend\Validator\File\WordCount',
-        'float'                    => 'Zend\Validator\Float',
+        'float'                    => 'Zend\I18n\Validator\Float',
         'greaterthan'              => 'Zend\Validator\GreaterThan',
         'hex'                      => 'Zend\Validator\Hex',
         'hostname'                 => 'Zend\Validator\Hostname',
-        'iban'                     => 'Zend\Validator\Iban',
+        'iban'                     => 'Zend\I18n\Validator\Iban',
         'identical'                => 'Zend\Validator\Identical',
         'inarray'                  => 'Zend\Validator\InArray',
-        'int'                      => 'Zend\Validator\Int',
+        'int'                      => 'Zend\I18n\Validator\Int',
         'ip'                       => 'Zend\Validator\Ip',
         'isbn'                     => 'Zend\Validator\Isbn',
         'lessthan'                 => 'Zend\Validator\LessThan',
         'notempty'                 => 'Zend\Validator\NotEmpty',
-        'postcode'                 => 'Zend\Validator\PostCode',
+        'postcode'                 => 'Zend\I18n\Validator\PostCode',
         'regex'                    => 'Zend\Validator\Regex',
         'sitemapchangefreq'        => 'Zend\Validator\Sitemap\Changefreq',
         'sitemaplastmod'           => 'Zend\Validator\Sitemap\Lastmod',
         'sitemaploc'               => 'Zend\Validator\Sitemap\Loc',
         'sitemappriority'          => 'Zend\Validator\Sitemap\Priority',
         'stringlength'             => 'Zend\Validator\StringLength',
+        'step'                     => 'Zend\Validator\Step',
     );
 
     /**
      * Validate the plugin
      *
      * Checks that the validator loaded is an instance of ValidatorInterface.
-     * 
-     * @param  mixed $plugin 
+     *
+     * @param  mixed $plugin
      * @return void
      * @throws Exception\RuntimeException if invalid
      */

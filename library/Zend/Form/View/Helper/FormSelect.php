@@ -44,8 +44,13 @@ class FormSelect extends AbstractHelper
     protected $validTagAttributes;
 
     protected $validSelectAttributes = array(
-        'name'     => true,
-        'multiple' => true,
+        'name'      => true,
+        'autofocus' => true,
+        'disabled'  => true,
+        'form'      => true,
+        'multiple'  => true,
+        'required'  => true,
+        'size'      => true
     );
 
     protected $validOptionAttributes = array(
@@ -132,7 +137,7 @@ class FormSelect extends AbstractHelper
     {
         $template      = '<option %s>%s</option>';
         $optionStrings = array();
-        $escape        = $this->getEscapeHelper();
+        $escapeHtml    = $this->getEscapeHtmlHelper();
 
         foreach ($options as $key => $optionSpec) {
             $value    = '';
@@ -174,7 +179,7 @@ class FormSelect extends AbstractHelper
             $optionStrings[] = sprintf(
                 $template,
                 $this->createAttributesString($attributes),
-                $escape($label)
+                $escapeHtml($label)
             );
         }
 
@@ -221,7 +226,7 @@ class FormSelect extends AbstractHelper
      * Proxies to {@link render()}.
      *
      * @param  ElementInterface|null $element
-     * @return string
+     * @return string|FormSelect
      */
     public function __invoke(ElementInterface $element = null)
     {

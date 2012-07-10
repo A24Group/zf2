@@ -164,11 +164,15 @@ class FormElementErrors extends AbstractHelper
         }
 
         // Flatten message array
-        $escape          = $this->getEscapeHelper();
+        $escapeHtml      = $this->getEscapeHtmlHelper();
         $messagesToPrint = array();
-        array_walk_recursive($messages, function($item) use (&$messagesToPrint, $escape) {
-            $messagesToPrint[] = $escape($item);
+        array_walk_recursive($messages, function($item) use (&$messagesToPrint, $escapeHtml) {
+            $messagesToPrint[] = $escapeHtml($item);
         });
+
+        if (empty($messagesToPrint)) {
+            return '';
+        }
 
         // Generate markup
         $markup  = sprintf($this->getMessageOpenFormat(), $attributes);
@@ -189,9 +193,10 @@ class FormElementErrors extends AbstractHelper
      */
     public function __invoke(ElementInterface $element = null, array $attributes = array())
     {
-        if ($element) {
-            return $this->render($element, $attributes);
+        if (!$element) {
+            return $this;
         }
-        return $this;
+
+        return $this->render($element, $attributes);
     }
 }

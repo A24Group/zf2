@@ -33,12 +33,15 @@ use Zend\ServiceManager\ServiceManager;
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class HelperLoader implements ConfigurationInterface
+class HelperConfiguration implements ConfigurationInterface
 {
     /**
      * @var array Pre-aliased view helpers
      */
     protected $invokables = array(
+        'currencyformat'  => 'Zend\I18n\View\Helper\CurrencyFormat',
+        'dateformat'      => 'Zend\I18n\View\Helper\DateFormat',
+        'numberformat'    => 'Zend\I18n\View\Helper\NumberFormat',
         'translate'       => 'Zend\I18n\View\Helper\Translate',
         'translateplural' => 'Zend\I18n\View\Helper\TranslatePlural',
     );
@@ -47,7 +50,7 @@ class HelperLoader implements ConfigurationInterface
      * Configure the provided service manager instance with the configuration
      * in this class.
      *
-     * @param  ServiceManager $serviceManager 
+     * @param  ServiceManager $serviceManager
      * @return void
      */
     public function configureServiceManager(ServiceManager $serviceManager)

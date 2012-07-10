@@ -118,11 +118,22 @@ class Connection implements ConnectionInterface
             $this->connect();
         }
 
+        switch ($this->driverName) {
+            case 'mysql':
+                $sql = 'SELECT DATABASE()';
+                break;
+            case 'sqlite':
+                return 'main';
+            case 'pgsql':
+            default:
+                $sql = 'SELECT CURRENT_SCHEMA';
+                break;
+        }
+
         /** @var $result \PDOStatement */
-        $result = $this->resource->query('SELECT DATABASE()');
+        $result = $this->resource->query($sql);
         if ($result instanceof \PDOStatement) {
-            $r = $result->fetch_row();
-            return $r[0];
+            return $result->fetchColumn();
         }
         return false;
     }
@@ -344,10 +355,14 @@ class Connection implements ConnectionInterface
      * 
      * @return integer 
      */
-    public function getLastGeneratedValue()
+    public function getLastGeneratedValue($name = null)
     {
+        if ($name === null && $this->driverName == 'pgsql') {
+            return null;
+        }
+
         try {
-            return $this->resource->lastInsertId();
+            return $this->resource->lastInsertId($name);
         } catch (\Exception $e) {
             // do nothing
         }

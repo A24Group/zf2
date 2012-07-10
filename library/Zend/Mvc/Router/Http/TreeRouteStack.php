@@ -21,14 +21,14 @@
 
 namespace Zend\Mvc\Router\Http;
 
-use Zend\Mvc\Router\Exception,
-    Traversable,
-    Zend\Stdlib\ArrayUtils,
-    Zend\Mvc\Router\SimpleRouteStack,
-    Zend\Mvc\Router\RouteInterface as BaseRoute,
-    Zend\Mvc\Router\Http\RouteInterface,
-    Zend\Stdlib\RequestInterface as Request,
-    Zend\Uri\Http as HttpUri;
+use Zend\Mvc\Router\Exception;
+use Traversable;
+use Zend\Stdlib\ArrayUtils;
+use Zend\Mvc\Router\SimpleRouteStack;
+use Zend\Mvc\Router\RouteInterface as BaseRoute;
+use Zend\Mvc\Router\Http\RouteInterface;
+use Zend\Stdlib\RequestInterface as Request;
+use Zend\Uri\Http as HttpUri;
 
 /**
  * Tree search implementation.
@@ -102,6 +102,8 @@ class TreeRouteStack extends SimpleRouteStack
      * @see    SimpleRouteStack::routeFromArray()
      * @param  array|\Traversable $specs
      * @return RouteInterface
+     * @throws Exception\InvalidArgumentException
+     * @throws Exception\RuntimeException
      */
     protected function routeFromArray($specs)
     {
@@ -143,7 +145,7 @@ class TreeRouteStack extends SimpleRouteStack
      */
     public function match(Request $request)
     {
-        if (!method_exists($request, 'uri')) {
+        if (!method_exists($request, 'getUri')) {
             return null;
         }
 
@@ -151,7 +153,7 @@ class TreeRouteStack extends SimpleRouteStack
             $this->setBaseUrl($request->getBaseUrl());
         }
 
-        $uri           = $request->uri();
+        $uri           = $request->getUri();
         $baseUrlLength = strlen($this->baseUrl) ?: null;
 
         if ($this->requestUri === null) {
@@ -188,7 +190,8 @@ class TreeRouteStack extends SimpleRouteStack
      * @param  array $params
      * @param  array $options
      * @return mixed
-     * @throws Exception\ExceptionInterface
+     * @throws Exception\InvalidArgumentException
+     * @throws Exception\RuntimeException
      */
     public function assemble(array $params = array(), array $options = array())
     {
