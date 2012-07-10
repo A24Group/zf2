@@ -27,6 +27,16 @@ use ZendTest\Form\TestAsset;
 
 class AnnotationBuilderTest extends TestCase
 {
+    public function setUp()
+    {
+        if (!defined('TESTS_ZEND_FORM_ANNOTATION_SUPPORT')
+            || !constant('TESTS_ZEND_FORM_ANNOTATION_SUPPORT')
+        ) {
+            $this->markTestSkipped('Enable TESTS_ZEND_FORM_ANNOTATION_SUPPORT to test annotation parsing');
+        }
+
+    }
+
     public function testCanCreateFormFromStandardEntity()
     {
         $entity  = new TestAsset\Annotation\Entity();
@@ -163,5 +173,22 @@ class AnnotationBuilderTest extends TestCase
         $this->assertInstanceOf('Zend\InputFilter\InputFilterInterface', $composed);
         $this->assertTrue($composed->has('username'));
         $this->assertTrue($composed->has('password'));
+    }
+
+    public function testCanHandleOptionsAnnotation()
+    {
+        $entity  = new TestAsset\Annotation\EntityUsingOptions();
+        $builder = new Annotation\AnnotationBuilder();
+        $form    = $builder->createForm($entity);
+
+        $this->assertTrue($form->useAsBaseFieldset());
+
+        $this->assertTrue($form->has('username'));
+
+        $username = $form->get('username');
+        $this->assertInstanceOf('Zend\Form\Element', $username);
+
+        $this->assertEquals('Username:', $username->getLabel());
+        $this->assertEquals(array('class' => 'label'), $username->getLabelAttributes());
     }
 }

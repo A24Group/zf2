@@ -27,7 +27,7 @@ use Zend\ServiceManager\ConfigurationInterface;
  * Plugin manager implementation for view helpers
  *
  * Enforces that heleprs retrieved are instances of
- * Helper\HelperInterface. Additionally, it registers a number of default 
+ * Helper\HelperInterface. Additionally, it registers a number of default
  * helpers.
  *
  * @category   Zend
@@ -39,16 +39,24 @@ class HelperPluginManager extends AbstractPluginManager
 {
     /**
      * Default set of helpers
-     * 
+     *
      * @var array
      */
     protected $invokableClasses = array(
+        // basepath, doctype, and url are set up as factories in the ViewHelperManagerFactory.
+        // basepath and url are not very useful without their factories, however the doctype
+        // helper works fine as an invokable. The factory for doctype simply checks for the
+        // config value from the merged config.
+        'doctype'             => 'Zend\View\Helper\Doctype', // overridden by a factory in ViewHelperManagerFactory
         'basepath'            => 'Zend\View\Helper\BasePath',
-        'currency'            => 'Zend\View\Helper\Currency',
+        'url'                 => 'Zend\View\Helper\Url',
         'cycle'               => 'Zend\View\Helper\Cycle',
         'declarevars'         => 'Zend\View\Helper\DeclareVars',
-        'doctype'             => 'Zend\View\Helper\Doctype',
-        'escape'              => 'Zend\View\Helper\Escape',
+        'escapehtml'          => 'Zend\View\Helper\EscapeHtml',
+        'escapehtmlattr'      => 'Zend\View\Helper\EscapeHtmlAttr',
+        'escapejs'            => 'Zend\View\Helper\EscapeJs',
+        'escapecss'           => 'Zend\View\Helper\EscapeCss',
+        'escapeurl'           => 'Zend\View\Helper\EscapeUrl',
         'gravatar'            => 'Zend\View\Helper\Gravatar',
         'headlink'            => 'Zend\View\Helper\HeadLink',
         'headmeta'            => 'Zend\View\Helper\HeadMeta',
@@ -63,7 +71,6 @@ class HelperPluginManager extends AbstractPluginManager
         'inlinescript'        => 'Zend\View\Helper\InlineScript',
         'json'                => 'Zend\View\Helper\Json',
         'layout'              => 'Zend\View\Helper\Layout',
-        'navigation'          => 'Zend\View\Helper\Navigation',
         'paginationcontrol'   => 'Zend\View\Helper\PaginationControl',
         'partialloop'         => 'Zend\View\Helper\PartialLoop',
         'partial'             => 'Zend\View\Helper\Partial',
@@ -71,8 +78,6 @@ class HelperPluginManager extends AbstractPluginManager
         'renderchildmodel'    => 'Zend\View\Helper\RenderChildModel',
         'rendertoplaceholder' => 'Zend\View\Helper\RenderToPlaceholder',
         'serverurl'           => 'Zend\View\Helper\ServerUrl',
-        'translator'          => 'Zend\View\Helper\Translator',
-        'url'                 => 'Zend\View\Helper\Url',
         'viewmodel'           => 'Zend\View\Helper\ViewModel',
     );
 
@@ -86,8 +91,8 @@ class HelperPluginManager extends AbstractPluginManager
      *
      * After invoking parent constructor, add an initializer to inject the
      * attached renderer, if any, to the currently requested helper.
-     * 
-     * @param  null|ConfigurationInterface $configuration 
+     *
+     * @param  null|ConfigurationInterface $configuration
      * @return void
      */
     public function __construct(ConfigurationInterface $configuration = null)
@@ -98,8 +103,8 @@ class HelperPluginManager extends AbstractPluginManager
 
     /**
      * Set renderer
-     * 
-     * @param  Renderer\RendererInterface $renderer 
+     *
+     * @param  Renderer\RendererInterface $renderer
      * @return HelperPluginManager
      */
     public function setRenderer(Renderer\RendererInterface $renderer)
@@ -110,7 +115,7 @@ class HelperPluginManager extends AbstractPluginManager
 
     /**
      * Retrieve renderer instance
-     * 
+     *
      * @return null|Renderer\RendererInterface
      */
     public function getRenderer()
@@ -121,13 +126,13 @@ class HelperPluginManager extends AbstractPluginManager
     /**
      * Inject a helper instance with the registered renderer
      *
-     * @param  Helper\HelperInterface $helper 
+     * @param  Helper\HelperInterface $helper
      * @return void
      */
     public function injectRenderer($helper)
     {
         $renderer = $this->getRenderer();
-        if (null === $renderer) { 
+        if (null === $renderer) {
             return;
         }
         $helper->setView($renderer);
@@ -137,8 +142,8 @@ class HelperPluginManager extends AbstractPluginManager
      * Validate the plugin
      *
      * Checks that the helper loaded is an instance of Helper\HelperInterface.
-     * 
-     * @param  mixed $plugin 
+     *
+     * @param  mixed $plugin
      * @return void
      * @throws Exception\InvalidHelperException if invalid
      */

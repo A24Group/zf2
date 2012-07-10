@@ -21,12 +21,12 @@
 
 namespace Zend\Mvc\Router\Http;
 
-use Traversable,
-    Zend\Stdlib\ArrayUtils,
-    Zend\Stdlib\RequestInterface as Request,
-    Zend\Mvc\Router\RoutePluginManager,
-    Zend\Mvc\Router\Exception,
-    Zend\Mvc\Router\PriorityList;
+use Traversable;
+use Zend\Stdlib\ArrayUtils;
+use Zend\Stdlib\RequestInterface as Request;
+use Zend\Mvc\Router\RoutePluginManager;
+use Zend\Mvc\Router\Exception;
+use Zend\Mvc\Router\PriorityList;
 
 /**
  * RouteInterface part.
@@ -92,7 +92,7 @@ class Part extends TreeRouteStack implements RouteInterface
      *
      * @see    Route::factory()
      * @param  mixed $options
-     * @throws \Zend\Mvc\Router\Exception\InvalidArgumentException
+     * @throws Exception\InvalidArgumentException
      * @return Part
      */
     public static function factory($options = array())
@@ -141,7 +141,7 @@ class Part extends TreeRouteStack implements RouteInterface
 
         $match = $this->route->match($request, $pathOffset);
 
-        if ($match !== null && method_exists($request, 'uri')) {
+        if ($match !== null && method_exists($request, 'getUri')) {
             if ($this->childRoutes !== null) {
                 $this->addRoutes($this->childRoutes);
                 $this->childRoutes = null;
@@ -149,7 +149,7 @@ class Part extends TreeRouteStack implements RouteInterface
 
             $nextOffset = $pathOffset + $match->getLength();
 
-            $uri        = $request->uri();
+            $uri        = $request->getUri();
             $pathLength = strlen($uri->getPath());
 
             if ($this->mayTerminate && $nextOffset === $pathLength) {

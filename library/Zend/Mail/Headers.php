@@ -244,10 +244,11 @@ class Headers implements Iterator, Countable
     public function addHeader(Header\HeaderInterface $header)
     {
         $key = $this->normalizeFieldName($header->getFieldName());
-
         $this->headersKeys[] = $key;
         $this->headers[] = $header;
-        $header->setEncoding($this->getEncoding());
+        if ($this->getEncoding() !== 'ASCII') {
+            $header->setEncoding($this->getEncoding());
+        }
         return $this;
     }
 
@@ -296,7 +297,11 @@ class Headers implements Iterator, Countable
         $results = array();
 
         foreach (array_keys($this->headersKeys, $key) as $index) {
-            $results[] = $this->headers[$index];
+            if ($this->headers[$index] instanceof Header\GenericHeader) {
+                $results[] = $this->lazyLoadHeader($index);
+            } else {
+                $results[] = $this->headers[$index];
+            }
         }
 
         switch(count($results)) {
@@ -457,7 +462,7 @@ class Headers implements Iterator, Countable
         /* @var $class Header\HeaderInterface */
         $class = ($this->getPluginClassLoader()->load($key)) ?: 'Zend\Mail\Header\GenericHeader';
 
-        $encoding = $this->getEncoding();
+        $encoding = $current->getEncoding();
         $headers  = $class::fromString($current->toString());
         if (is_array($headers)) {
             $current = array_shift($headers);

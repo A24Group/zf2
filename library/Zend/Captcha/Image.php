@@ -23,7 +23,6 @@ namespace Zend\Captcha;
 
 use DirectoryIterator;
 use Zend\Captcha\Exception;
-use Zend\Loader\Pluggable;
 use Zend\Stdlib\ErrorHandler;
 
 /**
@@ -37,7 +36,7 @@ use Zend\Stdlib\ErrorHandler;
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Image extends Word
+class Image extends AbstractWord
 {
     /**
      * Directory for generated images

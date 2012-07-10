@@ -31,8 +31,7 @@ use ArrayObject,
     Zend\Cache\Storage\IterableInterface,
     Zend\Cache\Storage\TaggableInterface,
     Zend\Cache\Storage\AvailableSpaceCapableInterface,
-    Zend\Cache\Storage\TotalSpaceCapableInterface,
-    Zend\Cache\Utils;
+    Zend\Cache\Storage\TotalSpaceCapableInterface;
 
 /**
  * @category   Zend
@@ -41,7 +40,7 @@ use ArrayObject,
  * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
-class Memory extends AbstractAdapter implements 
+class Memory extends AbstractAdapter implements
     AvailableSpaceCapableInterface,
     ClearByPrefixInterface,
     ClearExpiredInterface,
@@ -723,7 +722,8 @@ class Memory extends AbstractAdapter implements
                         'object'   => true,
                         'resource' => true,
                     ),
-                    'supportedMetadata' => array('mtime'),
+                    'supportedMetadata'  => array('mtime'),
+                    'minTtl'             => 1,
                     'maxTtl'             => PHP_INT_MAX,
                     'staticTtl'          => false,
                     'ttlPrecision'       => 0.05,
