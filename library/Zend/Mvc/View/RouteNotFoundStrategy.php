@@ -72,6 +72,13 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
     protected $reason = false;
 
     /**
+     * The not found message to be passed along to the view strategy and renderer via the ViewModel.
+     * 
+     * @var string
+     */
+    protected $notFoundMessage = "";
+
+    /**
      * Attach the aggregate to the specified event manager
      *
      * @param  EventManagerInterface $events
@@ -166,6 +173,29 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
     }
 
     /**
+     * Sets the not found message for the strategy.
+     *
+     * @author Jaco Nel <jaco.nel@a24group.com>
+     * @since 03 Aug 2012
+     *
+     * @param string $message The not found message
+     */
+    public function setNotFoundMessage($message)
+    {
+        $this->notFoundMessage = trim($message);
+    }
+
+    /**
+     * Get the not found message for the strategy.
+     *
+     * @return string The not found message
+     */
+    public function getNotFoundMessage()
+    {
+        return $this->notFoundMessage;
+    }
+
+    /**
      * Detect if an error is a 404 condition
      *
      * If a "controller not found" or "invalid controller" error type is
@@ -219,7 +249,7 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
         }
 
         $model = new ViewModel();
-        $model->setVariable('message', 'Page not found.');
+        $model->setVariable('message', $this->getNotFoundMessage());
         $model->setTemplate($this->getNotFoundTemplate());
 
         // If displaying reasons, inject the reason
