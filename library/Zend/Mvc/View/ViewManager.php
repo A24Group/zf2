@@ -370,6 +370,7 @@ class ViewManager implements ListenerAggregateInterface
 
         $displayNotFoundReason = false;
         $notFoundTemplate      = '404';
+        $notFoundMessage       = 'Page not found.';
 
         if (isset($this->config['display_not_found_reason'])) {
             $displayNotFoundReason = $this->config['display_not_found_reason'];
@@ -377,9 +378,13 @@ class ViewManager implements ListenerAggregateInterface
         if (isset($this->config['not_found_template'])) {
             $notFoundTemplate = $this->config['not_found_template'];
         }
+        if (isset($this->config['not_found_message'])) {
+            $notFoundMessage = $this->config['not_found_message'];
+        }
 
         $this->routeNotFoundStrategy->setDisplayNotFoundReason($displayNotFoundReason);
         $this->routeNotFoundStrategy->setNotFoundTemplate($notFoundTemplate);
+        $this->routeNotFoundStrategy->setNotFoundMessage($notFoundMessage);
 
         $this->services->setService('RouteNotFoundStrategy', $this->routeNotFoundStrategy);
         $this->services->setAlias('Zend\Mvc\View\RouteNotFoundStrategy', 'RouteNotFoundStrategy');
