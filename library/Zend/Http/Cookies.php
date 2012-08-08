@@ -1,10 +1,18 @@
 <?php
+/**
+ * Zend Framework (http://framework.zend.com/)
+ *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Http
+ */
 
 namespace Zend\Http;
 
-use Zend\Uri,
-    Zend\Http\Header\Cookie,
-    Zend\Http\Response;
+use Zend\Http\Header\Cookie;
+use Zend\Http\Response;
+use Zend\Uri;
 
 /**
  * A Zend_Http_CookieJar object is designed to contain and maintain HTTP cookies, and should
@@ -26,8 +34,6 @@ use Zend\Uri,
  *
  * @category   Zend
  * @package    Zend\Http\Client
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Cookies extends Headers
 {
@@ -35,6 +41,11 @@ class Cookies extends Headers
      * @var Headers
      */
     protected $headers = null;
+
+    /**
+     * @var $_rawCookies
+     */
+    protected $rawCookies;
 
     /**
      * @static
@@ -79,7 +90,7 @@ class Cookies extends Headers
                 $this->cookies[$domain][$path] = array();
             }
             $this->cookies[$domain][$path][$cookie->getName()] = $cookie;
-            $this->_rawCookies[] = $cookie;
+            $this->rawCookies[] = $cookie;
         } else {
             throw new Exception\InvalidArgumentException('Supplient argument is not a valid cookie string or object');
         }
@@ -146,7 +157,7 @@ class Cookies extends Headers
         $cookies = $this->_matchPath($cookies, $uri->getPath());
         $cookies = $this->_flattenCookiesArray($cookies, self::COOKIE_OBJECT);
 
-        // Next, run Cookie->match on all cookies to check secure, time and session mathcing
+        // Next, run Cookie->match on all cookies to check secure, time and session matching
         $ret = array();
         foreach ($cookies as $cookie)
             if ($cookie->match($uri, $matchSessionCookies, $now))
@@ -207,14 +218,15 @@ class Cookies extends Headers
     }
 
     /**
-     * Helper function to recursivly flatten an array. Shoud be used when exporting the
+     * Helper function to recursively flatten an array. Should be used when exporting the
      * cookies array (or parts of it)
      *
      * @param \Zend\Http\Header\Cookie|array $ptr
      * @param int $ret_as What value to return
      * @return array|string
      */
-    protected function _flattenCookiesArray($ptr, $ret_as = self::COOKIE_OBJECT) {
+    protected function _flattenCookiesArray($ptr, $ret_as = self::COOKIE_OBJECT)
+    {
         if (is_array($ptr)) {
             $ret = ($ret_as == self::COOKIE_STRING_CONCAT ? '' : array());
             foreach ($ptr as $item) {
@@ -325,7 +337,7 @@ class Cookies extends Headers
      */
     public function reset()
     {
-        $this->cookies = $this->_rawCookies = array();
+        $this->cookies = $this->rawCookies = array();
         return $this;
     }
 

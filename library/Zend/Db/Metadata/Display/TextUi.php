@@ -20,15 +20,15 @@ class TextUi
 
     /**
      *
-     * @var 
+     * @var
      */
     protected $camelCaseFilter = null;
 
     /**
      * Render
-     * 
+     *
      * @param  \Zend\Db\Metadata\Metadata $metadata
-     * @return string 
+     * @return string
      */
     public function render(\Zend\Db\Metadata\Metadata $metadata)
     {
@@ -39,9 +39,9 @@ class TextUi
 
     /**
      * Render tables
-     * 
+     *
      * @param  array $tables
-     * @return string 
+     * @return string
      */
     public function renderTables(array $tables)
     {
@@ -54,9 +54,9 @@ class TextUi
 
     /**
      * Render table
-     * 
+     *
      * @param  \Zend\Db\Metadata\Table $table
-     * @return string 
+     * @return string
      */
     public function renderTable(\Zend\Db\Metadata\Table $table)
     {
@@ -69,15 +69,15 @@ class TextUi
 
     /**
      * Render columns
-     * 
+     *
      * @param  \Zend\Db\Metadata\ColumnCollection $columnCollection
-     * @return string 
+     * @return string
      */
     public function renderColumns(\Zend\Db\Metadata\ColumnCollection $columnCollection)
     {
         $columnAttributes = array(
             array('name', 'Name', 12),
-            array('ordinalPosition', "Oridinal\nPosition", 10),
+            array('ordinalPosition', "Ordinal\nPosition", 10),
             array('columnDefault', "Column\nDefault", 8),
             array('isNullable', "Is\nNullable", 9),
             array('dataType', "Data\nType", 8),
@@ -125,9 +125,9 @@ class TextUi
 
     /**
      * Render constraints
-     * 
+     *
      * @param  \Zend\Db\Metadata\ConstraintCollection $constraints
-     * @return string 
+     * @return string
      */
     public function renderConstraints(\Zend\Db\Metadata\ConstraintCollection $constraints)
     {

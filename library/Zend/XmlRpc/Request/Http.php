@@ -1,27 +1,17 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_XmlRpc
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_XmlRpc
  */
 
 namespace Zend\XmlRpc\Request;
 
-use Zend\XmlRpc\Request as XmlRpcRequest;
 use Zend\XmlRpc\Fault;
+use Zend\XmlRpc\Request as XmlRpcRequest;
 
 /**
  * XmlRpc Request object -- Request via HTTP
@@ -32,8 +22,6 @@ use Zend\XmlRpc\Fault;
  *
  * @category   Zend
  * @package    Zend_XmlRpc
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Http extends XmlRpcRequest
 {
@@ -41,13 +29,13 @@ class Http extends XmlRpcRequest
      * Array of headers
      * @var array
      */
-    protected $_headers;
+    protected $headers;
 
     /**
      * Raw XML as received via request
      * @var string
      */
-    protected $_xml;
+    protected $xml;
 
     /**
      * Constructor
@@ -62,11 +50,11 @@ class Http extends XmlRpcRequest
     {
         $xml = @file_get_contents('php://input');
         if (!$xml) {
-            $this->_fault = new Fault(630);
+            $this->fault = new Fault(630);
             return;
         }
 
-        $this->_xml = $xml;
+        $this->xml = $xml;
 
         $this->loadXml($xml);
     }
@@ -78,7 +66,7 @@ class Http extends XmlRpcRequest
      */
     public function getRawRequest()
     {
-        return $this->_xml;
+        return $this->xml;
     }
 
     /**
@@ -90,17 +78,17 @@ class Http extends XmlRpcRequest
      */
     public function getHeaders()
     {
-        if (null === $this->_headers) {
-            $this->_headers = array();
+        if (null === $this->headers) {
+            $this->headers = array();
             foreach ($_SERVER as $key => $value) {
                 if ('HTTP_' == substr($key, 0, 5)) {
                     $header = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($key, 5)))));
-                    $this->_headers[$header] = $value;
+                    $this->headers[$header] = $value;
                 }
             }
         }
 
-        return $this->_headers;
+        return $this->headers;
     }
 
     /**
@@ -115,7 +103,7 @@ class Http extends XmlRpcRequest
             $request .= $key . ': ' . $value . "\n";
         }
 
-        $request .= $this->_xml;
+        $request .= $this->xml;
 
         return $request;
     }

@@ -1,30 +1,19 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Soap
- * @subpackage Server
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Soap
  */
 
 namespace Zend\Soap\Server;
 
-use ReflectionClass,
-    ReflectionObject,
-    Zend\Soap\Exception\UnexpectedValueException,
-    Zend\Soap\Exception\BadMethodCallException;
+use ReflectionClass;
+use ReflectionObject;
+use Zend\Soap\Exception\BadMethodCallException;
+use Zend\Soap\Exception\UnexpectedValueException;
 
 /**
  * Wraps WSDL Document/Literal Style service objects to hide SOAP request
@@ -82,20 +71,18 @@ use ReflectionClass,
  * @category   Zend
  * @package    Zend_Soap
  * @subpackage Server
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class DocumentLiteralWrapper
 {
     /**
      * @var object
      */
-    protected $_object;
+    protected $object;
 
     /**
      * @var ReflectionObject
      */
-    protected $_reflection;
+    protected $reflection;
 
     /**
      * Pass Service object to the constructor
@@ -104,8 +91,8 @@ class DocumentLiteralWrapper
      */
     public function __construct($object)
     {
-        $this->_object = $object;
-        $this->_reflection = new ReflectionObject($this->_object);
+        $this->object = $object;
+        $this->reflection = new ReflectionObject($this->object);
     }
 
     /**
@@ -121,7 +108,7 @@ class DocumentLiteralWrapper
         $this->_assertServiceDelegateHasMethod($method);
 
         $delegateArgs = $this->_parseArguments($method, $args[0]);
-        $ret = call_user_func_array(array($this->_object, $method), $delegateArgs);
+        $ret = call_user_func_array(array($this->object, $method), $delegateArgs);
         return $this->_getResultMessage($method, $ret);
     }
 
@@ -135,7 +122,7 @@ class DocumentLiteralWrapper
      */
     protected function _parseArguments($method, $document)
     {
-        $reflMethod = $this->_reflection->getMethod($method);
+        $reflMethod = $this->reflection->getMethod($method);
         $params = array();
         foreach ($reflMethod->getParameters() as $param) {
             $params[$param->getName()] = $param;
@@ -145,8 +132,8 @@ class DocumentLiteralWrapper
         foreach (get_object_vars($document) as $argName => $argValue) {
             if (!isset($params[$argName])) {
                 throw new UnexpectedValueException(sprintf(
-                    "Recieved unknown argument %s which is not an argument to %s::%s",
-                    get_class($this->_object), $method
+                    "Received unknown argument %s which is not an argument to %s::%s",
+                    get_class($this->object), $method
                 ));
             }
             $delegateArgs[$params[$argName]->getPosition()] = $argValue;
@@ -161,10 +148,10 @@ class DocumentLiteralWrapper
 
     protected function _assertServiceDelegateHasMethod($method)
     {
-        if ( !$this->_reflection->hasMethod($method) ) {
+        if ( !$this->reflection->hasMethod($method) ) {
             throw new BadMethodCallException(sprintf(
                 "Method %s does not exist on delegate object %s",
-                $method, get_class($this->_object)
+                $method, get_class($this->object)
             ));
         }
     }

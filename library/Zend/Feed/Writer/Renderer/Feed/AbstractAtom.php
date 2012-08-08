@@ -1,21 +1,11 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Feed_Writer
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Feed
  */
 
 namespace Zend\Feed\Writer\Renderer\Feed;
@@ -25,19 +15,18 @@ use DOMDocument;
 use DOMElement;
 use Zend\Feed\Writer;
 use Zend\Feed\Writer\Renderer;
+use Zend\Version\Version;
 
 /**
 * @category Zend
 * @package Zend_Feed_Writer
-* @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
-* @license http://framework.zend.com/license/new-bsd New BSD License
 */
 class AbstractAtom extends Renderer\AbstractRenderer
 {
     /**
      * Constructor
-     * 
-     * @param  Zend_Feed_Writer_Feed $container 
+     *
+     * @param  Zend_Feed_Writer_Feed $container
      * @return void
      */
     public function __construct ($container)
@@ -47,9 +36,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set feed language
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setLanguage(DOMDocument $dom, DOMElement $root)
@@ -62,9 +51,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set feed title
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -74,10 +63,10 @@ class AbstractAtom extends Renderer\AbstractRenderer
             $message = 'Atom 1.0 feed elements MUST contain exactly one'
             . ' atom:title element but a title has not been set';
             $exception = new Writer\Exception\InvalidArgumentException($message);
-            if (!$this->_ignoreExceptions) {
+            if (!$this->ignoreExceptions) {
                 throw $exception;
             } else {
-                $this->_exceptions[] = $exception;
+                $this->exceptions[] = $exception;
                 return;
             }
         }
@@ -91,9 +80,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set feed description
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setDescription(DOMDocument $dom, DOMElement $root)
@@ -110,9 +99,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set date feed was last modified
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -122,10 +111,10 @@ class AbstractAtom extends Renderer\AbstractRenderer
             $message = 'Atom 1.0 feed elements MUST contain exactly one'
             . ' atom:updated element but a modification date has not been set';
             $exception = new Writer\Exception\InvalidArgumentException($message);
-            if (!$this->_ignoreExceptions) {
+            if (!$this->ignoreExceptions) {
                 throw $exception;
             } else {
-                $this->_exceptions[] = $exception;
+                $this->exceptions[] = $exception;
                 return;
             }
         }
@@ -140,16 +129,16 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set feed generator string
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setGenerator(DOMDocument $dom, DOMElement $root)
     {
         if(!$this->getDataContainer()->getGenerator()) {
             $this->getDataContainer()->setGenerator('Zend_Feed_Writer',
-                \Zend\Version::VERSION, 'http://framework.zend.com');
+                Version::VERSION, 'http://framework.zend.com');
         }
 
         $gdata = $this->getDataContainer()->getGenerator();
@@ -167,9 +156,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set link to feed
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setLink(DOMDocument $dom, DOMElement $root)
@@ -186,9 +175,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set feed links
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -201,10 +190,10 @@ class AbstractAtom extends Renderer\AbstractRenderer
             . 'preferred URI for retrieving Atom Feed Documents representing '
             . 'this Atom feed but a feed link has not been set';
             $exception = new Writer\Exception\InvalidArgumentException($message);
-            if (!$this->_ignoreExceptions) {
+            if (!$this->ignoreExceptions) {
                 throw $exception;
             } else {
-                $this->_exceptions[] = $exception;
+                $this->exceptions[] = $exception;
                 return;
             }
         }
@@ -218,17 +207,17 @@ class AbstractAtom extends Renderer\AbstractRenderer
             $flink->setAttribute('href', $href);
         }
     }
-    
+
     /**
-     * Set feed authors 
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     * Set feed authors
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setAuthors(DOMDocument $dom, DOMElement $root)
     {
-        $authors = $this->_container->getAuthors();
+        $authors = $this->container->getAuthors();
         if (!$authors || empty($authors)) {
             /**
              * Technically we should defer an exception until we can check
@@ -238,20 +227,20 @@ class AbstractAtom extends Renderer\AbstractRenderer
             return;
         }
         foreach ($authors as $data) {
-            $author = $this->_dom->createElement('author');
-            $name = $this->_dom->createElement('name');
+            $author = $this->dom->createElement('author');
+            $name = $this->dom->createElement('name');
             $author->appendChild($name);
             $root->appendChild($author);
             $text = $dom->createTextNode($data['name']);
             $name->appendChild($text);
             if (array_key_exists('email', $data)) {
-                $email = $this->_dom->createElement('email');
+                $email = $this->dom->createElement('email');
                 $author->appendChild($email);
                 $text = $dom->createTextNode($data['email']);
                 $email->appendChild($text);
             }
             if (array_key_exists('uri', $data)) {
-                $uri = $this->_dom->createElement('uri');
+                $uri = $this->dom->createElement('uri');
                 $author->appendChild($uri);
                 $text = $dom->createTextNode($data['uri']);
                 $uri->appendChild($text);
@@ -261,9 +250,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set feed identifier
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      * @throws Writer\Exception\InvalidArgumentException
      */
@@ -276,10 +265,10 @@ class AbstractAtom extends Renderer\AbstractRenderer
             . 'value as atom:link however neither a suitable link nor an '
             . 'id have been set';
             $exception = new Writer\Exception\InvalidArgumentException($message);
-            if (!$this->_ignoreExceptions) {
+            if (!$this->ignoreExceptions) {
                 throw $exception;
             } else {
-                $this->_exceptions[] = $exception;
+                $this->exceptions[] = $exception;
                 return;
             }
         }
@@ -293,12 +282,12 @@ class AbstractAtom extends Renderer\AbstractRenderer
         $text = $dom->createTextNode($this->getDataContainer()->getId());
         $id->appendChild($text);
     }
-    
+
     /**
      * Set feed copyright
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setCopyright(DOMDocument $dom, DOMElement $root)
@@ -315,9 +304,9 @@ class AbstractAtom extends Renderer\AbstractRenderer
 
     /**
      * Set feed level logo (image)
-     * 
-     * @param DOMDocument $dom 
-     * @param DOMElement $root 
+     *
+     * @param DOMDocument $dom
+     * @param DOMElement $root
      * @return void
      */
     protected function _setImage(DOMDocument $dom, DOMElement $root)
@@ -331,12 +320,12 @@ class AbstractAtom extends Renderer\AbstractRenderer
         $text = $dom->createTextNode($image['uri']);
         $img->appendChild($text);
     }
-    
+
     /**
-     * Set date feed was created 
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     * Set date feed was created
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setDateCreated(DOMDocument $dom, DOMElement $root)
@@ -350,12 +339,12 @@ class AbstractAtom extends Renderer\AbstractRenderer
             );
         }
     }
-    
+
     /**
      * Set base URL to feed links
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setBaseUrl(DOMDocument $dom, DOMElement $root)
@@ -366,12 +355,12 @@ class AbstractAtom extends Renderer\AbstractRenderer
         }
         $root->setAttribute('xml:base', $baseUrl);
     }
-    
+
     /**
-     * Set hubs to which this feed pushes 
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     * Set hubs to which this feed pushes
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setHubs(DOMDocument $dom, DOMElement $root)
@@ -387,12 +376,12 @@ class AbstractAtom extends Renderer\AbstractRenderer
             $root->appendChild($hub);
         }
     }
-    
+
     /**
-     * Set feed cateories 
-     * 
-     * @param  DOMDocument $dom 
-     * @param  DOMElement $root 
+     * Set feed categories
+     *
+     * @param  DOMDocument $dom
+     * @param  DOMElement $root
      * @return void
      */
     protected function _setCategories(DOMDocument $dom, DOMElement $root)
