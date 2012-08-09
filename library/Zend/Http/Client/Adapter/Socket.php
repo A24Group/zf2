@@ -1,31 +1,20 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Http
- * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Http
  */
 
 namespace Zend\Http\Client\Adapter;
 
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
 use Zend\Http\Client\Adapter\AdapterInterface as HttpAdapter;
 use Zend\Http\Client\Adapter\Exception as AdapterException;
 use Zend\Http\Response;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * A sockets based (stream\socket\client) adapter class for Zend\Http\Client. Can be used
@@ -34,8 +23,6 @@ use Zend\Http\Response;
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Socket implements HttpAdapter, StreamInterface
 {
@@ -66,11 +53,13 @@ class Socket implements HttpAdapter, StreamInterface
      * @var array
      */
     protected $config = array(
-        'persistent'    => false,
-        'ssltransport'  => 'ssl',
-        'sslcert'       => null,
-        'sslpassphrase' => null,
-        'sslusecontext' => false
+        'persistent'            => false,
+        'ssltransport'          => 'ssl',
+        'sslcert'               => null,
+        'sslpassphrase'         => null,
+        'sslverifypeer'         => true,
+        'sslallowselfsigned'    => false,
+        'sslusecontext'         => false
     );
 
     /**
@@ -85,7 +74,7 @@ class Socket implements HttpAdapter, StreamInterface
      *
      * @var resource
      */
-    protected $_context = null;
+    protected $context = null;
 
     /**
      * Adapter constructor, currently empty. Config is set using setOptions()
@@ -142,10 +131,10 @@ class Socket implements HttpAdapter, StreamInterface
     public function setStreamContext($context)
     {
         if (is_resource($context) && get_resource_type($context) == 'stream-context') {
-            $this->_context = $context;
+            $this->context = $context;
 
         } elseif (is_array($context)) {
-            $this->_context = stream_context_create($context);
+            $this->context = stream_context_create($context);
 
         } else {
             // Invalid parameter
@@ -166,11 +155,11 @@ class Socket implements HttpAdapter, StreamInterface
      */
     public function getStreamContext()
     {
-        if (! $this->_context) {
-            $this->_context = stream_context_create();
+        if (! $this->context) {
+            $this->context = stream_context_create();
         }
 
-        return $this->_context;
+        return $this->context;
     }
 
     /**
@@ -195,6 +184,18 @@ class Socket implements HttpAdapter, StreamInterface
         if (! is_resource($this->socket) || ! $this->config['keepalive']) {
             $context = $this->getStreamContext();
             if ($secure || $this->config['sslusecontext']) {
+                if ($this->config['sslverifypeer'] !== null) {
+                    if (! stream_context_set_option($context, 'ssl', 'verify_peer',
+                                                    $this->config['sslverifypeer'])) {
+                        throw new AdapterException\RuntimeException('Unable to set sslverifypeer option');
+                    }
+                    if ($this->config['sslallowselfsigned'] !== null) {
+                        if (! stream_context_set_option($context, 'ssl', 'allow_self_signed',
+                                                        $this->config['sslallowselfsigned'])) {
+                            throw new AdapterException\RuntimeException('Unable to set sslallowselfsigned option');
+                        }
+                    }
+                }
                 if ($this->config['sslcert'] !== null) {
                     if (! stream_context_set_option($context, 'ssl', 'local_cert',
                                                     $this->config['sslcert'])) {
@@ -305,7 +306,7 @@ class Socket implements HttpAdapter, StreamInterface
         $response = '';
         $gotStatus = false;
 
-        while (($line = @fgets($this->socket)) !== false) {
+        while (($line = fgets($this->socket)) !== false) {
             $gotStatus = $gotStatus || (strpos($line, 'HTTP') !== false);
             if ($gotStatus) {
                 $response .= $line;
@@ -348,7 +349,7 @@ class Socket implements HttpAdapter, StreamInterface
             if (strtolower($transfer_encoding->getFieldValue()) == 'chunked') {
 
                 do {
-                    $line  = @fgets($this->socket);
+                    $line  = fgets($this->socket);
                     $this->_checkSocketReadTimeout();
 
                     $chunk = $line;
@@ -377,7 +378,7 @@ class Socket implements HttpAdapter, StreamInterface
                               break;
                              }
                         } else {
-                            $line = @fread($this->socket, $read_to - $current_pos);
+                            $line = fread($this->socket, $read_to - $current_pos);
                             if ($line === false || strlen($line) === 0) {
                                 $this->_checkSocketReadTimeout();
                                 break;
@@ -422,12 +423,12 @@ class Socket implements HttpAdapter, StreamInterface
                  $current_pos = ftell($this->socket)) {
 
                  if ($this->out_stream) {
-                     if (@stream_copy_to_stream($this->socket, $this->out_stream, $read_to - $current_pos) == 0) {
+                     if (stream_copy_to_stream($this->socket, $this->out_stream, $read_to - $current_pos) == 0) {
                           $this->_checkSocketReadTimeout();
                           break;
                      }
                  } else {
-                    $chunk = @fread($this->socket, $read_to - $current_pos);
+                    $chunk = fread($this->socket, $read_to - $current_pos);
                     if ($chunk === false || strlen($chunk) === 0) {
                         $this->_checkSocketReadTimeout();
                         break;
@@ -445,12 +446,12 @@ class Socket implements HttpAdapter, StreamInterface
 
             do {
                 if ($this->out_stream) {
-                    if (@stream_copy_to_stream($this->socket, $this->out_stream) == 0) {
+                    if (stream_copy_to_stream($this->socket, $this->out_stream) == 0) {
                           $this->_checkSocketReadTimeout();
                           break;
                      }
                 } else {
-                    $buff = @fread($this->socket, 8192);
+                    $buff = fread($this->socket, 8192);
                     if ($buff === false || strlen($buff) === 0) {
                         $this->_checkSocketReadTimeout();
                         break;

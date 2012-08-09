@@ -1,21 +1,11 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Validator
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Validator
  */
 
 namespace Zend\Validator;
@@ -32,8 +22,6 @@ namespace Zend\Validator;
  *
  * @category   Zend
  * @package    Zend_Validator
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Hostname extends AbstractValidator
 {
@@ -112,7 +100,7 @@ class Hostname extends AbstractValidator
      * Array for valid Idns
      * @see http://www.iana.org/domains/idn-tables/ Official list of supported IDN Chars
      * (.AC) Ascension Island http://www.nic.ac/pdf/AC-IDN-Policy.pdf
-     * (.AR) Argentinia http://www.nic.ar/faqidn.html
+     * (.AR) Argentina http://www.nic.ar/faqidn.html
      * (.AS) American Samoa http://www.nic.as/idn/chars.cfm
      * (.AT) Austria http://www.nic.at/en/service/technical_information/idn/charset_converter/
      * (.BIZ) International http://www.iana.org/domains/idn-tables/

@@ -1,29 +1,18 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Http
- * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Http
  */
 
 namespace Zend\Http\Client\Adapter;
 
 use Traversable;
-use Zend\Stdlib\ArrayUtils;
 use Zend\Http\Response;
+use Zend\Stdlib\ArrayUtils;
 
 /**
  * A testing-purposes adapter.
@@ -36,8 +25,6 @@ use Zend\Http\Response;
  * @category   Zend
  * @package    Zend_Http
  * @subpackage Client_Adapter
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Test implements AdapterInterface
 {
@@ -64,11 +51,11 @@ class Test implements AdapterInterface
     protected $responseIndex = 0;
 
     /**
-     * Wether or not the next request will fail with an exception
+     * Whether or not the next request will fail with an exception
      *
      * @var boolean
      */
-    protected $_nextRequestWillFail = false;
+    protected $nextRequestWillFail = false;
 
     /**
      * Adapter constructor, currently empty. Config is set using setOptions()
@@ -84,7 +71,7 @@ class Test implements AdapterInterface
      */
     public function setNextRequestWillFail($flag)
     {
-        $this->_nextRequestWillFail = (bool) $flag;
+        $this->nextRequestWillFail = (bool) $flag;
 
         return $this;
     }
@@ -123,8 +110,8 @@ class Test implements AdapterInterface
      */
     public function connect($host, $port = 80, $secure = false)
     {
-        if ($this->_nextRequestWillFail) {
-            $this->_nextRequestWillFail = false;
+        if ($this->nextRequestWillFail) {
+            $this->nextRequestWillFail = false;
             throw new Exception\RuntimeException('Request failed');
         }
     }
