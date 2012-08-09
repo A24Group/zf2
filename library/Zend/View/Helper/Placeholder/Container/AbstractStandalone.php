@@ -1,36 +1,23 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_View
- * @subpackage Helper
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_View
  */
 
 namespace Zend\View\Helper\Placeholder\Container;
 
-use Zend\View\Helper\Placeholder\Registry;
 use Zend\View\Exception;
+use Zend\View\Helper\Placeholder\Registry;
 
 /**
- * Base class for targetted placeholder helpers
+ * Base class for targeted placeholder helpers
  *
  * @package    Zend_View
  * @subpackage Helper
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 abstract class AbstractStandalone
     extends \Zend\View\Helper\AbstractHelper
@@ -39,25 +26,25 @@ abstract class AbstractStandalone
     /**
      * @var \Zend\View\Helper\Placeholder\Container\AbstractContainer
      */
-    protected $_container;
+    protected $container;
 
     /**
      * @var \Zend\View\Helper\Placeholder\Registry
      */
-    protected $_registry;
+    protected $registry;
 
     /**
      * Registry key under which container registers itself
      * @var string
      */
-    protected $_regKey;
+    protected $regKey;
 
     /**
-     * Flag wheter to automatically escape output, must also be
-     * enforced in the child class if __toString/toString is overriden
+     * Flag whether to automatically escape output, must also be
+     * enforced in the child class if __toString/toString is overridden
      * @var book
      */
-    protected $_autoEscape = true;
+    protected $autoEscape = true;
 
     /**
      * Constructor
@@ -67,7 +54,7 @@ abstract class AbstractStandalone
     public function __construct()
     {
         $this->setRegistry(Registry::getRegistry());
-        $this->setContainer($this->getRegistry()->getContainer($this->_regKey));
+        $this->setContainer($this->getRegistry()->getContainer($this->regKey));
     }
 
     /**
@@ -77,7 +64,7 @@ abstract class AbstractStandalone
      */
     public function getRegistry()
     {
-        return $this->_registry;
+        return $this->registry;
     }
 
     /**
@@ -88,7 +75,7 @@ abstract class AbstractStandalone
      */
     public function setRegistry(Registry $registry)
     {
-        $this->_registry = $registry;
+        $this->registry = $registry;
         return $this;
     }
 
@@ -100,7 +87,7 @@ abstract class AbstractStandalone
      */
     public function setAutoEscape($autoEscape = true)
     {
-        $this->_autoEscape = ($autoEscape) ? true : false;
+        $this->autoEscape = ($autoEscape) ? true : false;
         return $this;
     }
 
@@ -111,7 +98,7 @@ abstract class AbstractStandalone
      */
     public function getAutoEscape()
     {
-        return $this->_autoEscape;
+        return $this->autoEscape;
     }
 
     /**
@@ -120,7 +107,7 @@ abstract class AbstractStandalone
      * @param  string $string
      * @return string
      */
-    protected function _escape($string)
+    protected function escape($string)
     {
         $enc = 'UTF-8';
         if ($this->view instanceof \Zend\View\Renderer\RendererInterface
@@ -149,7 +136,7 @@ abstract class AbstractStandalone
      */
     public function setContainer(AbstractContainer $container)
     {
-        $this->_container = $container;
+        $this->container = $container;
         return $this;
     }
 
@@ -160,7 +147,7 @@ abstract class AbstractStandalone
      */
     public function getContainer()
     {
-        return $this->_container;
+        return $this->container;
     }
 
     /**

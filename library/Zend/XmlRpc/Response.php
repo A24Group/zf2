@@ -1,21 +1,11 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_XmlRpc
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_XmlRpc
  */
 
 namespace Zend\XmlRpc;
@@ -27,8 +17,6 @@ namespace Zend\XmlRpc;
  *
  * @category   Zend
  * @package    Zend_XmlRpc
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Response
 {
@@ -36,25 +24,25 @@ class Response
      * Return value
      * @var mixed
      */
-    protected $_return;
+    protected $return;
 
     /**
      * Return type
      * @var string
      */
-    protected $_type;
+    protected $type;
 
     /**
      * Response character encoding
      * @var string
      */
-    protected $_encoding = 'UTF-8';
+    protected $encoding = 'UTF-8';
 
     /**
      * Fault, if response is a fault response
      * @var null|Zend\XmlRpc\Fault
      */
-    protected $_fault = null;
+    protected $fault = null;
 
     /**
      * Constructor
@@ -79,7 +67,7 @@ class Response
      */
     public function setEncoding($encoding)
     {
-        $this->_encoding = $encoding;
+        $this->encoding = $encoding;
         AbstractValue::setEncoding($encoding);
         return $this;
     }
@@ -91,7 +79,7 @@ class Response
      */
     public function getEncoding()
     {
-        return $this->_encoding;
+        return $this->encoding;
     }
 
     /**
@@ -105,8 +93,8 @@ class Response
      */
     public function setReturnValue($value, $type = null)
     {
-        $this->_return = $value;
-        $this->_type = (string) $type;
+        $this->return = $value;
+        $this->type = (string) $type;
     }
 
     /**
@@ -116,7 +104,7 @@ class Response
      */
     public function getReturnValue()
     {
-        return $this->_return;
+        return $this->return;
     }
 
     /**
@@ -126,7 +114,7 @@ class Response
      */
     protected function _getXmlRpcReturn()
     {
-        return AbstractValue::getXmlRpcValue($this->_return);
+        return AbstractValue::getXmlRpcValue($this->return);
     }
 
     /**
@@ -136,7 +124,7 @@ class Response
      */
     public function isFault()
     {
-        return $this->_fault instanceof Fault;
+        return $this->fault instanceof Fault;
     }
 
     /**
@@ -146,7 +134,7 @@ class Response
      */
     public function getFault()
     {
-        return $this->_fault;
+        return $this->fault;
     }
 
     /**
@@ -162,8 +150,8 @@ class Response
     public function loadXml($response)
     {
         if (!is_string($response)) {
-            $this->_fault = new Fault(650);
-            $this->_fault->setEncoding($this->getEncoding());
+            $this->fault = new Fault(650);
+            $this->fault->setEncoding($this->getEncoding());
             return false;
         }
 
@@ -178,23 +166,23 @@ class Response
             libxml_disable_entity_loader($loadEntities);
             libxml_use_internal_errors($useInternalXmlErrors);
             // Not valid XML
-            $this->_fault = new Fault(651);
-            $this->_fault->setEncoding($this->getEncoding());
+            $this->fault = new Fault(651);
+            $this->fault->setEncoding($this->getEncoding());
             return false;
         }
 
         if (!empty($xml->fault)) {
             // fault response
-            $this->_fault = new Fault();
-            $this->_fault->setEncoding($this->getEncoding());
-            $this->_fault->loadXml($response);
+            $this->fault = new Fault();
+            $this->fault->setEncoding($this->getEncoding());
+            $this->fault->loadXml($response);
             return false;
         }
 
         if (empty($xml->params)) {
             // Invalid response
-            $this->_fault = new Fault(652);
-            $this->_fault->setEncoding($this->getEncoding());
+            $this->fault = new Fault(652);
+            $this->fault->setEncoding($this->getEncoding());
             return false;
         }
 
@@ -205,8 +193,8 @@ class Response
             $valueXml = $xml->params->param->value->asXML();
             $value = AbstractValue::getXmlRpcValue($valueXml, AbstractValue::XML_STRING);
         } catch (Exception\ValueException $e) {
-            $this->_fault = new Fault(653);
-            $this->_fault->setEncoding($this->getEncoding());
+            $this->fault = new Fault(653);
+            $this->fault->setEncoding($this->getEncoding());
             return false;
         }
 

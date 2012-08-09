@@ -13,8 +13,6 @@ namespace Zend\Paginator\Adapter;
 /**
  * @category   Zend
  * @package    Zend_Paginator
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class DbTableSelect extends DbSelect
 {
@@ -27,8 +25,8 @@ class DbTableSelect extends DbSelect
      */
     public function getItems($offset, $itemCountPerPage)
     {
-        $this->_select->limit($itemCountPerPage, $offset);
+        $this->select->limit($itemCountPerPage, $offset);
 
-        return $this->_select->getTable()->fetchAll($this->_select);
+        return $this->select->getTable()->fetchAll($this->select);
     }
 }

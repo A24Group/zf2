@@ -1,22 +1,11 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
- * @category   Zend
- * @package    Zend_Mail
- * @subpackage Protocol
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
+ * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @license   http://framework.zend.com/license/new-bsd New BSD License
+ * @package   Zend_Mail
  */
 
 namespace Zend\Mail\Protocol;
@@ -25,8 +14,6 @@ namespace Zend\Mail\Protocol;
  * @category   Zend
  * @package    Zend_Mail
  * @subpackage Protocol
- * @copyright  Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
 class Imap
 {
@@ -39,13 +26,13 @@ class Imap
      * socket to imap server
      * @var resource|null
      */
-    protected $_socket;
+    protected $socket;
 
     /**
      * counter for request tag
      * @var int
      */
-    protected $_tagCount = 0;
+    protected $tagCount = 0;
 
     /**
      * Public constructor
@@ -55,7 +42,7 @@ class Imap
      * @param  bool     $ssl   use ssl? 'SSL', 'TLS' or false
      * @throws \Zend\Mail\Protocol\Exception\ExceptionInterface
      */
-    function __construct($host = '', $port = null, $ssl = false)
+    public function __construct($host = '', $port = null, $ssl = false)
     {
         if ($host) {
             $this->connect($host, $port, $ssl);
@@ -91,8 +78,8 @@ class Imap
 
         $errno  =  0;
         $errstr = '';
-        $this->_socket = @fsockopen($host, $port, $errno, $errstr, self::TIMEOUT_CONNECTION);
-        if (!$this->_socket) {
+        $this->socket = @fsockopen($host, $port, $errno, $errstr, self::TIMEOUT_CONNECTION);
+        if (!$this->socket) {
             throw new Exception\RuntimeException('cannot connect to host; error = ' . $errstr .
                                                    ' (errno = ' . $errno . ' )');
         }
@@ -103,7 +90,7 @@ class Imap
 
         if ($ssl === 'TLS') {
             $result = $this->requestAndResponse('STARTTLS');
-            $result = $result && stream_socket_enable_crypto($this->_socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
+            $result = $result && stream_socket_enable_crypto($this->socket, true, STREAM_CRYPTO_METHOD_TLS_CLIENT);
             if (!$result) {
                 throw new Exception\RuntimeException('cannot enable TLS');
             }
@@ -118,7 +105,7 @@ class Imap
      */
     protected function _nextLine()
     {
-        $line = @fgets($this->_socket);
+        $line = fgets($this->socket);
         if ($line === false) {
             throw new Exception\RuntimeException('cannot read - connection closed?');
         }
@@ -314,15 +301,15 @@ class Imap
     public function sendRequest($command, $tokens = array(), &$tag = null)
     {
         if (!$tag) {
-            ++$this->_tagCount;
-            $tag = 'TAG' . $this->_tagCount;
+            ++$this->tagCount;
+            $tag = 'TAG' . $this->tagCount;
         }
 
         $line = $tag . ' ' . $command;
 
         foreach ($tokens as $token) {
             if (is_array($token)) {
-                if (@fwrite($this->_socket, $line . ' ' . $token[0] . "\r\n") === false) {
+                if (fwrite($this->socket, $line . ' ' . $token[0] . "\r\n") === false) {
                     throw new Exception\RuntimeException('cannot write - connection closed?');
                 }
                 if (!$this->_assumedNextLine('+ ')) {
@@ -334,7 +321,7 @@ class Imap
             }
         }
 
-        if (@fwrite($this->_socket, $line . "\r\n") === false) {
+        if (fwrite($this->socket, $line . "\r\n") === false) {
             throw new Exception\RuntimeException('cannot write - connection closed?');
         }
     }
@@ -419,14 +406,14 @@ class Imap
     public function logout()
     {
         $result = false;
-        if ($this->_socket) {
+        if ($this->socket) {
             try {
                 $result = $this->requestAndResponse('LOGOUT', array(), true);
             } catch (Exception\ExceptionInterface $e) {
                 // ignoring exception
             }
-            fclose($this->_socket);
-            $this->_socket = null;
+            fclose($this->socket);
+            $this->socket = null;
         }
         return $result;
     }
@@ -537,9 +524,9 @@ class Imap
     {
         if (is_array($from)) {
             $set = implode(',', $from);
-        } else if ($to === null) {
+        } elseif ($to === null) {
             $set = (int)$from;
-        } else if ($to === INF) {
+        } elseif ($to === INF) {
             $set = (int)$from . ':*';
         } else {
             $set = (int)$from . ':' . (int)$to;
@@ -635,7 +622,7 @@ class Imap
      * @param  array       $flags  flags to set, add or remove - see $mode
      * @param  int         $from   message for items or start message if $to !== null
      * @param  int|null    $to     if null only one message ($from) is fetched, else it's the
-     *                             last message, INF means last message avaible
+     *                             last message, INF means last message available
      * @param  string|null $mode   '+' to add flags, '-' to remove flags, everything else sets the flags as given
      * @param  bool        $silent if false the return values are the new flags for the wanted messages
      * @return bool|array new flags if $silent is false, else true or false depending on success
