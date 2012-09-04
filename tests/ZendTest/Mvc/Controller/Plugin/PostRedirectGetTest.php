@@ -81,6 +81,7 @@ class PostRedirectGetTest extends TestCase
         $this->assertInstanceOf('Zend\Http\Response', $prgResultUrl);
         $this->assertTrue($prgResultUrl->getHeaders()->has('Location'));
         $this->assertEquals('/test/getPage', $prgResultUrl->getHeaders()->get('Location')->getUri());
+        $this->assertEquals(303, $prgResultUrl->getStatusCode());
     }
 
     public function testRedirectsToRouteOnPost()
@@ -96,6 +97,7 @@ class PostRedirectGetTest extends TestCase
         $this->assertInstanceOf('Zend\Http\Response', $prgResultRoute);
         $this->assertTrue($prgResultRoute->getHeaders()->has('Location'));
         $this->assertEquals('/', $prgResultRoute->getHeaders()->get('Location')->getUri());
+        $this->assertEquals(303, $prgResultRoute->getStatusCode());
     }
 
     /**
@@ -113,5 +115,24 @@ class PostRedirectGetTest extends TestCase
 
         $result = $this->controller->dispatch($this->request, $this->response);
         $this->controller->prg('some/route');
+    }
+
+    public function testNullRouteUsesMatchedRouteName()
+    {
+        $this->controller->getEvent()->getRouteMatch()->setMatchedRouteName('home');
+
+        $this->request->setMethod('POST');
+        $this->request->setPost(new Parameters(array(
+            'postval1' => 'value1'
+        )));
+
+
+        $result         = $this->controller->dispatch($this->request, $this->response);
+        $prgResultRoute = $this->controller->prg();
+
+        $this->assertInstanceOf('Zend\Http\Response', $prgResultRoute);
+        $this->assertTrue($prgResultRoute->getHeaders()->has('Location'));
+        $this->assertEquals('/', $prgResultRoute->getHeaders()->get('Location')->getUri());
+        $this->assertEquals(303, $prgResultRoute->getStatusCode());
     }
 }
