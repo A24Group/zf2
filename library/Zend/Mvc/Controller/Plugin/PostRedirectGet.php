@@ -23,10 +23,14 @@ use Zend\Session\Container;
  */
 class PostRedirectGet extends AbstractPlugin
 {
-    public function __invoke($redirect, $redirectToUrl = false)
+    public function __invoke($redirect = null, $redirectToUrl = false)
     {
         $controller = $this->getController();
-        $request = $controller->getRequest();
+        $request    = $controller->getRequest();
+
+        if (null === $redirect) {
+            $redirect = $controller->getEvent()->getRouteMatch()->getMatchedRouteName();
+        }
 
         $container = new Container('prg_post1');
 
@@ -51,10 +55,14 @@ class PostRedirectGet extends AbstractPlugin
             }
 
             if ($redirectToUrl === false) {
-                return $redirector->toRoute($redirect);
+                $response = $redirector->toRoute($redirect);
+                $response->setStatusCode(303);
+                return $response;
             }
 
-            return $redirector->toUrl($redirect);
+            $response = $redirector->toUrl($redirect);
+            $response->setStatusCode(303);
+            return $response;
         } else {
             if ($container->post !== null) {
                 $post = $container->post;
