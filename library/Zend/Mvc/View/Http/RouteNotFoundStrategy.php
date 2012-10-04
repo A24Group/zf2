@@ -60,7 +60,7 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
 
     /**
      * The not found message to be passed along to the view strategy and renderer via the ViewModel.
-     * 
+     *
      * @var string
      */
     protected $notFoundMessage = "";
@@ -235,8 +235,20 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
             return;
         }
 
-        $model = new ViewModel();
-        $model->setVariable('message', $this->getNotFoundMessage());
+        if (!$vars instanceof ViewModel) {
+            $model = new ViewModel();
+            if (is_string($vars)) {
+                $model->setVariable('message', $vars);
+            } else {
+                $model->setVariable('message', 'Page not found.');
+            }
+        } else {
+            $model = $vars;
+            if ($model->getVariable('message') === null) {
+                $model->setVariable('message', 'Page not found.');
+            }
+        }
+
         $model->setTemplate($this->getNotFoundTemplate());
 
         // If displaying reasons, inject the reason
