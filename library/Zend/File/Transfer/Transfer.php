@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_File
  */
 
 namespace Zend\File\Transfer;
@@ -13,8 +12,6 @@ namespace Zend\File\Transfer;
 /**
  * Base class for all protocols supporting file transfers
  *
- * @category  Zend
- * @package   Zend_File_Transfer
  */
 class Transfer
 {
@@ -29,7 +26,7 @@ class Transfer
      * Creates a file processing handler
      *
      * @param  string  $adapter   Adapter to use
-     * @param  boolean $direction OPTIONAL False means Download, true means upload
+     * @param  bool $direction OPTIONAL False means Download, true means upload
      * @param  array   $options   OPTIONAL Options to set for this adapter
      * @throws Exception\InvalidArgumentException
      */
@@ -42,7 +39,7 @@ class Transfer
      * Sets a new adapter
      *
      * @param  string  $adapter   Adapter to use
-     * @param  boolean $direction OPTIONAL False means Download, true means upload
+     * @param  bool $direction OPTIONAL False means Download, true means upload
      * @param  array   $options   OPTIONAL Options to set for this adapter
      * @return Transfer
      * @throws Exception\InvalidArgumentException
@@ -71,7 +68,7 @@ class Transfer
     /**
      * Returns all set adapters
      *
-     * @param boolean $direction On null, all directions are returned
+     * @param  bool $direction On null, all directions are returned
      *                           On false, download direction is returned
      *                           On true, upload direction is returned
      * @return array|Adapter\AbstractAdapter

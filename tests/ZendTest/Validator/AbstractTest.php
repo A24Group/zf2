@@ -3,13 +3,14 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Validator
  */
 
 namespace ZendTest\Validator;
 
+use ReflectionMethod;
 use Zend\I18n\Translator\Translator;
 use Zend\Validator\AbstractValidator;
 
@@ -27,7 +28,7 @@ class AbstractTest extends \PHPUnit_Framework_TestCase
     /**
      * Whether an error occurred
      *
-     * @var boolean
+     * @var bool
      */
     protected $errorOccurred = false;
 
@@ -225,6 +226,17 @@ class AbstractTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('foo', AbstractValidator::getDefaultTranslatorTextDomain());
         $this->assertEquals('foo', $this->validator->getTranslatorTextDomain());
         $this->assertTrue(AbstractValidator::hasDefaultTranslator());
+    }
+
+    public function testMessageCreationWithNestedArrayValueDoesNotRaiseNotice()
+    {
+        $r = new ReflectionMethod($this->validator, 'createMessage');
+        $r->setAccessible(true);
+
+        $message = $r->invoke($this->validator, 'fooMessage', array('foo' => array('bar' => 'baz')));
+        $this->assertContains('foo', $message);
+        $this->assertContains('bar', $message);
+        $this->assertContains('baz', $message);
     }
 
     /**

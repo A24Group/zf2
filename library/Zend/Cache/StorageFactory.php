@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Cache
  */
 
 namespace Zend\Cache;
@@ -13,12 +12,7 @@ namespace Zend\Cache;
 use Traversable;
 use Zend\Stdlib\ArrayUtils;
 
-/**
- * @category   Zend
- * @package    Zend_Cache
- * @subpackage Storage
- */
-class StorageFactory
+abstract class StorageFactory
 {
     /**
      * Plugin manager for loading adapters
@@ -73,7 +67,7 @@ class StorageFactory
             $adapterOptions = array_merge($adapterOptions, $cfg['options']);
         }
 
-        $adapter = static::adapterFactory((string)$adapterName, $adapterOptions);
+        $adapter = static::adapterFactory((string) $adapterName, $adapterOptions);
 
         // add plugins
         if (isset($cfg['plugins'])) {

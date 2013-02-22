@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_View
  */
@@ -439,6 +439,28 @@ class NavigationTest extends AbstractTest
         $render = $this->_helper->menu()->render($container);
 
         $this->assertTrue(strpos($render, 'p2') !== false);
+    }
+
+    public function testMultipleNavigations()
+    {
+        $sm   = new ServiceManager();
+        $nav1 = new Container();
+        $nav2 = new Container();
+        $sm->setService('nav1', $nav1);
+        $sm->setService('nav2', $nav2);
+
+        $helper = new Navigation();
+        $helper->setServiceLocator($sm);
+
+        $menu     = $helper('nav1')->menu();
+        $actual   = spl_object_hash($nav1);
+        $expected = spl_object_hash($menu->getContainer());
+        $this->assertEquals($expected, $actual);
+
+        $menu     = $helper('nav2')->menu();
+        $actual   = spl_object_hash($nav2);
+        $expected = spl_object_hash($menu->getContainer());
+        $this->assertEquals($expected, $actual);
     }
 
     /**

@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Mail
  */
 
 namespace Zend\Mail\Storage;
@@ -13,11 +12,6 @@ namespace Zend\Mail\Storage;
 use Zend\Mail;
 use Zend\Stdlib\ErrorHandler;
 
-/**
- * @category   Zend
- * @package    Zend_Mail
- * @subpackage Storage
- */
 class Maildir extends AbstractStorage
 {
     /**
@@ -221,7 +215,7 @@ class Maildir extends AbstractStorage
     public function __construct($params)
     {
         if (is_array($params)) {
-            $params = (object)$params;
+            $params = (object) $params;
         }
 
         if (!isset($params->dirname) || !is_dir($params->dirname)) {
@@ -291,9 +285,9 @@ class Maildir extends AbstractStorage
      *
      * @param resource $dh            dir handle used for search
      * @param string   $dirname       dirname of dir in $dh
-     * @param array    $default_flags default flags for given dir
+     * @param array    $defaultFlags default flags for given dir
      */
-    protected function _getMaildirFiles($dh, $dirname, $default_flags = array())
+    protected function _getMaildirFiles($dh, $dirname, $defaultFlags = array())
     {
         while (($entry = readdir($dh)) !== false) {
             if ($entry[0] == '.' || !is_file($dirname . $entry)) {
@@ -318,19 +312,19 @@ class Maildir extends AbstractStorage
                 $flags = '';
             }
 
-            $named_flags = $default_flags;
+            $namedFlags = $defaultFlags;
             $length = strlen($flags);
             for ($i = 0; $i < $length; ++$i) {
                 $flag = $flags[$i];
-                $named_flags[$flag] = isset(self::$knownFlags[$flag]) ? self::$knownFlags[$flag] : $flag;
+                $namedFlags[$flag] = isset(static::$knownFlags[$flag]) ? static::$knownFlags[$flag] : $flag;
             }
 
             $data = array('uniq'       => $uniq,
-                          'flags'      => $named_flags,
-                          'flaglookup' => array_flip($named_flags),
+                          'flags'      => $namedFlags,
+                          'flaglookup' => array_flip($namedFlags),
                           'filename'   => $dirname . $entry);
             if ($size !== null) {
-                $data['size'] = (int)$size;
+                $data['size'] = (int) $size;
             }
             $this->files[] = $data;
         }
@@ -351,7 +345,7 @@ class Maildir extends AbstractStorage
     /**
      * Waste some CPU cycles doing nothing.
      *
-     * @return boolean always return true
+     * @return bool always return true
      */
     public function noop()
     {

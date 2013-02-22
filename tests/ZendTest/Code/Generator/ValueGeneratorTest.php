@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Code
  */
@@ -34,7 +34,6 @@ class ValueGeneratorTest extends \PHPUnit_Framework_TestCase
         $valueGenerator = new ValueGenerator();
         $valueGenerator->setValue('foo');
         $this->assertEquals('foo', $valueGenerator->getValue());
-        //$this->assertEquals('\'foo\';', $valueGenerator->generate());
     }
 
     public function testPropertyDefaultValueCanHandleStrings()
@@ -78,11 +77,11 @@ class ValueGeneratorTest extends \PHPUnit_Framework_TestCase
                 'bar',
                 array(
                     'baz1',
-                    'baz2'
-                    )
-                ),
+                    'baz2',
+                )
+            ),
             new ValueGenerator('PHP_EOL', 'constant')
-            );
+        );
 
         $expectedSource = <<<EOS
 array(
@@ -105,8 +104,5 @@ EOS;
         $valueGenerator->setValue($targetValue);
         $generatedTargetSource = $valueGenerator->generate();
         $this->assertEquals($expectedSource, $generatedTargetSource);
-
     }
-
-
 }

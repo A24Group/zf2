@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Mvc
  */
 
 namespace Zend\Mvc\Router\Http;
@@ -18,9 +17,7 @@ use Zend\Stdlib\RequestInterface as Request;
 /**
  * Wildcard route.
  *
- * @package    Zend_Mvc_Router
- * @subpackage Http
- * @see        http://manuals.rubyonrails.com/read/chapter/65
+ * @see        http://guides.rubyonrails.org/routing.html
  */
 class Wildcard implements RouteInterface
 {
@@ -69,7 +66,7 @@ class Wildcard implements RouteInterface
     /**
      * factory(): defined by RouteInterface interface.
      *
-     * @see    Route::factory()
+     * @see    \Zend\Mvc\Router\RouteInterface::factory()
      * @param  array|Traversable $options
      * @throws \Zend\Mvc\Router\Exception\InvalidArgumentException
      * @return Wildcard
@@ -100,7 +97,7 @@ class Wildcard implements RouteInterface
     /**
      * match(): defined by RouteInterface interface.
      *
-     * @see    Route::match()
+     * @see    \Zend\Mvc\Router\RouteInterface::match()
      * @param  Request $request
      * @param  int|null $pathOffset
      * @return RouteMatch
@@ -134,7 +131,7 @@ class Wildcard implements RouteInterface
 
             for ($i = 1; $i < $count; $i += 2) {
                 if (isset($params[$i + 1])) {
-                    $matches[urldecode($params[$i])] = urldecode($params[$i + 1]);
+                    $matches[rawurldecode($params[$i])] = rawurldecode($params[$i + 1]);
                 }
             }
         } else {
@@ -144,7 +141,7 @@ class Wildcard implements RouteInterface
                 $param = explode($this->keyValueDelimiter, $param, 2);
 
                 if (isset($param[1])) {
-                    $matches[urldecode($param[0])] = urldecode($param[1]);
+                    $matches[rawurldecode($param[0])] = rawurldecode($param[1]);
                 }
             }
         }
@@ -155,7 +152,7 @@ class Wildcard implements RouteInterface
     /**
      * assemble(): Defined by RouteInterface interface.
      *
-     * @see    Route::assemble()
+     * @see    \Zend\Mvc\Router\RouteInterface::assemble()
      * @param  array $params
      * @param  array $options
      * @return mixed
@@ -168,7 +165,7 @@ class Wildcard implements RouteInterface
 
         if ($mergedParams) {
             foreach ($mergedParams as $key => $value) {
-                $elements[] = urlencode($key) . $this->keyValueDelimiter . urlencode($value);
+                $elements[] = rawurlencode($key) . $this->keyValueDelimiter . rawurlencode($value);
 
                 $this->assembledParams[] = $key;
             }
@@ -182,7 +179,7 @@ class Wildcard implements RouteInterface
     /**
      * getAssembledParams(): defined by RouteInterface interface.
      *
-     * @see    Route::getAssembledParams
+     * @see    RouteInterface::getAssembledParams
      * @return array
      */
     public function getAssembledParams()

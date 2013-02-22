@@ -3,17 +3,14 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Soap
  */
 
 namespace Zend\Soap;
 
 use Zend\Server\Reflection;
 use Zend\Server\Reflection\AbstractFunction;
-use Zend\Server\Reflection\Prototype;
-use Zend\Server\Reflection\ReflectionParameter;
 use Zend\Soap\AutoDiscover\DiscoveryStrategy\DiscoveryStrategyInterface as DiscoveryStrategy;
 use Zend\Soap\AutoDiscover\DiscoveryStrategy\ReflectionDiscovery;
 use Zend\Soap\Wsdl;
@@ -22,10 +19,6 @@ use Zend\Uri;
 
 /**
  * \Zend\Soap\AutoDiscover
- *
- * @category   Zend
- * @package    Zend_Soap
- * @subpackage AutoDiscover
  */
 class AutoDiscover
 {
@@ -54,7 +47,7 @@ class AutoDiscover
     protected $class;
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $strategy;
 
@@ -191,7 +184,7 @@ class AutoDiscover
                                          ->getShortName();
             } else {
                 throw new Exception\RuntimeException(
-                    "No service name given. Call Autodiscover#setServiceName()."
+                    "No service name given. Call Autodiscover::setServiceName()."
                 );
             }
         }
@@ -201,7 +194,7 @@ class AutoDiscover
 
 
     /**
-     * Set the location at which the WSDL file will be availabe.
+     * Set the location at which the WSDL file will be available.
      *
      * @param  Uri\Uri|string $uri
      * @return AutoDiscover
@@ -228,7 +221,7 @@ class AutoDiscover
     public function getUri()
     {
         if ($this->uri === null) {
-            throw new Exception\RuntimeException("Missing uri. You have to explicitly configure the Endpoint Uri by calling AutoDiscover#setUri().");
+            throw new Exception\RuntimeException("Missing uri. You have to explicitly configure the Endpoint Uri by calling AutoDiscover::setUri().");
         }
         if (is_string($this->uri)) {
             $this->uri = Uri\UriFactory::factory($this->uri);
@@ -377,6 +370,7 @@ class AutoDiscover
         $uri = $this->getUri();
 
         $serviceName = $this->getServiceName();
+        /** @var Wsdl $wsdl  */
         $wsdl = new $this->wsdlClass($serviceName, $uri, $this->strategy, $this->classMap);
 
         // The wsdl:types element must precede all other elements (WS-I Basic Profile 1.1 R2023)
@@ -549,5 +543,14 @@ class AutoDiscover
     public function toXml()
     {
         return $this->generate()->toXml();
+    }
+
+    /**
+     * Handle WSDL document.
+     */
+    public function handle()
+    {
+        header('Content-Type: text/xml');
+        echo $this->toXml();
     }
 }

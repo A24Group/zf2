@@ -3,15 +3,13 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Text
  */
 
 namespace Zend\Text\Table;
 
 use Zend\ServiceManager\AbstractPluginManager;
-use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Plugin manager implementation for text table decorators
@@ -19,9 +17,6 @@ use Zend\ServiceManager\ConfigInterface;
  * Enforces that decorators retrieved are instances of
  * Decorator\DecoratorInterface. Additionally, it registers a number of default
  * decorators.
- *
- * @category   Zend
- * @package    Zend_View
  */
 class DecoratorManager extends AbstractPluginManager
 {
@@ -32,6 +27,7 @@ class DecoratorManager extends AbstractPluginManager
      */
     protected $invokableClasses = array(
         'ascii'   => 'Zend\Text\Table\Decorator\Ascii',
+        'blank'   => 'Zend\Text\Table\Decorator\Blank',
         'unicode' => 'Zend\Text\Table\Decorator\Unicode',
     );
 

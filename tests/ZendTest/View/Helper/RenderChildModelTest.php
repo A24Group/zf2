@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_View
  */
@@ -11,7 +11,6 @@
 namespace ZendTest\View\Helper;
 
 use PHPUnit_Framework_TestCase as TestCase;
-use Zend\View\Helper\RenderChildModel;
 use Zend\View\Model\ViewModel;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Resolver\TemplateMapResolver;
@@ -127,7 +126,6 @@ class RenderChildModelTest extends TestCase
         $renderer = new PhpRenderer();
         $renderer->setResolver($this->resolver);
         $this->setExpectedException('Zend\View\Exception\RuntimeException', 'no view model');
-        $this->expectOutputString("Layout start" . PHP_EOL . PHP_EOL);
         $renderer->render('layout');
     }
 }

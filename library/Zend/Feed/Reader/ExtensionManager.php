@@ -3,24 +3,19 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Feed_Reader
  */
 
 namespace Zend\Feed\Reader;
 
 use Zend\ServiceManager\AbstractPluginManager;
-use Zend\ServiceManager\ConfigInterface;
 
 /**
  * Plugin manager implementation for feed reader extensions
  *
  * Validation checks that we have an Extension\AbstractEntry or
  * Extension\AbstractFeed.
- *
- * @category   Zend
- * @package    Zend_Feed_Reader
  */
 class ExtensionManager extends AbstractPluginManager
 {
