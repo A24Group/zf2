@@ -235,11 +235,13 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
                 $model->setVariable('message', $vars);
             } else {
                 $model->setVariable('message', $this->getNotFoundMessage());
+                $this->setDisplayExceptions(false);
             }
         } else {
             $model = $vars;
             if ($model->getVariable('message') === null) {
                 $model->setVariable('message', $this->getNotFoundMessage());
+                $this->setDisplayExceptions(false);
             }
         }
 
