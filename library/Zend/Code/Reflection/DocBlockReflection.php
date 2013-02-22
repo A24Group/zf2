@@ -3,21 +3,17 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Code
  */
 
 namespace Zend\Code\Reflection;
 
-use Reflector;
-use Zend\Code\Annotation\AnnotationManager;
+use Zend\Code\Reflection\DocBlock\Tag\TagInterface as DocBlockTagInterface;
+use Zend\Code\Reflection\DocBlock\TagManager as DocBlockTagManager;
 use Zend\Code\Scanner\DocBlockScanner;
+use Reflector;
 
-/**
- * @category   Zend
- * @package    Zend_Reflection
- */
 class DocBlockReflection implements ReflectionInterface
 {
     /**
@@ -31,7 +27,7 @@ class DocBlockReflection implements ReflectionInterface
     protected $docComment = null;
 
     /**
-     * @var DocBlock\TagManager
+     * @var DocBlockTagManager
      */
     protected $tagManager = null;
 
@@ -81,16 +77,14 @@ class DocBlockReflection implements ReflectionInterface
     }
 
     /**
-     * Constructor
-     *
-     * @param  Reflector|string                               $commentOrReflector
-     * @param  null|\Zend\Code\Reflection\DocBlock\TagManager $tagManager
+     * @param  Reflector|string $commentOrReflector
+     * @param  null|DocBlockTagManager $tagManager
      * @throws Exception\InvalidArgumentException
      * @return DocBlockReflection
      */
-    public function __construct($commentOrReflector, DocBlock\TagManager $tagManager = null)
+    public function __construct($commentOrReflector, DocBlockTagManager $tagManager = null)
     {
-        $this->tagManager = $tagManager ? : new DocBlock\TagManager(DocBlock\TagManager::USE_DEFAULT_PROTOTYPES);
+        $this->tagManager = $tagManager ? : new DocBlockTagManager(DocBlockTagManager::USE_DEFAULT_PROTOTYPES);
 
         if ($commentOrReflector instanceof Reflector) {
             $this->reflector = $commentOrReflector;
@@ -108,9 +102,10 @@ class DocBlockReflection implements ReflectionInterface
         } elseif (is_string($commentOrReflector)) {
             $this->docComment = $commentOrReflector;
         } else {
-            throw new Exception\InvalidArgumentException(
-                get_called_class() . ' must have a (string) DocComment or a Reflector in the constructor'
-            );
+            throw new Exception\InvalidArgumentException(sprintf(
+                '%s must have a (string) DocComment or a Reflector in the constructor',
+                get_called_class()
+            ));
         }
 
         if ($this->docComment == '') {
@@ -128,6 +123,7 @@ class DocBlockReflection implements ReflectionInterface
     public function getContents()
     {
         $this->reflect();
+
         return $this->cleanDocComment;
     }
 
@@ -139,6 +135,7 @@ class DocBlockReflection implements ReflectionInterface
     public function getStartLine()
     {
         $this->reflect();
+
         return $this->startLine;
     }
 
@@ -150,6 +147,7 @@ class DocBlockReflection implements ReflectionInterface
     public function getEndLine()
     {
         $this->reflect();
+
         return $this->endLine;
     }
 
@@ -161,6 +159,7 @@ class DocBlockReflection implements ReflectionInterface
     public function getShortDescription()
     {
         $this->reflect();
+
         return $this->shortDescription;
     }
 
@@ -172,6 +171,7 @@ class DocBlockReflection implements ReflectionInterface
     public function getLongDescription()
     {
         $this->reflect();
+
         return $this->longDescription;
     }
 
@@ -189,6 +189,7 @@ class DocBlockReflection implements ReflectionInterface
                 return true;
             }
         }
+
         return false;
     }
 
@@ -196,7 +197,7 @@ class DocBlockReflection implements ReflectionInterface
      * Retrieve the given DocBlock tag
      *
      * @param  string $name
-     * @return DocBlock\Tag\TagInterface|false
+     * @return DocBlockTagInterface|false
      */
     public function getTag($name)
     {
@@ -213,8 +214,8 @@ class DocBlockReflection implements ReflectionInterface
     /**
      * Get all DocBlock annotation tags
      *
-     * @param string $filter
-     * @return array Array of \Zend\Code\Reflection\ReflectionDocBlockTag
+     * @param  string $filter
+     * @return DocBlockTagInterface[]
      */
     public function getTags($filter = null)
     {
@@ -229,6 +230,7 @@ class DocBlockReflection implements ReflectionInterface
                 $returnTags[] = $tag;
             }
         }
+
         return $returnTags;
     }
 
@@ -246,16 +248,18 @@ class DocBlockReflection implements ReflectionInterface
         $docComment = $this->docComment; // localize variable
 
         // create a clean docComment
-        $this->cleanDocComment = preg_replace('#[ \t]*(?:\/\*\*|\*\/|\*)?[ ]{0,1}(.*)?#', '$1', $docComment);
+        $this->cleanDocComment = preg_replace("#[ \t]*(?:/\*\*|\*/|\*)[ ]{0,1}(.*)?#", '$1', $docComment);
         $this->cleanDocComment = ltrim($this->cleanDocComment,
                                        "\r\n"); // @todo should be changed to remove first and last empty line
 
         $scanner                = new DocBlockScanner($docComment);
         $this->shortDescription = ltrim($scanner->getShortDescription());
         $this->longDescription  = ltrim($scanner->getLongDescription());
+
         foreach ($scanner->getTags() as $tag) {
             $this->tags[] = $this->tagManager->createTag(ltrim($tag['name'], '@'), ltrim($tag['value']));
         }
+
         $this->isReflected = true;
     }
 
@@ -285,5 +289,4 @@ class DocBlockReflection implements ReflectionInterface
     {
         return $this->toString();
     }
-
 }

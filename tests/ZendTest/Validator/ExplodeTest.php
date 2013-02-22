@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Validator
  */
@@ -44,7 +44,10 @@ class ExplodeTest extends \PHPUnit_Framework_TestCase
             array(array('a', 'b'),   null, false, 2, true,  array(),                   true),
             array(array('a', 'b'),   null, false, 2, false, array('X', 'X'),           false),
             array('foo',             null, false, 1, true,  array(),                   true),
-            array(1,                  ',', false, 0, true,  array(Explode::INVALID => 'Invalid'), false),
+            array(1,                  ',', false, 1, true,  array(),                   true),
+            array(null,               ',', false, 1, true,  array(),                   true),
+            array(new \stdClass(),    ',', false, 1, true,  array(),                   true),
+            array(new \ArrayObject(array('a', 'b')), null, false, 2, true,  array(),   true),
         );
     }
 
@@ -62,7 +65,6 @@ class ExplodeTest extends \PHPUnit_Framework_TestCase
             'valueDelimiter'      => $delimiter,
             'breakOnFirstFailure' => $breakOnFirst,
         ));
-        $validator->setMessage('Invalid', Explode::INVALID);
 
         $this->assertEquals($expects,  $validator->isValid($value));
         $this->assertEquals($messages, $validator->getMessages());

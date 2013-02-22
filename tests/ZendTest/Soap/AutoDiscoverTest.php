@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Soap
  */
@@ -14,7 +14,6 @@ namespace ZendTest\Soap;
 require_once 'TestAsset/commontypes.php';
 
 use Zend\Soap\AutoDiscover;
-use Zend\Soap\AutoDiscoverException;
 
 /** PHPUnit Test Case */
 
@@ -72,10 +71,11 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
         $server->setClass('\ZendTest\Soap\TestAsset\Test');
         $dom = $server->generate()->toDomDocument();
 
-        $wsdl = '<?xml version="1.0"?>'
+        $wsdl = '<?xml version="1.0" encoding="utf-8"?>'
               . '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" '
               .              'xmlns:tns="' . $scriptUri . '" '
               .              'xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" '
+              .              'xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" '
               .              'xmlns:xsd="http://www.w3.org/2001/XMLSchema" '
               .              'xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" '
               .              'xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" '
@@ -157,10 +157,11 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
         $server->setClass('\ZendTest\Soap\TestAsset\Test');
         $dom = $server->generate()->toDomDocument();
 
-        $wsdl = '<?xml version="1.0"?>'
+        $wsdl = '<?xml version="1.0" encoding="utf-8"?>'
               . '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" '
               .              'xmlns:tns="' . $scriptUri . '" '
               .              'xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" '
+              .              'xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" '
               .              'xmlns:xsd="http://www.w3.org/2001/XMLSchema" '
               .              'xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" '
               .              'xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" '
@@ -329,8 +330,8 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
 
         $name = "TestService";
 
-        $wsdl = '<?xml version="1.0"?>'.
-                '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="' . $scriptUri . '" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="' .$name. '" targetNamespace="' . $scriptUri . '">'.
+        $wsdl = '<?xml version="1.0" encoding="utf-8"?>'.
+                '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="' . $scriptUri . '" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="' .$name. '" targetNamespace="' . $scriptUri . '">'.
                 '<types><xsd:schema targetNamespace="' . $scriptUri . '"/></types>'.
                 '<portType name="' .$name. 'Port">'.
                 '<operation name="TestFunc"><documentation>Test Function</documentation><input message="tns:TestFuncIn"/><output message="tns:TestFuncOut"/></operation>'.
@@ -367,8 +368,8 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
         $dom = $server->generate()->toDomDocument();
 
         $name = "TestService";
-        $wsdl = '<?xml version="1.0"?>'.
-                '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="' . $scriptUri . '" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="' .$name. '" targetNamespace="' . $scriptUri . '">'.
+        $wsdl = '<?xml version="1.0" encoding="utf-8"?>'.
+                '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="' . $scriptUri . '" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="' .$name. '" targetNamespace="' . $scriptUri . '">'.
                 '<types>'.
                 '<xsd:schema targetNamespace="' . $scriptUri . '">'.
                 '<xsd:element name="TestFunc"><xsd:complexType><xsd:sequence><xsd:element name="who" type="xsd:string"/></xsd:sequence></xsd:complexType></xsd:element>'.
@@ -436,8 +437,8 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
 
         $name = "TestService";
 
-        $wsdl = '<?xml version="1.0"?>'.
-                '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="' . $scriptUri . '" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="' .$name. '" targetNamespace="' . $scriptUri . '">'.
+        $wsdl = '<?xml version="1.0" encoding="utf-8"?>'.
+                '<definitions xmlns="http://schemas.xmlsoap.org/wsdl/" xmlns:tns="' . $scriptUri . '" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:soap12="http://schemas.xmlsoap.org/wsdl/soap12/" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:soap-enc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" name="' .$name. '" targetNamespace="' . $scriptUri . '">'.
                 '<types><xsd:schema targetNamespace="' . $scriptUri . '"/></types>'.
                 '<portType name="' .$name. 'Port">'.
                 '<operation name="TestFunc"><documentation>Test Function</documentation><input message="tns:TestFuncIn"/><output message="tns:TestFuncOut"/></operation>'.
@@ -686,7 +687,7 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
         $wsdl = $autodiscover->toXml();
 
         $this->assertContains(
-            '<operation name="pushOneWay"><documentation>@param string $message</documentation><input message="tns:pushOneWayIn"/></operation>',
+            '<operation name="pushOneWay"><documentation>pushOneWay</documentation><input message="tns:pushOneWayIn"/></operation>',
             $wsdl
         );
     }
@@ -702,7 +703,7 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
         $wsdl = $autodiscover->toXml();
 
         $this->assertContains(
-            '<operation name="OneWay"><documentation>@param string $message</documentation><input message="tns:OneWayIn"/></operation>',
+            '<operation name="OneWay"><documentation>ZendTest\Soap\TestAsset\OneWay</documentation><input message="tns:OneWayIn"/></operation>',
             $wsdl
         );
     }
@@ -727,6 +728,23 @@ class AutoDiscoverTest extends \PHPUnit_Framework_TestCase
 
         $path = '//wsdl:types/xsd:schema/xsd:complexType[@name="Recursion"]/xsd:all/xsd:element[@name="recursion" and @type="tns:Recursion"]';
         $this->assertWsdlPathExists($wsdl, $path);
+    }
+
+    /**
+     * @runInSeparateProcess
+     */
+    public function testHandle()
+    {
+        $scriptUri = 'http://localhost/my_script.php';
+
+        $server = $this->createAutodiscoverService();
+        $server->setClass('\ZendTest\Soap\TestAsset\Test');
+
+        ob_start();
+        $server->handle();
+        $actualWsdl = ob_get_clean();
+        $this->assertNotEmpty($actualWsdl, "WSDL content was not outputted.");
+        $this->assertContains($scriptUri, $actualWsdl, "Script URL was not found in WSDL content.");
     }
 
     public function assertWsdlPathExists($xml, $path)

@@ -3,28 +3,28 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Db
  */
 
 namespace Zend\Db\Adapter\Driver\Mysqli;
 
 use Zend\Db\Adapter\Driver\ConnectionInterface;
 use Zend\Db\Adapter\Exception;
+use Zend\Db\Adapter\Profiler;
 
-/**
- * @category   Zend
- * @package    Zend_Db
- * @subpackage Adapter
- */
-class Connection implements ConnectionInterface
+class Connection implements ConnectionInterface, Profiler\ProfilerAwareInterface
 {
 
     /**
      * @var Mysqli
      */
     protected $driver = null;
+
+    /**
+     * @var Profiler\ProfilerInterface
+     */
+    protected $profiler = null;
 
     /**
      * Connection parameters
@@ -41,7 +41,7 @@ class Connection implements ConnectionInterface
     /**
      * In transaction
      *
-     * @var boolean
+     * @var bool
      */
     protected $inTransaction = false;
 
@@ -70,6 +70,24 @@ class Connection implements ConnectionInterface
     {
         $this->driver = $driver;
         return $this;
+    }
+
+    /**
+     * @param Profiler\ProfilerInterface $profiler
+     * @return Connection
+     */
+    public function setProfiler(Profiler\ProfilerInterface $profiler)
+    {
+        $this->profiler = $profiler;
+        return $this;
+    }
+
+    /**
+     * @return null|Profiler\ProfilerInterface
+     */
+    public function getProfiler()
+    {
+        return $this->profiler;
     }
 
     /**
@@ -117,7 +135,7 @@ class Connection implements ConnectionInterface
      * @param  mysqli $resource
      * @return Connection
      */
-    public function setResource(mysqli $resource)
+    public function setResource(\mysqli $resource)
     {
         $this->resource = $resource;
         return $this;
@@ -138,19 +156,19 @@ class Connection implements ConnectionInterface
      * Connect
      *
      * @throws Exception\RuntimeException
-     * @return void
+     * @return Connection
      */
     public function connect()
     {
         if ($this->resource instanceof \mysqli) {
-            return;
+            return $this;
         }
 
         // localize
         $p = $this->connectionParameters;
 
         // given a list of key names, test for existence in $p
-        $findParameterValue = function(array $names) use ($p) {
+        $findParameterValue = function (array $names) use ($p) {
             foreach ($names as $name) {
                 if (isset($p[$name])) {
                     return $p[$name];
@@ -166,7 +184,23 @@ class Connection implements ConnectionInterface
         $port     = (isset($p['port'])) ? (int) $p['port'] : null;
         $socket   = (isset($p['socket'])) ? $p['socket'] : null;
 
-        $this->resource = new \Mysqli($hostname, $username, $password, $database, $port, $socket);
+        $this->resource = new \mysqli();
+        $this->resource->init();
+
+        if (!empty($p['driver_options'])) {
+            foreach ($p['driver_options'] as $option => $value) {
+                if (is_string($option)) {
+                    $option = strtoupper($option);
+                    if (!defined($option)) {
+                        continue;
+                    }
+                    $option = constant($option);
+                }
+                $this->resource->options($option, $value);
+            }
+        }
+
+        $this->resource->real_connect($hostname, $username, $password, $database, $port, $socket);
 
         if ($this->resource->connect_error) {
             throw new Exception\RuntimeException(
@@ -180,6 +214,7 @@ class Connection implements ConnectionInterface
             $this->resource->set_charset($p['charset']);
         }
 
+        return $this;
     }
 
     /**
@@ -189,7 +224,7 @@ class Connection implements ConnectionInterface
      */
     public function isConnected()
     {
-        return ($this->resource instanceof \Mysqli);
+        return ($this->resource instanceof \mysqli);
     }
 
     /**
@@ -199,7 +234,7 @@ class Connection implements ConnectionInterface
      */
     public function disconnect()
     {
-        if ($this->resource instanceof \PDO) {
+        if ($this->resource instanceof \mysqli) {
             $this->resource->close();
         }
         unset($this->resource);
@@ -269,7 +304,15 @@ class Connection implements ConnectionInterface
             $this->connect();
         }
 
+        if ($this->profiler) {
+            $this->profiler->profilerStart($sql);
+        }
+
         $resultResource = $this->resource->query($sql);
+
+        if ($this->profiler) {
+            $this->profiler->profilerFinish($sql);
+        }
 
         // if the returnValue is something other than a mysqli_result, bypass wrapping it
         if ($resultResource === false) {

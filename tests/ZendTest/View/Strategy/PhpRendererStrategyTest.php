@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_View
  */
@@ -12,10 +12,8 @@ namespace ZendTest\View\Strategy;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\EventManager\EventManager;
-use Zend\Http\Request as HttpRequest;
 use Zend\Http\Response as HttpResponse;
 use Zend\View\Helper\Placeholder\Registry as PlaceholderRegistry;
-use Zend\View\Model\ModelInterface as Model;
 use Zend\View\Renderer\PhpRenderer;
 use Zend\View\Strategy\PhpRendererStrategy;
 use Zend\View\ViewEvent;

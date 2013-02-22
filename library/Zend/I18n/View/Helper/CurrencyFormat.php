@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_I18n
  */
 
 namespace Zend\I18n\View\Helper;
@@ -15,11 +14,7 @@ use NumberFormatter;
 use Zend\View\Helper\AbstractHelper;
 
 /**
- * View helper for formatting dates.
- *
- * @category   Zend
- * @package    Zend_I18n
- * @subpackage View
+ * View helper for formatting currency.
  */
 class CurrencyFormat extends AbstractHelper
 {
@@ -36,6 +31,13 @@ class CurrencyFormat extends AbstractHelper
      * @var string
      */
     protected $currencyCode;
+
+    /**
+     * If set to true, the currency will be returned with two decimals
+     *
+     * @var bool
+     */
+    protected $showDecimals = true;
 
     /**
      * Formatter instances.
@@ -64,6 +66,28 @@ class CurrencyFormat extends AbstractHelper
     public function getCurrencyCode()
     {
         return $this->currencyCode;
+    }
+
+    /**
+     * Set if the view helper should show two decimals
+     *
+     * @param  bool $showDecimals
+     * @return CurrencyFormat
+     */
+    public function setShouldShowDecimals($showDecimals)
+    {
+        $this->showDecimals = (bool) $showDecimals;
+        return $this;
+    }
+
+    /**
+     * Get if the view helper should show two decimals
+     *
+     * @return bool
+     */
+    public function shouldShowDecimals()
+    {
+        return $this->showDecimals;
     }
 
     /**
@@ -97,12 +121,14 @@ class CurrencyFormat extends AbstractHelper
      *
      * @param  float  $number
      * @param  string $currencyCode
+     * @param  bool    $showDecimals
      * @param  string $locale
      * @return string
      */
     public function __invoke(
         $number,
         $currencyCode = null,
+        $showDecimals = null,
         $locale       = null
     ) {
         if (null === $locale) {
@@ -110,6 +136,9 @@ class CurrencyFormat extends AbstractHelper
         }
         if (null === $currencyCode) {
             $currencyCode = $this->getCurrencyCode();
+        }
+        if (null !== $showDecimals) {
+            $this->setShouldShowDecimals($showDecimals);
         }
 
         $formatterId = md5($locale);
@@ -119,6 +148,12 @@ class CurrencyFormat extends AbstractHelper
                 $locale,
                 NumberFormatter::CURRENCY
             );
+        }
+
+        if ($this->shouldShowDecimals()) {
+            $this->formatters[$formatterId]->setAttribute(NumberFormatter::FRACTION_DIGITS, 2);
+        } else {
+            $this->formatters[$formatterId]->setAttribute(NumberFormatter::FRACTION_DIGITS, 0);
         }
 
         return $this->formatters[$formatterId]->formatCurrency(

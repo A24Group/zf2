@@ -3,14 +3,13 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Db
  */
 
 namespace Zend\Db\Sql;
 
-use Zend\Db\Adapter\Adapter;
+use Zend\Db\Adapter\Driver\DriverInterface;
 use Zend\Db\Adapter\StatementContainer;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\Adapter\Platform\PlatformInterface;
@@ -27,12 +26,17 @@ abstract class AbstractSql
      */
     protected $processInfo = array('paramPrefix' => '', 'subselectCount' => 0);
 
-    protected function processExpression(ExpressionInterface $expression, PlatformInterface $platform, Adapter $adapter = null, $namedParameterPrefix = null)
+    /**
+     * @var array
+     */
+    protected $instanceParameterIndex = array();
+
+    protected function processExpression(ExpressionInterface $expression, PlatformInterface $platform, DriverInterface $driver = null, $namedParameterPrefix = null)
     {
         // static counter for the number of times this method was invoked across the PHP runtime
         static $runtimeExpressionPrefix = 0;
 
-        if ($adapter && ((!is_string($namedParameterPrefix) || $namedParameterPrefix == ''))) {
+        if ($driver && ((!is_string($namedParameterPrefix) || $namedParameterPrefix == ''))) {
             $namedParameterPrefix = sprintf('expr%04dParam', ++$runtimeExpressionPrefix);
         }
 
@@ -42,7 +46,12 @@ abstract class AbstractSql
 
         // initialize variables
         $parts = $expression->getExpressionData();
-        $expressionParamIndex = 1;
+
+        if(!isset($this->instanceParameterIndex[$namedParameterPrefix])) {
+            $this->instanceParameterIndex[$namedParameterPrefix] = 1;
+        }
+
+        $expressionParamIndex = &$this->instanceParameterIndex[$namedParameterPrefix];
 
         foreach ($parts as $part) {
 
@@ -62,14 +71,28 @@ abstract class AbstractSql
             foreach ($values as $vIndex => $value) {
                 if (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_IDENTIFIER) {
                     $values[$vIndex] = $platform->quoteIdentifierInFragment($value);
+                } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_VALUE && $value instanceof Select) {
+                    // process sub-select
+                    if ($driver) {
+                        $values[$vIndex] = '(' . $this->processSubSelect($value, $platform, $driver, $parameterContainer) . ')';
+                    } else {
+                        $values[$vIndex] = '(' . $this->processSubSelect($value, $platform) . ')';
+                    }
+                } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_VALUE && $value instanceof ExpressionInterface) {
+                    // recursive call to satisfy nested expressions
+                    $innerStatementContainer = $this->processExpression($value, $platform, $driver, $namedParameterPrefix . $vIndex . 'subpart');
+                    $values[$vIndex] = $innerStatementContainer->getSql();
+                    if ($driver) {
+                        $parameterContainer->merge($innerStatementContainer->getParameterContainer());
+                    }
                 } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_VALUE) {
 
                     // if prepareType is set, it means that this particular value must be
                     // passed back to the statement in a way it can be used as a placeholder value
-                    if ($adapter) {
+                    if ($driver) {
                         $name = $namedParameterPrefix . $expressionParamIndex++;
                         $parameterContainer->offsetSet($name, $value);
-                        $values[$vIndex] = $adapter->getDriver()->formatParameterName($name);
+                        $values[$vIndex] = $driver->formatParameterName($name);
                         continue;
                     }
 
@@ -77,13 +100,6 @@ abstract class AbstractSql
                     $values[$vIndex] = $platform->quoteValue($value);
                 } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_LITERAL) {
                     $values[$vIndex] = $value;
-                } elseif (isset($types[$vIndex]) && $types[$vIndex] == ExpressionInterface::TYPE_SELECT) {
-                    // process sub-select
-                    if ($adapter) {
-                        $values[$vIndex] = '(' . $this->processSubSelect($value, $platform, $adapter, $statementContainer->getParameterContainer()) . ')';
-                    } else {
-                        $values[$vIndex] = '(' . $this->processSubSelect($value, $platform) . ')';
-                    }
                 }
             }
 
@@ -96,19 +112,30 @@ abstract class AbstractSql
     }
 
     /**
-     * @param $specification
+     * @param $specifications
      * @param $parameters
      * @return string
      * @throws Exception\RuntimeException
      */
-    protected function createSqlFromSpecificationAndParameters($specification, $parameters)
+    protected function createSqlFromSpecificationAndParameters($specifications, $parameters)
     {
-        if (is_string($specification)) {
-            return vsprintf($specification, $parameters);
+        if (is_string($specifications)) {
+            return vsprintf($specifications, $parameters);
         }
 
-        $topSpec = key($specification);
-        $paramSpecs = $specification[$topSpec];
+        $parametersCount = count($parameters);
+        foreach ($specifications as $specificationString => $paramSpecs) {
+            if ($parametersCount == count($paramSpecs)) {
+                break;
+            }
+            unset($specificationString, $paramSpecs);
+        }
+
+        if (!isset($specificationString)) {
+            throw new Exception\RuntimeException(
+                'A number of parameters was found that is not supported by this specification'
+            );
+        }
 
         $topParameters = array();
         foreach ($parameters as $position => $paramsForPosition) {
@@ -132,13 +159,13 @@ abstract class AbstractSql
                 $topParameters[] = $paramsForPosition;
             }
         }
-        return vsprintf($topSpec, $topParameters);
+        return vsprintf($specificationString, $topParameters);
     }
 
-    protected function processSubSelect(Select $subselect, PlatformInterface $platform, Adapter $adapter = null, ParameterContainer $parameterContainer = null)
+    protected function processSubSelect(Select $subselect, PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
     {
-        if ($adapter) {
-            $stmtContainer = new \Zend\Db\Adapter\StatementContainer;
+        if ($driver) {
+            $stmtContainer = new StatementContainer;
 
             // Track subselect prefix and count for parameters
             $this->processInfo['subselectCount']++;
@@ -146,7 +173,7 @@ abstract class AbstractSql
             $subselect->processInfo['paramPrefix'] = 'subselect' . $subselect->processInfo['subselectCount'];
 
             // call subselect
-            $subselect->prepareStatement($adapter, $stmtContainer);
+            $subselect->prepareStatement(new \Zend\Db\Adapter\Adapter($driver, $platform), $stmtContainer);
 
             // copy count
             $this->processInfo['subselectCount'] = $subselect->processInfo['subselectCount'];
@@ -158,5 +185,4 @@ abstract class AbstractSql
         }
         return $sql;
     }
-
 }

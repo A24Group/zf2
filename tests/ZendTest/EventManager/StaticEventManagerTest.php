@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_EventManager
  */
@@ -144,7 +144,7 @@ class StaticEventManagerTest extends TestCase
     {
         $test     = new stdClass;
         $test->events = array();
-        $callback = function($e) use ($test) {
+        $callback = function ($e) use ($test) {
             $test->events[] = $e->getName();
         };
 
@@ -179,11 +179,35 @@ class StaticEventManagerTest extends TestCase
         $this->assertEquals(array('bar'), $events->getEvents('foo'));
     }
 
+    public function testCanGetEventsByWildcard()
+    {
+        $events = StaticEventManager::getInstance();
+        $events->attach('*', 'bar', array($this, __FUNCTION__));
+        $this->assertEquals(array('bar'), $events->getEvents('foo'));
+    }
+
     public function testCanGetListenersByResourceAndEvent()
     {
         $events = StaticEventManager::getInstance();
         $events->attach('foo', 'bar', array($this, __FUNCTION__));
         $listeners = $events->getListeners('foo', 'bar');
+        $this->assertInstanceOf('Zend\Stdlib\PriorityQueue', $listeners);
+        $this->assertEquals(1, count($listeners));
+    }
+
+    public function testCanNotGetListenersByResourceAndEventWithWildcard()
+    {
+        $events = StaticEventManager::getInstance();
+        $events->attach('*', 'bar', array($this, __FUNCTION__));
+        $listeners = $events->getListeners('foo', 'bar');
+        $this->assertFalse($listeners);
+    }
+
+    public function testCanGetListenersByWildcardAndEvent()
+    {
+        $events = StaticEventManager::getInstance();
+        $events->attach('*', 'bar', array($this, __FUNCTION__));
+        $listeners = $events->getListeners('*', 'bar');
         $this->assertInstanceOf('Zend\Stdlib\PriorityQueue', $listeners);
         $this->assertEquals(1, count($listeners));
     }
@@ -228,13 +252,83 @@ class StaticEventManagerTest extends TestCase
 
         $test = new \stdClass;
         $test->triggered = 0;
-        $events->attach('foo', 'bar', function($e) use ($test) {
+        $events->attach('foo', 'bar', function ($e) use ($test) {
             $test->triggered++;
         });
-        $events->attach('bar', 'bar', function($e) use ($test) {
+        $events->attach('bar', 'bar', function ($e) use ($test) {
             $test->triggered++;
         });
         $manager->trigger('bar', $this, array());
         $this->assertEquals(2, $test->triggered);
+    }
+
+    public function testListenersAttachedToWildcardsWillBeTriggered()
+    {
+        $identifiers = array('foo', 'bar');
+        $events  = StaticEventManager::getInstance();
+        $manager = new EventManager($identifiers);
+        $manager->setSharedManager($events);
+
+        $test = new \stdClass;
+        $test->triggered = 0;
+        $events->attach('*', 'bar', function ($e) use ($test) {
+            $test->triggered++;
+        });
+        //Tests one can have multiple wildcards attached
+        $events->attach('*', 'bar', function ($e) use ($test) {
+            $test->triggered++;
+        });
+        $manager->trigger('bar', $this, array());
+        $this->assertEquals(2, $test->triggered);
+    }
+
+    public function testListenersAttachedToAnyIdentifierProvidedToEventManagerOrWildcardsWillBeTriggered()
+    {
+        $identifiers = array('foo', 'bar');
+        $events  = StaticEventManager::getInstance();
+        $manager = new EventManager($identifiers);
+        $manager->setSharedManager($events);
+
+        $test = new \stdClass;
+        $test->triggered = 0;
+        $events->attach('foo', 'bar', function ($e) use ($test) {
+            $test->triggered++;
+        });
+        $events->attach('bar', 'bar', function ($e) use ($test) {
+            $test->triggered++;
+        });
+        $events->attach('*', 'bar', function ($e) use ($test) {
+            $test->triggered++;
+        });
+        //Tests one can have multiple wildcards attached
+        $events->attach('*', 'bar', function ($e) use ($test) {
+            $test->triggered++;
+        });
+        $manager->trigger('bar', $this, array());
+        $this->assertEquals(4, $test->triggered);
+    }
+
+    public function testCanAttachListenerAggregate()
+    {
+        $staticManager = StaticEventManager::getInstance();
+        $aggregate = new TestAsset\SharedMockAggregate('bazinga');
+        $staticManager->attachAggregate($aggregate);
+
+        $events = $staticManager->getEvents('bazinga');
+        $this->assertCount(2, $events);
+    }
+
+    public function testCanDetachListenerAggregate()
+    {
+        $staticManager = StaticEventManager::getInstance();
+        $aggregate = new TestAsset\SharedMockAggregate('bazinga');
+
+        $staticManager->attachAggregate($aggregate);
+        $events = $staticManager->getEvents('bazinga');
+        $this->assertCount(2, $events);
+
+        $staticManager->detachAggregate($aggregate);
+        $events = $staticManager->getEvents('bazinga');
+        $this->assertCount(0, $events);
     }
 }

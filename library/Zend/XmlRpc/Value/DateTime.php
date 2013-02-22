@@ -3,20 +3,14 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_XmlRpc
  */
 
 namespace Zend\XmlRpc\Value;
 
 use Zend\XmlRpc\Exception;
 
-/**
- * @category   Zend
- * @package    Zend_XmlRpc
- * @subpackage Value
- */
 class DateTime extends AbstractScalar
 {
     /**
@@ -49,7 +43,7 @@ class DateTime extends AbstractScalar
         if ($value instanceof \DateTime) {
             $this->value = $value->format($this->phpFormatString);
         } elseif (is_numeric($value)) { // The value is numeric, we make sure it is an integer
-            $this->value = date($this->phpFormatString, (int)$value);
+            $this->value = date($this->phpFormatString, (int) $value);
         } else {
             try {
                 $dateTime = new \DateTime($value);

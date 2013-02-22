@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Permissions
  */
@@ -1303,4 +1303,40 @@ class AclTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($this->_acl->isAllowed('guest', 'newsletter', 'read'));
     }
 
+    /**
+     * @group ZF2-3454
+     */
+    public function testAclResourcePermissionsAreInheritedWithMultilevelResourcesAndDenyPolicy()
+    {
+        $this->_acl->addRole('guest');
+        $this->_acl->addResource('blogposts');
+        $this->_acl->addResource('feature', 'blogposts');
+        $this->_acl->addResource('post_1', 'feature');
+        $this->_acl->addResource('post_2', 'feature');
+
+        // Allow a guest to read feature posts and
+        // comment on everything except feature posts.
+        $this->_acl->deny();
+        $this->_acl->allow('guest', 'feature', 'read');
+        $this->_acl->allow('guest', null, 'comment');
+        $this->_acl->deny('guest', 'feature', 'comment');
+
+        $this->assertFalse($this->_acl->isAllowed('guest', 'feature', 'write'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'post_1', 'read'));
+        $this->assertTrue($this->_acl->isAllowed('guest', 'post_2', 'read'));
+
+        $this->assertFalse($this->_acl->isAllowed('guest', 'post_1', 'comment'));
+        $this->assertFalse($this->_acl->isAllowed('guest', 'post_2', 'comment'));
+    }
+
+    public function testSetRuleWorksWithResourceInterface()
+    {
+        $roleGuest = new Role\GenericRole('guest');
+        $this->_acl->addRole($roleGuest);
+
+        $resourceFoo = new Resource\GenericResource('foo');
+        $this->_acl->addResource($resourceFoo);
+
+        $this->_acl->setRule(Acl\Acl::OP_ADD, Acl\Acl::TYPE_ALLOW, $roleGuest, $resourceFoo);
+    }
 }

@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_ModuleManager
  */
@@ -11,11 +11,12 @@
 namespace ZendTest\ModuleManager;
 
 use PHPUnit_Framework_TestCase as TestCase;
+use stdClass;
 use Zend\EventManager\EventManager;
 use Zend\Loader\AutoloaderFactory;
-use Zend\Loader\ModuleAutoloader;
 use Zend\ModuleManager\Listener\ListenerOptions;
 use Zend\ModuleManager\Listener\DefaultListenerAggregate;
+use Zend\ModuleManager\ModuleEvent;
 use Zend\ModuleManager\ModuleManager;
 use InvalidArgumentException;
 
@@ -142,5 +143,22 @@ class ModuleManagerTest extends TestCase
         $config = $configListener->getMergedConfig();
         $this->assertTrue(isset($config['loaded']));
         $this->assertSame('oh, yeah baby!', $config['loaded']);
+    }
+
+    public function testModuleIsMarkedAsLoadedWhenLoadModuleEventIsTriggered()
+    {
+        $test          = new stdClass;
+        $moduleManager = new ModuleManager(array('BarModule'));
+        $events        = $moduleManager->getEventManager();
+        $events->attachAggregate($this->defaultListeners);
+        $events->attach(ModuleEvent::EVENT_LOAD_MODULE, function ($e) use ($test) {
+            $test->modules = $e->getTarget()->getLoadedModules(false);
+        });
+
+        $moduleManager->loadModules();
+
+        $this->assertTrue(isset($test->modules));
+        $this->assertArrayHasKey('BarModule', $test->modules);
+        $this->assertInstanceOf('BarModule\Module', $test->modules['BarModule']);
     }
 }

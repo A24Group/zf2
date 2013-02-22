@@ -3,7 +3,6 @@ namespace ZendTest\Mvc\Router\Console;
 
 use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Http\Request;
-use Zend\Stdlib\Request as BaseRequest;
 use Zend\Console\Request as ConsoleRequest;
 use Zend\Mvc\Router\Console\Simple;
 use ZendTest\Mvc\Router\FactoryTester;
@@ -131,6 +130,14 @@ class SimpleTestTest extends TestCase
                     'baz' => null,
                 )
             ),
+            'literal-optional-long-flag' => array(
+                'foo [--bar]',
+                array('foo', '--bar'),
+                array(
+                    'foo' => true,
+                    'bar' => true,
+                )
+            ),
             'optional-long-flag-partial-mismatch' => array(
                 '--foo [--bar]',
                 array('--foo', '--baz'),
@@ -142,6 +149,46 @@ class SimpleTestTest extends TestCase
                 array(
                     'foo' => true,
                     'bar' => true
+                )
+            ),
+            'optional-long-value-flag-non-existent' => array(
+                '--foo [--bar=]',
+                array('--foo'),
+                array(
+                    'foo' => true,
+                    'bar' => false
+                )
+            ),
+            'optional-long-value-flag' => array(
+                '--foo [--bar=]',
+                array('--foo', '--bar=4'),
+                array(
+                    'foo' => true,
+                    'bar' => 4
+                )
+            ),
+            'optional-long-value-flag-non-existent-mixed-case' => array(
+                '--foo [--barBaz=]',
+                array('--foo', '--barBaz=4'),
+                array(
+                    'foo'    => true,
+                    'barBaz' => 4
+                )
+            ),
+            'value-optional-long-value-flag' => array(
+                '<foo> [--bar=]',
+                array('value', '--bar=4'),
+                array(
+                    'foo' => 'value',
+                    'bar' => 4
+                )
+            ),
+            'literal-optional-long-value-flag' => array(
+                'foo [--bar=]',
+                array('foo', '--bar=4'),
+                array(
+                    'foo' => true,
+                    'bar' => 4,
                 )
             ),
             'optional-long-flag-mixed-order-match' => array(
@@ -525,8 +572,19 @@ class SimpleTestTest extends TestCase
                 null
             ),
 
+            // other (combination)
+            'combined-1' => array(
+                'literal <bar> [--foo=] --baz',
+                array('literal', 'oneBar', '--foo=4', '--baz'),
+                array(
+                    'literal' => true,
+                    'bar' => 'oneBar',
+                    'foo' => 4,
+                    'baz' => true
+                )
+            ),
 
-            /*'combined-1' => array(
+            /*'combined-2' => array(
                 '--foo --bar',
                 array('a','b', 'c', '--foo', '--bar'),
                 array(

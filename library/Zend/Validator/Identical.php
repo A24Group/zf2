@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Validator
  */
 
 namespace Zend\Validator;
@@ -13,10 +12,6 @@ namespace Zend\Validator;
 use Traversable;
 use Zend\Stdlib\ArrayUtils;
 
-/**
- * @category   Zend
- * @package    Zend_Validate
- */
 class Identical extends AbstractValidator
 {
     /**
@@ -92,7 +87,7 @@ class Identical extends AbstractValidator
      */
     public function setToken($token)
     {
-        $this->tokenString = (is_array($token) ? implode($token) : (string) $token);
+        $this->tokenString = (is_array($token) ? var_export($token, true) : (string) $token);
         $this->token       = $token;
         return $this;
     }
@@ -100,7 +95,7 @@ class Identical extends AbstractValidator
     /**
      * Returns the strict parameter
      *
-     * @return boolean
+     * @return bool
      */
     public function getStrict()
     {
@@ -115,7 +110,7 @@ class Identical extends AbstractValidator
      */
     public function setStrict($strict)
     {
-        $this->strict = (boolean) $strict;
+        $this->strict = (bool) $strict;
         return $this;
     }
 
@@ -125,16 +120,42 @@ class Identical extends AbstractValidator
      *
      * @param  mixed $value
      * @param  array $context
-     * @return boolean
+     * @return bool
+     * @throws Exception\RuntimeException if the token doesn't exist in the context array
      */
     public function isValid($value, $context = null)
     {
         $this->setValue($value);
 
-        if (($context !== null) && isset($context) && array_key_exists($this->getToken(), $context)) {
-            $token = $context[$this->getToken()];
-        } else {
-            $token = $this->getToken();
+        $token = $this->getToken();
+
+        if ($context !== null) {
+            if (!is_array($context)) {
+                throw new Exception\InvalidArgumentException(sprintf(
+                    'Context passed to %s must be an array or null; received "%s"',
+                    __METHOD__,
+                    (is_object($context) ? get_class($context) : gettype($context))
+                ));
+            }
+
+            if (is_array($token)) {
+                while (is_array($token)){
+                    $key = key($token);
+                    if (!isset($context[$key])) {
+                        break;
+                    }
+                    $context = $context[$key];
+                    $token   = $token[$key];
+                }
+            }
+
+            // if $token is an array it means the above loop didn't went all the way down to the leaf,
+            // so the $token structure doesn't match the $context structure
+            if (is_array($token) || !isset($context[$token])) {
+                throw new Exception\RuntimeException("The token doesn't exist in the context");
+            } else {
+                $token = $context[$token];
+            }
         }
 
         if ($token === null) {

@@ -3,24 +3,17 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Form
  */
 
 namespace Zend\Form\View\Helper\Captcha;
 
-use Traversable;
 use Zend\Captcha\ReCaptcha as CaptchaAdapter;
 use Zend\Form\ElementInterface;
 use Zend\Form\Exception;
 use Zend\Form\View\Helper\FormInput;
 
-/**
- * @category   Zend
- * @package    Zend_Form
- * @subpackage View
- */
 class ReCaptcha extends FormInput
 {
     /**

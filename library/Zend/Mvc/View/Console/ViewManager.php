@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Mvc
  */
 
 namespace Zend\Mvc\View\Console;
@@ -13,19 +12,9 @@ namespace Zend\Mvc\View\Console;
 use ArrayAccess;
 use Zend\Mvc\MvcEvent;
 use Zend\Mvc\View\Http\ViewManager as BaseViewManager;
-use Zend\Mvc\View\SendResponseListener;
-use Zend\ServiceManager\ServiceManager;
-use Zend\Stdlib\ArrayUtils;
-use Zend\View\Helper as ViewHelper;
-use Zend\View\Resolver as ViewResolver;
-use Zend\View\View;
 
 /**
  * Prepares the view layer for console applications
- *
- * @category   Zend
- * @package    Zend_Mvc
- * @subpackage View
  */
 class ViewManager extends BaseViewManager
 {
@@ -58,7 +47,6 @@ class ViewManager extends BaseViewManager
         $mvcRenderingStrategy    = $this->getMvcRenderingStrategy();
         $createViewModelListener = new CreateViewModelListener();
         $injectViewModelListener = new InjectViewModelListener();
-        $sendResponseListener    = new SendResponseListener();
         $injectParamsListener    = new InjectNamedConsoleParamsListener();
 
         $this->registerMvcRenderingStrategies($events);
@@ -67,8 +55,8 @@ class ViewManager extends BaseViewManager
         $events->attach($routeNotFoundStrategy);
         $events->attach($exceptionStrategy);
         $events->attach(MvcEvent::EVENT_DISPATCH_ERROR, array($injectViewModelListener, 'injectViewModel'), -100);
+        $events->attach(MvcEvent::EVENT_RENDER_ERROR, array($injectViewModelListener, 'injectViewModel'), -100);
         $events->attach($mvcRenderingStrategy);
-        $events->attach($sendResponseListener);
 
         $sharedEvents->attach('Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH, array($injectParamsListener,  'injectNamedParams'), 1000);
         $sharedEvents->attach('Zend\Stdlib\DispatchableInterface', MvcEvent::EVENT_DISPATCH, array($createViewModelListener, 'createViewModelFromArray'), -80);
@@ -145,6 +133,13 @@ class ViewManager extends BaseViewManager
         }
 
         $this->routeNotFoundStrategy = new RouteNotFoundStrategy();
+
+        $displayNotFoundReason = true;
+
+        if (array_key_exists('display_not_found_reason', $this->config)) {
+            $displayNotFoundReason = $this->config['display_not_found_reason'];
+        }
+        $this->routeNotFoundStrategy->setDisplayNotFoundReason($displayNotFoundReason);
 
         $this->services->setService('RouteNotFoundStrategy', $this->routeNotFoundStrategy);
         $this->services->setAlias('Zend\Mvc\View\RouteNotFoundStrategy', 'RouteNotFoundStrategy');

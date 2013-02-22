@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_View
  */
@@ -44,22 +44,39 @@ class FeedStrategyTest extends TestCase
         $this->assertSame($this->renderer, $result);
     }
 
-    public function testRssAcceptHeaderSelectsFeedStrategy()
+    /**
+     * @group #2410
+     */
+    public function testRssAcceptHeaderDoesNotSelectFeedStrategy()
     {
         $request = new HttpRequest();
         $request->getHeaders()->addHeaderLine('Accept', 'application/rss+xml');
         $this->event->setRequest($request);
         $result = $this->strategy->selectRenderer($this->event);
-        $this->assertSame($this->renderer, $result);
+        $this->assertNotSame($this->renderer, $result);
     }
 
-    public function testAtomAcceptHeaderSelectsFeedStrategy()
+    /**
+     * @group #2410
+     */
+    public function testAtomAcceptHeaderDoesNotSelectFeedStrategy()
     {
         $request = new HttpRequest();
         $request->getHeaders()->addHeaderLine('Accept', 'application/atom+xml');
         $this->event->setRequest($request);
         $result = $this->strategy->selectRenderer($this->event);
+        $this->assertNotSame($this->renderer, $result);
+    }
+
+    public function testAcceptHeaderDoesNotSetFeedtype()
+    {
+        $this->event->setModel(new FeedModel());
+        $request = new HttpRequest();
+        $request->getHeaders()->addHeaderLine('Accept', 'application/atom+xml');
+        $this->event->setRequest($request);
+        $result = $this->strategy->selectRenderer($this->event);
         $this->assertSame($this->renderer, $result);
+        $this->assertNotSame('atom', $result->getFeedType());
     }
 
     public function testLackOfFeedModelOrAcceptHeaderDoesNotSelectFeedStrategy()
