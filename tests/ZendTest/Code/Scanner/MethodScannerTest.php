@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Code
  */
@@ -62,8 +62,8 @@ class MethodScannerTest extends TestCase
         $file       = new FileScanner(__DIR__ . '/../TestAsset/BarClass.php');
         $class      = $file->getClass('ZendTest\Code\TestAsset\BarClass');
         $method     = $class->getMethod('three');
-        $this->assertEquals(28, $method->getLineStart());
-        $this->assertEquals(32, $method->getLineEnd());
+        $this->assertEquals(27, $method->getLineStart());
+        $this->assertEquals(31, $method->getLineEnd());
     }
 
     public function testMethodScannerReturnsBodyMethods()

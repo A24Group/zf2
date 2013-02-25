@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Soap
  */
@@ -13,7 +13,6 @@ namespace ZendTest\Soap;
 require_once __DIR__ . '/TestAsset/commontypes.php';
 
 use Zend\Soap\Server;
-use Zend\Soap\ServerException;
 
 /**
  * Zend_Soap_Server
@@ -649,9 +648,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($expectedResponse, $server1->handle($request));
     }
 
-    /**
-     * @todo Implement testRegisterFaultException().
-     */
     public function testRegisterFaultException()
     {
         $server = new Server();
@@ -666,9 +662,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         ), $server->getFaultExceptions());
     }
 
-    /**
-     * @todo Implement testDeregisterFaultException().
-     */
     public function testDeregisterFaultException()
     {
         $server = new Server();
@@ -685,9 +678,6 @@ class ServerTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($ret);
     }
 
-    /**
-     * @todo Implement testGetFaultExceptions().
-     */
     public function testGetFaultExceptions()
     {
         $server = new Server();

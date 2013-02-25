@@ -3,14 +3,13 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Form
  */
 
 namespace ZendTest\Form\View\Helper;
 
-use PHPUnit_Framework_TestCase as TestCase;
 use Zend\Form\Element;
 use Zend\Form\Element\Select as SelectElement;
 use Zend\Form\View\Helper\FormSelect as FormSelectHelper;
@@ -323,6 +322,26 @@ class FormSelectTest extends CommonTestCase
         $this->assertNotContains('<option value=""></option>', $markup);
     }
 
+    public function testCanMarkOptionsAsSelectedWhenEmptyOptionOrZeroValueSelected()
+    {
+        $element = new SelectElement('foo');
+        $element->setEmptyOption('empty');
+        $element->setValueOptions(array(
+            0 => 'label0',
+            1 => 'label1',
+        ));
+
+        $element->setValue('');
+        $markup = $this->helper->render($element);
+        $this->assertContains('<option value="" selected="selected">empty</option>', $markup);
+        $this->assertContains('<option value="0">label0</option>', $markup);
+
+        $element->setValue('0');
+        $markup = $this->helper->render($element);
+        $this->assertContains('<option value="">empty</option>', $markup);
+        $this->assertContains('<option value="0" selected="selected">label0</option>', $markup);
+    }
+
     public function testRenderInputNotSelectElementRaisesException()
     {
         $element = new Element\Text('foo');
@@ -333,14 +352,6 @@ class FormSelectTest extends CommonTestCase
     public function testRenderElementWithNoNameRaisesException()
     {
         $element = new SelectElement();
-
-        $this->setExpectedException('Zend\Form\Exception\DomainException');
-        $this->helper->render($element);
-    }
-
-    public function testRenderElementWithNoValueOptionsRaisesException()
-    {
-        $element = new SelectElement('foo');
 
         $this->setExpectedException('Zend\Form\Exception\DomainException');
         $this->helper->render($element);

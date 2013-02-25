@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Di
  */
@@ -48,14 +48,6 @@ class DiTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($im, $di->instanceManager());
     }
 
-    public function testPassingInvalidDefinitionRaisesException()
-    {
-        $di = new Di();
-
-        $this->setExpectedException('PHPUnit_Framework_Error');
-        $di->setDefinitionList(array('foo'));
-    }
-
     public function testGetRetrievesObjectWithMatchingClassDefinition()
     {
         $di = new Di();
@@ -65,12 +57,61 @@ class DiTest extends \PHPUnit_Framework_TestCase
 
     public function testGetRetrievesSameInstanceOnSubsequentCalls()
     {
-        $di = new Di();
+        $config = new Config(array(
+            'instance' => array(
+                'ZendTest\Di\TestAsset\BasicClass' => array(
+                    'shared' => true,
+                    ),
+                ),
+        ));
+        $di = new Di(null, null, $config);
         $obj1 = $di->get('ZendTest\Di\TestAsset\BasicClass');
         $obj2 = $di->get('ZendTest\Di\TestAsset\BasicClass');
         $this->assertInstanceOf('ZendTest\Di\TestAsset\BasicClass', $obj1);
         $this->assertInstanceOf('ZendTest\Di\TestAsset\BasicClass', $obj2);
         $this->assertSame($obj1, $obj2);
+    }
+
+    public function testGetRetrievesDifferentInstanceOnSubsequentCallsIfSharingDisabled()
+    {
+        $config = new Config(array(
+            'instance' => array(
+                'ZendTest\Di\TestAsset\BasicClass' => array(
+                    'shared' => false,
+                ),
+            ),
+        ));
+        $di = new Di(null, null, $config);
+        $obj1 = $di->get('ZendTest\Di\TestAsset\BasicClass');
+        $obj2 = $di->get('ZendTest\Di\TestAsset\BasicClass');
+        $this->assertInstanceOf('ZendTest\Di\TestAsset\BasicClass', $obj1);
+        $this->assertInstanceOf('ZendTest\Di\TestAsset\BasicClass', $obj2);
+        $this->assertNotSame($obj1, $obj2);
+    }
+
+    public function testGetRetrievesSameSharedInstanceOnUsingInConstructor()
+    {
+        $config = new Config(array(
+            'instance' => array(
+                'ZendTest\Di\TestAsset\BasicClass' => array(
+                    'shared' => true,
+                ),
+            ),
+        ));
+        $di = new Di(null, null, $config);
+        $obj1 = $di->get('ZendTest\Di\TestAsset\BasicClassWithParent', array('foo' => 0));
+        $obj2 = $di->get('ZendTest\Di\TestAsset\BasicClassWithParent', array('foo' => 1));
+        $obj3 = $di->get('ZendTest\Di\TestAsset\BasicClassWithParent', array('foo' => 2, 'non_exists' => 1));
+        $objParent1 = $di->get('ZendTest\Di\TestAsset\BasicClass');
+        $objParent2 = $di->get('ZendTest\Di\TestAsset\BasicClass', array('foo' => 1));
+
+        $this->assertInstanceOf('ZendTest\Di\TestAsset\BasicClassWithParent', $obj1);
+        $this->assertInstanceOf('ZendTest\Di\TestAsset\BasicClassWithParent', $obj2);
+        $this->assertInstanceOf('ZendTest\Di\TestAsset\BasicClassWithParent', $obj3);
+        $this->assertSame($obj1->parent, $obj2->parent);
+        $this->assertSame($obj2->parent, $obj3->parent);
+        $this->assertSame($obj3->parent, $objParent1);
+        $this->assertSame($obj3->parent, $objParent2);
     }
 
     public function testGetThrowsExceptionWhenUnknownClassIsUsed()
@@ -693,4 +734,78 @@ class DiTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($d->a, 'ZendTest\Di\TestAsset\SetterInjection\A');
     }
 
+    /**
+     * @group ZF2-308
+     */
+    public function testWillNotCallStaticInjectionMethods()
+    {
+        $di = new Di;
+        $di->definitions()->addDefinition(new Definition\RuntimeDefinition(), false);
+        $di->newInstance('ZendTest\Di\TestAsset\SetterInjection\StaticSetter', array('name' => 'testName'));
+
+        $this->assertSame(\ZendTest\Di\TestAsset\SetterInjection\StaticSetter::$name, 'originalName');
+    }
+
+    /**
+     * @group ZF2-142
+     */
+    public function testDiWillInjectDefaultParameters()
+    {
+        $di = new Di;
+
+        $classDef = new Definition\ClassDefinition('ZendTest\Di\TestAsset\ConstructorInjection\OptionalParameters');
+        $classDef->addMethod('__construct', true);
+        $classDef->addMethodParameter(
+            '__construct',
+            'a',
+            array('type' => false, 'required' => false, 'default' => null)
+        );
+        $classDef->addMethodParameter(
+            '__construct',
+            'b',
+            array('type' => false, 'required' => false, 'default' => 'defaultConstruct')
+        );
+        $classDef->addMethodParameter(
+            '__construct',
+            'c',
+            array('type' => false, 'required' => false, 'default' => array())
+        );
+
+        $di->definitions()->addDefinition($classDef, false);
+
+        $optionalParams = $di->newInstance('ZendTest\Di\TestAsset\ConstructorInjection\OptionalParameters');
+
+        $this->assertSame(null, $optionalParams->a);
+        $this->assertSame('defaultConstruct', $optionalParams->b);
+        $this->assertSame(array(), $optionalParams->c);
+    }
+
+    /**
+     * @group SharedInstance
+     */
+    public function testGetWithParamsWillUseSharedInstance()
+    {
+        $di = new Di;
+
+        $sharedInstanceClass = 'ZendTest\Di\TestAsset\ConstructorInjection\A';
+        $retrievedInstanceClass = 'ZendTest\Di\TestAsset\ConstructorInjection\C';
+
+        // Provide definitions for $retrievedInstanceClass, but not for $sharedInstanceClass.
+        $arrayDefinition = array($retrievedInstanceClass => array (
+            'supertypes' => array ( ),
+            'instantiator' => '__construct',
+            'methods' => array ('__construct' => true),
+            'parameters' => array ( '__construct' => array (
+                "$retrievedInstanceClass::__construct:0" => array ('a', $sharedInstanceClass, true, NULL),
+                "$retrievedInstanceClass::__construct:1" => array ('params', NULL, false, array()),
+            )),
+        ));
+
+        // This also disables scanning of class A.
+        $di->setDefinitionList(new DefinitionList(new Definition\ArrayDefinition($arrayDefinition)));
+
+        $di->instanceManager()->addSharedInstance(new $sharedInstanceClass, $sharedInstanceClass);
+        $returnedC = $di->get($retrievedInstanceClass, array('params' => array('test')));
+        $this->assertInstanceOf($retrievedInstanceClass, $returnedC);
+    }
 }

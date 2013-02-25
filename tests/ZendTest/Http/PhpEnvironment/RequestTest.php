@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Http
  */
@@ -204,6 +204,17 @@ class RequestTest extends TestCase
                 '/html/index.php',
                 '/html'
             ),
+
+            //Test when url quert contains a full http url
+            array(
+                array(
+                    'REQUEST_URI' => '/html/index.php?url=http://test.example.com/path/&foo=bar',
+                    'PHP_SELF' => '/html/index.php',
+                    'SCRIPT_FILENAME' => '/var/web/html/index.php',
+                ),
+                '/html/index.php',
+                '/html'
+            ),
         );
     }
 
@@ -357,6 +368,18 @@ class RequestTest extends TestCase
                 '443',
                 '/news',
             ),
+
+            //Test when url quert contains a full http url
+            array(
+                array(
+                    'SERVER_NAME' => 'test.example.com',
+                    'REQUEST_URI' => '/html/index.php?url=http://test.example.com/path/&foo=bar',
+                ),
+                'test.example.com',
+                '80',
+                '/html/index.php?url=http://test.example.com/path/&foo=bar',
+            ),
+
         );
     }
 

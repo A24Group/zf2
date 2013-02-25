@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_ServiceManager
  */
 
 namespace Zend\ServiceManager;
@@ -19,9 +18,6 @@ namespace Zend\ServiceManager;
  * the plugin when retrieved. Finally, enables the allowOverride property by
  * default to allow registering factories, aliases, and invokables to take
  * the place of those provided by the implementing class.
- *
- * @category   Zend
- * @package    Zend_ServiceManager
  */
 abstract class AbstractPluginManager extends ServiceManager implements ServiceLocatorAwareInterface
 {
@@ -30,7 +26,7 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
      *
      * @var bool
      */
-    protected $allowOverride   = true;
+    protected $allowOverride = true;
 
     /**
      * Whether or not to auto-add a class as an invokable class if it exists
@@ -68,9 +64,6 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
         $this->addInitializer(function ($instance) use ($self) {
             if ($instance instanceof ServiceLocatorAwareInterface) {
                 $instance->setServiceLocator($self);
-            }
-            if ($instance instanceof ServiceManagerAwareInterface) {
-                $instance->setServiceManager($self);
             }
         });
     }
@@ -177,6 +170,43 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
             $instance = new $invokable();
         } else {
             $instance = new $invokable($this->creationOptions);
+        }
+
+        return $instance;
+    }
+
+    /**
+     * Attempt to create an instance via a factory class
+     *
+     * Overrides parent implementation by passing $creationOptions to the
+     * constructor, if non-null.
+     *
+     * @param  string $canonicalName
+     * @param  string $requestedName
+     * @return mixed
+     * @throws Exception\ServiceNotCreatedException If factory is not callable
+     */
+    protected function createFromFactory($canonicalName, $requestedName)
+    {
+        $factory = $this->factories[$canonicalName];
+        if (is_string($factory) && class_exists($factory, true)) {
+            if (null === $this->creationOptions || (is_array($this->creationOptions) && empty($this->creationOptions))) {
+                $factory = new $factory();
+            } else {
+                $factory = new $factory($this->creationOptions);
+            }
+
+            $this->factories[$canonicalName] = $factory;
+        }
+
+        if ($factory instanceof FactoryInterface) {
+            $instance = $this->createServiceViaCallback(array($factory, 'createService'), $canonicalName, $requestedName);
+        } elseif (is_callable($factory)) {
+            $instance = $this->createServiceViaCallback($factory, $canonicalName, $requestedName);
+        } else {
+            throw new Exception\ServiceNotCreatedException(sprintf(
+                'While attempting to create %s%s an invalid factory was registered for this instance type.', $canonicalName, ($requestedName ? '(alias: ' . $requestedName . ')' : '')
+            ));
         }
 
         return $instance;

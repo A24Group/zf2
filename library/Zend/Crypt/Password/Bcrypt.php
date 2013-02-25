@@ -3,23 +3,18 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Crypt
  */
 
 namespace Zend\Crypt\Password;
 
 use Traversable;
-use Zend\Math\Exception as MathException;
 use Zend\Math\Rand;
 use Zend\Stdlib\ArrayUtils;
 
 /**
  * Bcrypt algorithm using crypt() function of PHP
- *
- * @category   Zend
- * @package    Zend_Crypt
  */
 class Bcrypt implements PasswordInterface
 {
@@ -34,6 +29,11 @@ class Bcrypt implements PasswordInterface
      * @var string
      */
     protected $salt;
+
+    /**
+     * @var boolean
+     */
+    protected $backwardCompatibility = false;
 
     /**
      * Constructor
@@ -83,7 +83,7 @@ class Bcrypt implements PasswordInterface
          * Check for security flaw in the bcrypt implementation used by crypt()
          * @see http://php.net/security/crypt_blowfish.php
          */
-        if (version_compare(PHP_VERSION, '5.3.7') >= 0) {
+        if ((version_compare(PHP_VERSION, '5.3.7') >= 0) && !$this->backwardCompatibility) {
             $prefix = '$2y$';
         } else {
             $prefix = '$2a$';
@@ -108,7 +108,7 @@ class Bcrypt implements PasswordInterface
      *
      * @param  string $password
      * @param  string $hash
-     * @return boolean
+     * @return bool
      */
     public function verify($password, $hash)
     {
@@ -125,7 +125,7 @@ class Bcrypt implements PasswordInterface
     public function setCost($cost)
     {
         if (!empty($cost)) {
-            $cost = (int)$cost;
+            $cost = (int) $cost;
             if ($cost < 4 || $cost > 31) {
                 throw new Exception\InvalidArgumentException(
                     'The cost parameter of bcrypt must be in range 04-31'
@@ -157,7 +157,7 @@ class Bcrypt implements PasswordInterface
     {
         if (strlen($salt) < self::MIN_SALT_SIZE) {
             throw new Exception\InvalidArgumentException(
-                'The length of the salt must be at lest ' . self::MIN_SALT_SIZE . ' bytes'
+                'The length of the salt must be at least ' . self::MIN_SALT_SIZE . ' bytes'
             );
         }
         $this->salt = $salt;
@@ -172,5 +172,27 @@ class Bcrypt implements PasswordInterface
     public function getSalt()
     {
         return $this->salt;
+    }
+
+    /**
+     * Set the backward compatibility $2a$ instead of $2y$ for PHP 5.3.7+
+     *
+     * @param boolean $value
+     * @return Bcrypt
+     */
+    public function setBackwardCompatibility($value)
+    {
+        $this->backwardCompatibility = (boolean) $value;
+        return $this;
+    }
+
+    /**
+     * Get the backward compatibility
+     *
+     * @return boolean
+     */
+    public function getBackwardCompatibility()
+    {
+        return $this->backwardCompatibility;
     }
 }

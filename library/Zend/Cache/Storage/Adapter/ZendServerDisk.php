@@ -3,14 +3,12 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Cache
  */
 
 namespace Zend\Cache\Storage\Adapter;
 
-use ArrayObject;
 use Zend\Cache\Exception;
 use Zend\Cache\Storage\AvailableSpaceCapableInterface;
 use Zend\Cache\Storage\ClearByNamespaceInterface;
@@ -18,11 +16,6 @@ use Zend\Cache\Storage\FlushableInterface;
 use Zend\Cache\Storage\TotalSpaceCapableInterface;
 use Zend\Stdlib\ErrorHandler;
 
-/**
- * @category   Zend
- * @package    Zend_Cache
- * @subpackage Storage
- */
 class ZendServerDisk extends AbstractZendServer implements
     AvailableSpaceCapableInterface,
     ClearByNamespaceInterface,
@@ -59,7 +52,7 @@ class ZendServerDisk extends AbstractZendServer implements
     /**
      * Flush the whole storage
      *
-     * @return boolean
+     * @return bool
      */
     public function flush()
     {
@@ -72,10 +65,15 @@ class ZendServerDisk extends AbstractZendServer implements
      * Remove items of given namespace
      *
      * @param string $namespace
-     * @return boolean
+     * @return bool
      */
     public function clearByNamespace($namespace)
     {
+        $namespace = (string) $namespace;
+        if ($namespace === '') {
+            throw new Exception\InvalidArgumentException('No namespace given');
+        }
+
         return zend_disk_cache_clear($namespace);
     }
 
@@ -89,8 +87,8 @@ class ZendServerDisk extends AbstractZendServer implements
      */
     public function getTotalSpace()
     {
-        if ($this->totalSpace !== null) {
-            $path = $this->getOptions()->getCacheDir();
+        if ($this->totalSpace === null) {
+            $path = ini_get('zend_datacache.disk.save_path');
 
             ErrorHandler::start();
             $total = disk_total_space($path);
@@ -98,6 +96,8 @@ class ZendServerDisk extends AbstractZendServer implements
             if ($total === false) {
                 throw new Exception\RuntimeException("Can't detect total space of '{$path}'", 0, $error);
             }
+
+            $this->totalSpace = $total;
         }
         return $this->totalSpace;
     }
@@ -112,7 +112,7 @@ class ZendServerDisk extends AbstractZendServer implements
      */
     public function getAvailableSpace()
     {
-        $path = $this->getOptions()->getCacheDir();
+        $path = ini_get('zend_datacache.disk.save_path');
 
         ErrorHandler::start();
         $avail = disk_free_space($path);
@@ -154,7 +154,7 @@ class ZendServerDisk extends AbstractZendServer implements
      */
     protected function zdcFetch($internalKey)
     {
-        return zend_disk_cache_fetch((string)$internalKey);
+        return zend_disk_cache_fetch((string) $internalKey);
     }
 
     /**
@@ -177,7 +177,7 @@ class ZendServerDisk extends AbstractZendServer implements
      * Delete data from Zend Data Disk Cache
      *
      * @param  string $internalKey
-     * @return boolean
+     * @return bool
      * @throws Exception\RuntimeException
      */
     protected function zdcDelete($internalKey)

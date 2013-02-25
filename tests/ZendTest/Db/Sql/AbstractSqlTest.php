@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Db
  */
@@ -53,10 +53,9 @@ class AbstractSqlTest extends \PHPUnit_Framework_TestCase
         $mockDriver->expects($this->any())->method('formatParameterName')->will($this->returnCallback(function ($x) {
             return ':' . $x;
         }));
-        $mockAdapter = $this->getMock('Zend\Db\Adapter\Adapter', null, array($mockDriver));
 
         $expression = new Expression('? > ? AND y < ?', array('x', 5, 10), array(Expression::TYPE_IDENTIFIER));
-        $sqlAndParams = $this->invokeProcessExpressionMethod($expression, $mockAdapter);
+        $sqlAndParams = $this->invokeProcessExpressionMethod($expression, $mockDriver);
 
         $parameterContainer = $sqlAndParams->getParameterContainer();
         $parameters = $parameterContainer->getNamedArray();
@@ -74,7 +73,7 @@ class AbstractSqlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(10, current($parameters));
 
         // ensure next invocation increases number by 1
-        $sqlAndParamsNext = $this->invokeProcessExpressionMethod($expression, $mockAdapter);
+        $sqlAndParamsNext = $this->invokeProcessExpressionMethod($expression, $mockDriver);
 
         $parameterContainer = $sqlAndParamsNext->getParameterContainer();
         $parameters = $parameterContainer->getNamedArray();
@@ -115,17 +114,28 @@ class AbstractSqlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(0, $sqlAndParams->getParameterContainer()->count());
     }
 
+    public function testProcessExpressionWorksWithExpressionContainingExpressionObject()
+    {
+        $expression = new Predicate\Operator(
+            'release_date',
+            '=',
+            new Expression('FROM_UNIXTIME(?)', 100000000)
+        );
+
+        $sqlAndParams = $this->invokeProcessExpressionMethod($expression);
+        $this->assertEquals('"release_date" = FROM_UNIXTIME(\'100000000\')', $sqlAndParams->getSql());
+    }
 
     /**
      * @param \Zend\Db\Sql\ExpressionInterface $expression
      * @param \Zend\Db\Adapter\Adapter|null $adapter
      * @return \Zend\Db\Adapter\StatementContainer
      */
-    protected function invokeProcessExpressionMethod(ExpressionInterface $expression, $adapter = null)
+    protected function invokeProcessExpressionMethod(ExpressionInterface $expression, $driver = null)
     {
         $method = new \ReflectionMethod($this->abstractSql, 'processExpression');
         $method->setAccessible(true);
-        return $method->invoke($this->abstractSql, $expression, new Sql92, $adapter);
+        return $method->invoke($this->abstractSql, $expression, new Sql92, $driver);
     }
 
 }

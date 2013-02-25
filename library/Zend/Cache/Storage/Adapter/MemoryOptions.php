@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Cache
  */
 
 namespace Zend\Cache\Storage\Adapter;
@@ -14,10 +13,6 @@ use Zend\Cache\Exception;
 
 /**
  * These are options specific to the APC adapter
- *
- * @category   Zend
- * @package    Zend_Cache
- * @subpackage Storage
  */
 class MemoryOptions extends AdapterOptions
 {
@@ -66,7 +61,7 @@ class MemoryOptions extends AdapterOptions
             // By default use half of PHP's memory limit if possible
             $memoryLimit = $this->normalizeMemoryLimit(ini_get('memory_limit'));
             if ($memoryLimit >= 0) {
-                $this->memoryLimit = (int)($memoryLimit / 2);
+                $this->memoryLimit = (int) ($memoryLimit / 2);
             } else {
                 // disable memory limit
                 $this->memoryLimit = 0;
@@ -86,14 +81,14 @@ class MemoryOptions extends AdapterOptions
     protected function normalizeMemoryLimit($value)
     {
         if (is_numeric($value)) {
-            return (int)$value;
+            return (int) $value;
         }
 
         if (!preg_match('/(\-?\d+)\s*(\w*)/', ini_get('memory_limit'), $matches)) {
             throw new Exception\InvalidArgumentException("Invalid  memory limit '{$value}'");
         }
 
-        $value = (int)$matches[1];
+        $value = (int) $matches[1];
         if ($value <= 0) {
             return 0;
         }
@@ -101,18 +96,17 @@ class MemoryOptions extends AdapterOptions
         switch (strtoupper($matches[2])) {
             case 'G':
                 $value*= 1024;
-                // Break intentionally omitted
+                // no break
 
             case 'M':
                 $value*= 1024;
-                // Break intentionally omitted
+                // no break
 
             case 'K':
                 $value*= 1024;
-                // Break intentionally omitted
+                // no break
         }
 
         return $value;
     }
-
 }

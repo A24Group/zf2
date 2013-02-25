@@ -3,9 +3,8 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Feed
  */
 
 namespace Zend\Feed\Writer;
@@ -15,8 +14,6 @@ use Zend\Feed\Writer\Exception;
 use Zend\Uri;
 
 /**
-* @category Zend
-* @package Zend_Feed_Writer
 */
 class Entry
 {
@@ -64,7 +61,7 @@ class Entry
      *
      * @param array $author
      * @throws Exception\InvalidArgumentException If any value of $author not follow the format.
-     * @return void
+     * @return Entry
      */
     public function addAuthor(array $author)
     {
@@ -93,6 +90,8 @@ class Entry
         }
 
         $this->data['authors'][] = $author;
+
+        return $this;
     }
 
     /**
@@ -100,13 +99,15 @@ class Entry
      *
      * @see addAuthor
      * @param array $authors
-     * @return void
+     * @return Entry
      */
     public function addAuthors(array $authors)
     {
         foreach ($authors as $author) {
             $this->addAuthor($author);
         }
+
+        return $this;
     }
 
     /**
@@ -114,6 +115,7 @@ class Entry
      *
      * @param string $encoding
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setEncoding($encoding)
     {
@@ -121,6 +123,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: parameter must be a non-empty string');
         }
         $this->data['encoding'] = $encoding;
+
+        return $this;
     }
 
     /**
@@ -141,6 +145,7 @@ class Entry
      *
      * @param string $copyright
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setCopyright($copyright)
     {
@@ -148,6 +153,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: parameter must be a non-empty string');
         }
         $this->data['copyright'] = $copyright;
+
+        return $this;
     }
 
     /**
@@ -155,6 +162,7 @@ class Entry
      *
      * @param string $content
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setContent($content)
     {
@@ -162,13 +170,16 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: parameter must be a non-empty string');
         }
         $this->data['content'] = $content;
+
+        return $this;
     }
 
     /**
      * Set the feed creation date
      *
-     * @param string|null|DateTime $date
+     * @param null|integer|DateTime $date
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setDateCreated($date = null)
     {
@@ -180,13 +191,16 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid DateTime object or UNIX Timestamp passed as parameter');
         }
         $this->data['dateCreated'] = $date;
+
+        return $this;
     }
 
     /**
      * Set the feed modification date
      *
-     * @param string|null|DateTime $date
+     * @param null|integer|DateTime $date
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setDateModified($date = null)
     {
@@ -198,6 +212,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid DateTime object or UNIX Timestamp passed as parameter');
         }
         $this->data['dateModified'] = $date;
+
+        return $this;
     }
 
     /**
@@ -205,6 +221,7 @@ class Entry
      *
      * @param string $description
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setDescription($description)
     {
@@ -212,6 +229,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: parameter must be a non-empty string');
         }
         $this->data['description'] = $description;
+
+        return $this;
     }
 
     /**
@@ -219,6 +238,7 @@ class Entry
      *
      * @param string $id
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setId($id)
     {
@@ -226,6 +246,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: parameter must be a non-empty string');
         }
         $this->data['id'] = $id;
+
+        return $this;
     }
 
     /**
@@ -233,6 +255,7 @@ class Entry
      *
      * @param string $link
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setLink($link)
     {
@@ -240,6 +263,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: parameter must be a non-empty string and valid URI/IRI');
         }
         $this->data['link'] = $link;
+
+        return $this;
     }
 
     /**
@@ -247,13 +272,16 @@ class Entry
      *
      * @param int $count
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setCommentCount($count)
     {
-        if (!is_numeric($count) || (int)$count != $count || (int) $count < 0) {
+        if (!is_numeric($count) || (int) $count != $count || (int) $count < 0) {
             throw new Exception\InvalidArgumentException('Invalid parameter: "count" must be a positive integer number or zero');
         }
         $this->data['commentCount'] = (int) $count;
+
+        return $this;
     }
 
     /**
@@ -261,6 +289,7 @@ class Entry
      *
      * @param string $link
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setCommentLink($link)
     {
@@ -268,6 +297,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: "link" must be a non-empty string and valid URI/IRI');
         }
         $this->data['commentLink'] = $link;
+
+        return $this;
     }
 
     /**
@@ -275,6 +306,7 @@ class Entry
      *
      * @param array $link
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setCommentFeedLink(array $link)
     {
@@ -289,6 +321,8 @@ class Entry
             $this->data['commentFeedLinks'] = array();
         }
         $this->data['commentFeedLinks'][] = $link;
+
+        return $this;
     }
 
     /**
@@ -297,12 +331,15 @@ class Entry
      * "atom", "rss" or "rdf".
      *
      * @param array $links
+     * @return Entry
      */
     public function setCommentFeedLinks(array $links)
     {
         foreach ($links as $link) {
             $this->setCommentFeedLink($link);
         }
+
+        return $this;
     }
 
     /**
@@ -310,6 +347,7 @@ class Entry
      *
      * @param string $title
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setTitle($title)
     {
@@ -317,6 +355,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Invalid parameter: parameter must be a non-empty string');
         }
         $this->data['title'] = $title;
+
+        return $this;
     }
 
     /**
@@ -495,6 +535,7 @@ class Entry
      *
      * @param array $category
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function addCategory(array $category)
     {
@@ -516,18 +557,23 @@ class Entry
             $this->data['categories'] = array();
         }
         $this->data['categories'][] = $category;
+
+        return $this;
     }
 
     /**
      * Set an array of entry categories
      *
      * @param array $categories
+     * @return Entry
      */
     public function addCategories(array $categories)
     {
         foreach ($categories as $category) {
             $this->addCategory($category);
         }
+
+        return $this;
     }
 
     /**
@@ -551,6 +597,7 @@ class Entry
      *
      * @param array $enclosure
      * @throws Exception\InvalidArgumentException
+     * @return Entry
      */
     public function setEnclosure(array $enclosure)
     {
@@ -561,6 +608,8 @@ class Entry
             throw new Exception\InvalidArgumentException('Enclosure "uri" is not a valid URI/IRI');
         }
         $this->data['enclosure'] = $enclosure;
+
+        return $this;
     }
 
     /**
@@ -580,12 +629,15 @@ class Entry
      * Unset a specific data point
      *
      * @param string $name
+     * @return Entry
      */
     public function remove($name)
     {
         if (isset($this->data[$name])) {
             unset($this->data[$name]);
         }
+
+        return $this;
     }
 
     /**
@@ -618,10 +670,12 @@ class Entry
      * on their appropriateness for the current type, e.g. renderers.
      *
      * @param string $type
+     * @return Entry
      */
     public function setType($type)
     {
         $this->type = $type;
+        return $this;
     }
 
     /**
@@ -676,10 +730,12 @@ class Entry
      * the feed data container's internal group of entries.
      *
      * @param Source $source
+     * @return Entry
      */
     public function setSource(Source $source)
     {
         $this->data['source'] = $source;
+        return $this;
     }
 
     /**

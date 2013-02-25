@@ -3,37 +3,32 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
- * @package   Zend_Mvc
  */
 
 namespace Zend\Mvc\View\Console;
 
-use Zend\Mvc\Application;
-use Zend\Mvc\MvcEvent;
+use Zend\Console\Adapter\AdapterInterface as ConsoleAdapter;
+use Zend\Console\ColorInterface;
+use Zend\Console\Response as ConsoleResponse;
+use Zend\Console\Request as ConsoleRequest;
 use Zend\EventManager\EventManagerInterface;
 use Zend\EventManager\ListenerAggregateInterface;
-use Zend\ServiceManager\ServiceManager;
-use Zend\ServiceManager\Exception\ServiceNotFoundException;
 use Zend\ModuleManager\ModuleManagerInterface;
 use Zend\ModuleManager\Feature\ConsoleBannerProviderInterface;
 use Zend\ModuleManager\Feature\ConsoleUsageProviderInterface;
+use Zend\Mvc\Application;
 use Zend\Mvc\Exception\RuntimeException;
-use Zend\Console\Response as ConsoleResponse;
-use Zend\Console\Request as ConsoleRequest;
-use Zend\Console\Adapter\AdapterInterface as ConsoleAdapter;
-use Zend\Mvc\Router\RouteInterface;
-use Zend\View\Model\ConsoleModel;
-use Zend\Version\Version;
+use Zend\Mvc\MvcEvent;
+use Zend\ServiceManager\Exception\ServiceNotFoundException;
+use Zend\ServiceManager\ServiceManager;
 use Zend\Stdlib\ResponseInterface as Response;
+use Zend\Stdlib\StringUtils;
 use Zend\Text\Table;
+use Zend\Version\Version;
+use Zend\View\Model\ConsoleModel;
 
-/**
- * @category   Zend
- * @package    Zend_Mvc
- * @subpackage View
- */
 class RouteNotFoundStrategy implements ListenerAggregateInterface
 {
     /**
@@ -42,9 +37,16 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
     protected $listeners = array();
 
     /**
+     * Whether or not to display the reason for routing failure
+     *
+     * @var bool
+     */
+    protected $displayNotFoundReason = true;
+
+    /**
      * The reason for a not-found condition
      *
-     * @var boolean|string
+     * @var bool|string
      */
     protected $reason = false;
 
@@ -72,6 +74,28 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
                 unset($this->listeners[$index]);
             }
         }
+    }
+
+    /**
+     * Set flag indicating whether or not to display the routing failure
+     *
+     * @param  bool $displayNotFoundReason
+     * @return RouteNotFoundStrategy
+     */
+    public function setDisplayNotFoundReason($displayNotFoundReason)
+    {
+        $this->displayNotFoundReason = (bool) $displayNotFoundReason;
+        return $this;
+    }
+
+    /**
+     * Do we display the routing failure?
+     *
+     * @return bool
+     */
+    public function displayNotFoundReason()
+    {
+        return $this->displayNotFoundReason;
     }
 
     /**
@@ -162,10 +186,11 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
         // Get application usage information
         $usage = $this->getConsoleUsage($console, $scriptName, $mm, $router);
 
-        // Inject the text into view model
+        // Inject the text into view
         $result  = $banner ? rtrim($banner, "\r\n")        : '';
         $result .= $usage  ? "\n\n" . trim($usage, "\r\n") : '';
         $result .= "\n"; // to ensure we output a final newline
+        $result .= $this->reportNotFoundReason($e);
         $model->setResult($result);
 
         // Inject the result into MvcEvent
@@ -297,9 +322,12 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
                         $result .= "\n";
                     }
 
+                    // Colorize the command
+                    $a = $console->colorize($scriptName . ' ' . $a, ColorInterface::GREEN);
+
                     $tableCols = 2;
                     $tableType = 1;
-                    $table[]   = array($scriptName . ' ' . $a, $b);
+                    $table[]   = array($a, $b);
                     continue;
                 }
 
@@ -360,6 +388,7 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
         $result  = '';
         $padding = 2;
 
+
         // If there is only 1 column, just concatenate it
         if ($cols == 1) {
             foreach ($data as $row) {
@@ -368,12 +397,15 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
             return $result;
         }
 
+        // Get the string wrapper supporting UTF-8 character encoding
+        $strWrapper = StringUtils::getWrapper('UTF-8');
+
         // Determine max width for each column
         $maxW = array();
         for ($x = 1; $x <= $cols; $x += 1) {
             $maxW[$x] = 0;
             foreach ($data as $row) {
-                $maxW[$x] = max($maxW[$x], mb_strlen($row[$x-1],'utf-8') + $padding * 2);
+                $maxW[$x] = max($maxW[$x], $strWrapper->strlen($row[$x-1]) + $padding * 2);
             }
         }
 
@@ -411,5 +443,37 @@ class RouteNotFoundStrategy implements ListenerAggregateInterface
         }
 
         return $table->render();
+    }
+
+    /**
+     * Report the 404 reason and/or exceptions
+     *
+     * @param  \Zend\EventManager\EventInterface $e
+     * @return string
+     */
+    protected function reportNotFoundReason($e)
+    {
+        if (!$this->displayNotFoundReason()) {
+            return '';
+        }
+        $exception = $e->getParam('exception', false);
+        if (!$exception && !$this->reason) {
+            return '';
+        }
+
+        $reason    = (isset($this->reason) && !empty($this->reason)) ? $this->reason : 'unknown';
+        $reasons   = array(
+            Application::ERROR_CONTROLLER_NOT_FOUND => 'Could not match to a controller',
+            Application::ERROR_CONTROLLER_INVALID   => 'Invalid controller specified',
+            Application::ERROR_ROUTER_NO_MATCH      => 'Invalid arguments or no arguments provided',
+            'unknown'                               => 'Unknown',
+        );
+        $report = sprintf("\nReason for failure: %s\n", $reasons[$reason]);
+
+        while ($exception instanceof \Exception) {
+            $report   .= sprintf("Exception: %s\nTrace:\n%s\n", $exception->getMessage(), $exception->getTraceAsString());
+            $exception = $exception->getPrevious();
+        }
+        return $report;
     }
 }

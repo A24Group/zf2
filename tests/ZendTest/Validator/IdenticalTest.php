@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Validator
  */
@@ -128,5 +128,89 @@ class IdenticalTest extends \PHPUnit_Framework_TestCase
         $validator = $this->validator;
         $this->assertAttributeEquals($validator->getOption('messageVariables'),
                                      'messageVariables', $validator);
+    }
+
+    public function testValidatingStringTokenInContext()
+    {
+        $this->validator->setToken('email');
+
+        $this->assertTrue($this->validator->isValid(
+            'john@doe.com',
+            array('email' => 'john@doe.com')
+        ));
+
+        $this->assertFalse($this->validator->isValid(
+            'john@doe.com',
+            array('email' => 'harry@hoe.com')
+        ));
+
+        $this->assertFalse($this->validator->isValid(
+            'harry@hoe.com',
+            array('email' => 'john@doe.com')
+        ));
+    }
+
+    public function testValidatingArrayTokenInContext()
+    {
+        $this->validator->setToken(array('user' => 'email'));
+
+        $this->assertTrue($this->validator->isValid(
+            'john@doe.com',
+            array(
+                'user' => array(
+                    'email' => 'john@doe.com'
+                )
+            )
+        ));
+
+        $this->assertFalse($this->validator->isValid(
+            'john@doe.com',
+            array(
+                'user' => array(
+                    'email' => 'harry@hoe.com'
+                )
+            )
+        ));
+
+        $this->assertFalse($this->validator->isValid(
+            'harry@hoe.com',
+            array(
+                'user' => array(
+                    'email' => 'john@doe.com'
+                )
+            )
+        ));
+    }
+
+    public function testSetStringTokenNonExistentInContext()
+    {
+        $this->validator->setToken('email');
+        $this->setExpectedException(
+            'Zend\Validator\Exception\RuntimeException',
+            "The token doesn't exist in the context"
+        );
+
+        $this->validator->isValid(
+            'john@doe.com',
+            array('name' => 'john') // There's no 'email' key here, must throw an exception
+        );
+    }
+
+    public function testSetArrayTokenNonExistentInContext()
+    {
+        $this->validator->setToken(array('user' => 'email'));
+        $this->setExpectedException(
+            'Zend\Validator\Exception\RuntimeException',
+            "The token doesn't exist in the context"
+        );
+
+        $this->validator->isValid(
+            'john@doe.com',
+            array(
+                'admin' => array( // Here is 'admin' instead of 'user', must throw an exception
+                    'email' => 'john@doe.com'
+                )
+            )
+        );
     }
 }

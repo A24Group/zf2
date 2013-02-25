@@ -3,7 +3,7 @@
  * Zend Framework (http://framework.zend.com/)
  *
  * @link      http://github.com/zendframework/zf2 for the canonical source repository
- * @copyright Copyright (c) 2005-2012 Zend Technologies USA Inc. (http://www.zend.com)
+ * @copyright Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license   http://framework.zend.com/license/new-bsd New BSD License
  * @package   Zend_Mvc
  */
@@ -210,6 +210,38 @@ class TreeRouteStackTest extends TestCase
         );
 
         $this->assertEquals('/?bar=baz', $stack->assemble(array('bar' => 'baz'), array('name' => 'index/query')));
+    }
+
+    public function testAssembleWithQueryParams()
+    {
+        $stack = new TreeRouteStack();
+        $stack->addRoute(
+            'index',
+            array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/',
+                ),
+            )
+        );
+
+        $this->assertEquals('/?foo=bar', $stack->assemble(array(), array('name' => 'index', 'query' => array('foo' => 'bar'))));
+    }
+
+    public function testAssembleWithFragment()
+    {
+        $stack = new TreeRouteStack();
+        $stack->addRoute(
+            'index',
+            array(
+                'type' => 'Literal',
+                'options' => array(
+                    'route' => '/',
+                ),
+            )
+        );
+
+        $this->assertEquals('/#foobar', $stack->assemble(array(), array('name' => 'index', 'fragment' => 'foobar')));
     }
 
     public function testAssembleWithoutNameOption()
