@@ -38,7 +38,7 @@ class PostRedirectGet extends AbstractPlugin
      * boolean false.
      *
      * @param  null|string $redirect
-     * @param  bool $redirectToUrl
+     * @param  bool        $redirectToUrl
      * @return \Zend\Http\Response|array|\Traversable|false
      */
     public function __invoke($redirect = null, $redirectToUrl = false)
@@ -87,20 +87,23 @@ class PostRedirectGet extends AbstractPlugin
      * TODO: Good candidate for traits method in PHP 5.4 with FilePostRedirectGet plugin
      *
      * @param  string  $redirect
-     * @param  boolean $redirectToUrl
+     * @param  bool    $redirectToUrl
      * @return \Zend\Http\Response
      * @throws \Zend\Mvc\Exception\RuntimeException
      */
     protected function redirect($redirect, $redirectToUrl)
     {
-        $controller = $this->getController();
-        $params     = array();
+        $controller         = $this->getController();
+        $params             = array();
+        $options            = array();
+        $reuseMatchedParams = false;
 
         if (null === $redirect) {
             $routeMatch = $controller->getEvent()->getRouteMatch();
 
             $redirect = $routeMatch->getMatchedRouteName();
-            $params   = $routeMatch->getParams();
+            //null indicates to redirect for self.
+            $reuseMatchedParams = true;
         }
 
         if (method_exists($controller, 'getPluginManager')) {
@@ -119,7 +122,7 @@ class PostRedirectGet extends AbstractPlugin
         }
 
         if ($redirectToUrl === false) {
-            $response = $redirector->toRoute($redirect, $params);
+            $response = $redirector->toRoute($redirect, $params, $options, $reuseMatchedParams);
             $response->setStatusCode(303);
             return $response;
         }

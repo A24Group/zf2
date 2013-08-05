@@ -173,6 +173,16 @@ class ClassGeneratorTest extends \PHPUnit_Framework_TestCase
         $this->assertTrue($classGenerator->hasMethod('methodOne'));
     }
 
+    public function testRemoveMethod()
+    {
+        $classGenerator = new ClassGenerator();
+        $classGenerator->addMethod('methodOne');
+        $this->assertTrue($classGenerator->hasMethod('methodOne'));
+
+        $classGenerator->removeMethod('methodOne');
+        $this->assertFalse($classGenerator->hasMethod('methodOne'));
+    }
+
     /**
      * @group ZF-7361
      */
@@ -390,5 +400,20 @@ CODE;
 
         $docBlock = $classGenerator->getDocBlock();
         $this->assertInstanceOf('Zend\Code\Generator\DocBlockGenerator', $docBlock);
+    }
+
+    public function testExtendedClassProperies()
+    {
+        $reflClass = new ClassReflection('ZendTest\Code\Generator\TestAsset\ExtendedClassWithProperties');
+        $classGenerator = ClassGenerator::fromReflection($reflClass);
+        $code = $classGenerator->generate();
+        $this->assertContains('publicExtendedClassProperty', $code);
+        $this->assertContains('protectedExtendedClassProperty', $code);
+        $this->assertContains('privateExtendedClassProperty', $code);
+        $this->assertNotContains('publicClassProperty', $code);
+        $this->assertNotContains('protectedClassProperty', $code);
+        $this->assertNotContains('privateClassProperty', $code);
+
+
     }
 }

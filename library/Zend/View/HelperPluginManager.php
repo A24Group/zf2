@@ -28,7 +28,8 @@ class HelperPluginManager extends AbstractPluginManager
      * @var array
      */
     protected $factories = array(
-        'flashmessenger'      => 'Zend\View\Helper\Service\FlashMessengerFactory',
+        'flashmessenger' => 'Zend\View\Helper\Service\FlashMessengerFactory',
+        'identity'       => 'Zend\View\Helper\Service\IdentityFactory',
     );
 
     /**
@@ -92,16 +93,6 @@ class HelperPluginManager extends AbstractPluginManager
     {
         parent::__construct($configuration);
 
-        $this->setFactory('identity', function ($helpers) {
-            $services = $helpers->getServiceLocator();
-            $helper   = new Helper\Identity();
-            if (!$services->has('Zend\Authentication\AuthenticationService')) {
-                return $helper;
-            }
-            $helper->setAuthenticationService($services->get('Zend\Authentication\AuthenticationService'));
-            return $helper;
-        });
-
         $this->addInitializer(array($this, 'injectRenderer'))
              ->addInitializer(array($this, 'injectTranslator'));
     }
@@ -154,7 +145,9 @@ class HelperPluginManager extends AbstractPluginManager
     {
         if ($helper instanceof TranslatorAwareInterface) {
             $locator = $this->getServiceLocator();
-            if ($locator && $locator->has('translator')) {
+            if ($locator && $locator->has('MvcTranslator')) {
+                $helper->setTranslator($locator->get('MvcTranslator'));
+            } elseif ($locator && $locator->has('translator')) {
                 $helper->setTranslator($locator->get('translator'));
             }
         }

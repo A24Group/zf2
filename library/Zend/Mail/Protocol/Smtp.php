@@ -80,7 +80,7 @@ class Smtp extends AbstractProtocol
      * are present.
      *
      * @param  string|array $host
-     * @param  null|integer $port
+     * @param  null|int $port
      * @param  null|array   $config
      * @throws Exception\InvalidArgumentException
      */
@@ -196,7 +196,7 @@ class Smtp extends AbstractProtocol
     /**
      * Returns the perceived session status
      *
-     * @return boolean
+     * @return bool
      */
     public function hasSession()
     {
@@ -317,7 +317,7 @@ class Smtp extends AbstractProtocol
     /**
      * Issues the NOOP command end validates answer
      *
-     * Not used by Zend_Mail, could be used to keep a connection alive or check if it is still open.
+     * Not used by Zend\Mail, could be used to keep a connection alive or check if it is still open.
      *
      */
     public function noop()
@@ -330,7 +330,7 @@ class Smtp extends AbstractProtocol
     /**
      * Issues the VRFY command end validates answer
      *
-     * Not used by Zend_Mail.
+     * Not used by Zend\Mail.
      *
      * @param  string $user User Name or eMail to verify
      */
@@ -348,6 +348,7 @@ class Smtp extends AbstractProtocol
     public function quit()
     {
         if ($this->sess) {
+            $this->auth = false;
             $this->_send('QUIT');
             $this->_expect(221, 300); // Timeout set for 5 minutes as per RFC 2821 4.5.3.2
             $this->_stopSession();

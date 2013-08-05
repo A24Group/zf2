@@ -1,17 +1,17 @@
-### Welcome to the *Zend Framework 2.1* Release!
+### Welcome to the *Zend Framework 2.2* Release!
 
 Master: [![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=master)](http://travis-ci.org/zendframework/zf2)
 Develop: [![Build Status](https://secure.travis-ci.org/zendframework/zf2.png?branch=develop)](http://travis-ci.org/zendframework/zf2)
 
 ## RELEASE INFORMATION
 
-*Zend Framework 2.1.4dev*
+*Zend Framework 2.2.3dev*
 
-This is the fourth maintenance release for the version 2.1 series.
+This is the third maintenance release for the 2.2 series.
 
 DD MMM YYYY
 
-### UPDATES IN 2.1.4
+### UPDATES IN 2.2.3
 
 Please see [CHANGELOG.md](CHANGELOG.md).
 

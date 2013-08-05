@@ -19,7 +19,10 @@ use Zend\Session\Exception;
  * Replaces the $_SESSION superglobal with an ArrayObject that allows for
  * property access, metadata storage, locking, and immutability.
  */
-abstract class AbstractSessionArrayStorage implements IteratorAggregate, StorageInterface
+abstract class AbstractSessionArrayStorage implements
+    IteratorAggregate,
+    StorageInterface,
+    StorageInitializationInterface
 {
     /**
      * Constructor
@@ -27,6 +30,19 @@ abstract class AbstractSessionArrayStorage implements IteratorAggregate, Storage
      * @param array|null $input
      */
     public function __construct($input = null)
+    {
+        // this is here for B.C.
+        $this->init($input);
+    }
+
+
+    /**
+     * Initialize Storage
+     *
+     * @param  array $input
+     * @return void
+     */
+    public function init($input = null)
     {
         if ((null === $input) && isset($_SESSION)) {
             $input = $_SESSION;
@@ -67,7 +83,7 @@ abstract class AbstractSessionArrayStorage implements IteratorAggregate, Storage
      * Isset Offset
      *
      * @param  mixed   $key
-     * @return boolean
+     * @return bool
      */
     public function __isset($key)
     {
@@ -99,7 +115,7 @@ abstract class AbstractSessionArrayStorage implements IteratorAggregate, Storage
      * Offset Exists
      *
      * @param  mixed   $key
-     * @return boolean
+     * @return bool
      */
     public function offsetExists($key)
     {

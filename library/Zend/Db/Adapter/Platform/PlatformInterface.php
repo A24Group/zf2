@@ -51,10 +51,22 @@ interface PlatformInterface
     /**
      * Quote value
      *
+     * Will throw a notice when used in a workflow that can be considered "unsafe"
+     *
      * @param  string $value
      * @return string
      */
     public function quoteValue($value);
+
+    /**
+     * Quote Trusted Value
+     *
+     * The ability to quote values without notices
+     *
+     * @param $value
+     * @return mixed
+     */
+    public function quoteTrustedValue($value);
 
     /**
      * Quote value list
@@ -75,7 +87,7 @@ interface PlatformInterface
      * Quote identifier in fragment
      *
      * @param  string $identifier
-     * @param  array $safeWords
+     * @param  array $additionalSafeWords
      * @return string
      */
     public function quoteIdentifierInFragment($identifier, array $additionalSafeWords = array());

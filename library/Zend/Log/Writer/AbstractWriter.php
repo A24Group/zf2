@@ -100,7 +100,7 @@ abstract class AbstractWriter implements WriterInterface
                 $formatter = $options['formatter'];
                 if (is_string($formatter) || $formatter instanceof Formatter\FormatterInterface) {
                     $this->setFormatter($formatter);
-                } else if(is_array($formatter)) {
+                } elseif (is_array($formatter)) {
                     if (!isset($formatter['name'])) {
                         throw new Exception\InvalidArgumentException('Options must contain a name for the formatter');
                     }
@@ -131,7 +131,7 @@ abstract class AbstractWriter implements WriterInterface
 
         if (!$filter instanceof Filter\FilterInterface) {
             throw new Exception\InvalidArgumentException(sprintf(
-                'Writer must implement %s\Filter\FilterInterface; received "%s"',
+                'Filter must implement %s\Filter\FilterInterface; received "%s"',
                 __NAMESPACE__,
                 is_object($filter) ? get_class($filter) : gettype($filter)
             ));

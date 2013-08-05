@@ -39,6 +39,13 @@ abstract class AbstractRestfulController extends AbstractController
     );
 
     /**
+     * Name of request or query parameter containing identifier
+     *
+     * @var string
+     */
+    protected $identifierName = 'id';
+
+    /**
      * @var int From Zend\Json\Json
      */
     protected $jsonDecodeType = Json::TYPE_ARRAY;
@@ -51,12 +58,41 @@ abstract class AbstractRestfulController extends AbstractController
     protected $customHttpMethodsMap = array();
 
     /**
+     * Set the route match/query parameter name containing the identifier
+     *
+     * @param  string $name
+     * @return self
+     */
+    public function setIdentifierName($name)
+    {
+        $this->identifierName = (string) $name;
+        return $this;
+    }
+
+    /**
+     * Retrieve the route match/query parameter name containing the identifier
+     *
+     * @return string
+     */
+    public function getIdentifierName()
+    {
+        return $this->identifierName;
+    }
+
+    /**
      * Create a new resource
      *
      * @param  mixed $data
      * @return mixed
      */
-    abstract public function create($data);
+    public function create($data)
+    {
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
+    }
 
     /**
      * Delete an existing resource
@@ -64,7 +100,14 @@ abstract class AbstractRestfulController extends AbstractController
      * @param  mixed $id
      * @return mixed
      */
-    abstract public function delete($id);
+    public function delete($id)
+    {
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
+    }
 
     /**
      * Delete the entire resource collection
@@ -73,13 +116,14 @@ abstract class AbstractRestfulController extends AbstractController
      * (introduced in 2.1.0); instead, raises an exception if not implemented.
      *
      * @return mixed
-     * @throws Exception\RuntimeException
      */
     public function deleteList()
     {
-        throw new Exception\RuntimeException(sprintf(
-            '%s is unimplemented', __METHOD__
-        ));
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
     }
 
     /**
@@ -88,14 +132,28 @@ abstract class AbstractRestfulController extends AbstractController
      * @param  mixed $id
      * @return mixed
      */
-    abstract public function get($id);
+    public function get($id)
+    {
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
+    }
 
     /**
      * Return list of resources
      *
      * @return mixed
      */
-    abstract public function getList();
+    public function getList()
+    {
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
+    }
 
     /**
      * Retrieve HEAD metadata for the resource
@@ -105,13 +163,14 @@ abstract class AbstractRestfulController extends AbstractController
      *
      * @param  null|mixed $id
      * @return mixed
-     * @throws Exception\RuntimeException
      */
     public function head($id = null)
     {
-        throw new Exception\RuntimeException(sprintf(
-            '%s is unimplemented', __METHOD__
-        ));
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
     }
 
     /**
@@ -124,13 +183,14 @@ abstract class AbstractRestfulController extends AbstractController
      * (introduced in 2.1.0); instead, raises an exception if not implemented.
      *
      * @return mixed
-     * @throws Exception\RuntimeException
      */
     public function options()
     {
-        throw new Exception\RuntimeException(sprintf(
-            '%s is unimplemented', __METHOD__
-        ));
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
     }
 
     /**
@@ -139,14 +199,16 @@ abstract class AbstractRestfulController extends AbstractController
      * Not marked as abstract, as that would introduce a BC break
      * (introduced in 2.1.0); instead, raises an exception if not implemented.
      *
-     * @return mixed
-     * @throws Exception\RuntimeException
+     * @param  $id
+     * @param  $data
      */
     public function patch($id, $data)
     {
-        throw new Exception\RuntimeException(sprintf(
-            '%s is unimplemented', __METHOD__
-        ));
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
     }
 
     /**
@@ -157,13 +219,32 @@ abstract class AbstractRestfulController extends AbstractController
      *
      * @param  mixed $data
      * @return mixed
-     * @throws Exception\RuntimeException
      */
     public function replaceList($data)
     {
-        throw new Exception\RuntimeException(sprintf(
-            '%s is unimplemented', __METHOD__
-        ));
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
+    }
+
+    /**
+     * Modify a resource collection withou completely replacing it
+     *
+     * Not marked as abstract, as that would introduce a BC break
+     * (introduced in 2.2.0); instead, raises an exception if not implemented.
+     *
+     * @param  mixed $data
+     * @return mixed
+     */
+    public function patchList($data)
+    {
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
     }
 
     /**
@@ -173,7 +254,14 @@ abstract class AbstractRestfulController extends AbstractController
      * @param  mixed $data
      * @return mixed
      */
-    abstract public function update($id, $data);
+    public function update($id, $data)
+    {
+        $this->response->setStatusCode(405);
+
+        return array(
+            'content' => 'Method Not Allowed'
+        );
+    }
 
     /**
      * Basic functionality for when a page is not available
@@ -215,6 +303,7 @@ abstract class AbstractRestfulController extends AbstractController
     /**
      * Handle the request
      *
+     * @todo   try-catch in "patch" for patchList should be removed in the future
      * @param  MvcEvent $e
      * @return mixed
      * @throws Exception\DomainException if no route matches in event or invalid HTTP method
@@ -299,14 +388,25 @@ abstract class AbstractRestfulController extends AbstractController
             // PATCH
             case 'patch':
                 $id = $this->getIdentifier($routeMatch, $request);
-                if ($id === false) {
+                $data = $this->processBodyContent($request);
+
+                if ($id !== false) {
+                    $action = 'patch';
+                    $return = $this->patch($id, $data);
+                    break;
+                }
+
+                // TODO: This try-catch should be removed in the future, but it
+                // will create a BC break for pre-2.2.0 apps that expect a 405
+                // instead of going to patchList
+                try {
+                    $action = 'patchList';
+                    $return = $this->patchList($data);
+                } catch (Exception\RuntimeException $ex) {
                     $response = $e->getResponse();
                     $response->setStatusCode(405);
                     return $response;
                 }
-                $data   = $this->processBodyContent($request);
-                $action = 'patch';
-                $return = $this->patch($id, $data);
                 break;
             // POST
             case 'post':
@@ -361,7 +461,7 @@ abstract class AbstractRestfulController extends AbstractController
      *
      * @param  Request $request
      * @param  string|null $contentType
-     * @return boolean
+     * @return bool
      */
     public function requestHasContentType(Request $request, $contentType = '')
     {
@@ -431,7 +531,7 @@ abstract class AbstractRestfulController extends AbstractController
      * Retrieve the identifier, if any
      *
      * Attempts to see if an identifier was passed in either the URI or the
-     * query string, returning if if found. Otherwise, returns a boolean false.
+     * query string, returning it if found. Otherwise, returns a boolean false.
      *
      * @param  \Zend\Mvc\Router\RouteMatch $routeMatch
      * @param  Request $request
@@ -439,13 +539,14 @@ abstract class AbstractRestfulController extends AbstractController
      */
     protected function getIdentifier($routeMatch, $request)
     {
-        $id = $routeMatch->getParam('id', false);
-        if ($id) {
+        $identifier = $this->getIdentifierName();
+        $id = $routeMatch->getParam($identifier, false);
+        if ($id !== false) {
             return $id;
         }
 
-        $id = $request->getQuery()->get('id', false);
-        if ($id) {
+        $id = $request->getQuery()->get($identifier, false);
+        if ($id !== false) {
             return $id;
         }
 

@@ -120,7 +120,7 @@ abstract class AbstractRowGateway implements ArrayAccess, Countable, RowGatewayI
     /**
      * Save
      *
-     * @return integer
+     * @return int
      */
     public function save()
     {
@@ -205,10 +205,13 @@ abstract class AbstractRowGateway implements ArrayAccess, Countable, RowGatewayI
         $statement = $this->sql->prepareStatementForSqlObject($this->sql->delete()->where($where));
         $result = $statement->execute();
 
-        if ($result->getAffectedRows() == 1) {
+        $affectedRows = $result->getAffectedRows();
+        if ($affectedRows == 1) {
             // detach from database
             $this->primaryKeyData = null;
         }
+
+        return $affectedRows;
     }
 
     /**

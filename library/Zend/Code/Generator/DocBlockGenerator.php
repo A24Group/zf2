@@ -35,7 +35,7 @@ class DocBlockGenerator extends AbstractGenerator
     protected $indentation = '';
 
     /**
-     * @var boolean
+     * @var bool
      */
     protected $wordwrap = true;
 
@@ -119,7 +119,6 @@ class DocBlockGenerator extends AbstractGenerator
     public function setShortDescription($shortDescription)
     {
         $this->shortDescription = $shortDescription;
-
         return $this;
     }
 
@@ -138,7 +137,6 @@ class DocBlockGenerator extends AbstractGenerator
     public function setLongDescription($longDescription)
     {
         $this->longDescription = $longDescription;
-
         return $this;
     }
 
@@ -173,15 +171,14 @@ class DocBlockGenerator extends AbstractGenerator
         if (is_array($tag)) {
             $tag = new DockBlockTag($tag);
         } elseif (!$tag instanceof DockBlockTag) {
-            throw new Exception\InvalidArgumentException(
+            throw new Exception\InvalidArgumentException(sprintf(
                 '%s expects either an array of method options or an instance of %s\DocBlock\Tag',
                 __METHOD__,
                 __NAMESPACE__
-            );
+            ));
         }
 
         $this->tags[] = $tag;
-
         return $this;
     }
 
@@ -196,20 +193,19 @@ class DocBlockGenerator extends AbstractGenerator
     /**
      * Set the word wrap
      *
-     * @param boolean $value
+     * @param bool $value
      * @return \Zend\Code\Generator\DocBlockGenerator
      */
     public function setWordWrap($value)
     {
-        $this->wordwrap = (boolean) $value;
-
+        $this->wordwrap = (bool) $value;
         return $this;
     }
 
     /**
      * Get the word wrap
      *
-     * @return boolean
+     * @return bool
      */
     public function getWordWrap()
     {
@@ -222,7 +218,7 @@ class DocBlockGenerator extends AbstractGenerator
     public function generate()
     {
         if (!$this->isSourceDirty()) {
-            return $this->docCommentize($this->getSourceContent());
+            return $this->docCommentize(trim($this->getSourceContent()));
         }
 
         $output = '';

@@ -18,12 +18,10 @@ use Zend\Stdlib\RequestInterface as Request;
 /**
  * Query route.
  *
- * @see        http://guides.rubyonrails.org/routing.html
  * @deprecated
  */
 class Query implements RouteInterface
 {
-
     /**
      * Default values.
      *
@@ -45,6 +43,10 @@ class Query implements RouteInterface
      */
     public function __construct(array $defaults = array())
     {
+        /**
+         * Legacy purposes only, to prevent code that uses it from breaking.
+         */
+        trigger_error('Query route deprecated as of ZF 2.1.4; use the "query" option of the HTTP router\'s assembling method instead', E_USER_DEPRECATED);
         $this->defaults = $defaults;
     }
 
@@ -53,8 +55,8 @@ class Query implements RouteInterface
      *
      * @see    \Zend\Mvc\Router\RouteInterface::factory()
      * @param  array|Traversable $options
-     * @throws Exception\InvalidArgumentException
      * @return Query
+     * @throws Exception\InvalidArgumentException
      */
     public static function factory($options = array())
     {
@@ -63,7 +65,6 @@ class Query implements RouteInterface
         } elseif (!is_array($options)) {
             throw new Exception\InvalidArgumentException(__METHOD__ . ' expects an array or Traversable set of options');
         }
-
 
         if (!isset($options['defaults'])) {
             $options['defaults'] = array();
@@ -77,29 +78,26 @@ class Query implements RouteInterface
      *
      * @see    \Zend\Mvc\Router\RouteInterface::match()
      * @param  Request $request
-     * @param  int|null $pathOffset
      * @return RouteMatch
      */
-    public function match(Request $request, $pathOffset = null)
+    public function match(Request $request)
     {
-        if (!method_exists($request, 'getQuery')) {
-            return null;
-        }
-
-        $matches = $this->recursiveUrldecode($request->getQuery()->toArray());
-
-        return new RouteMatch(array_merge($this->defaults, $matches));
+        // We don't merge the query parameters into the rotue match here because
+        // of possible security problems. Use the Query object instead which is
+        // included in the Request object.
+        return new RouteMatch($this->defaults);
     }
 
     /**
      * Recursively urldecodes keys and values from an array
      *
-     * @param array $array
+     * @param  array $array
      * @return array
      */
     protected function recursiveUrldecode(array $array)
     {
         $matches = array();
+
         foreach ($array as $key => $value) {
             if (is_array($value)) {
                 $matches[urldecode($key)] = $this->recursiveUrldecode($value);
@@ -107,13 +105,14 @@ class Query implements RouteInterface
                 $matches[urldecode($key)] = urldecode($value);
             }
         }
+
         return $matches;
     }
 
     /**
      * assemble(): Defined by RouteInterface interface.
-     * @see    \Zend\Mvc\Router\RouteInterface::assemble()
      *
+     * @see    \Zend\Mvc\Router\RouteInterface::assemble()
      * @param  array $params
      * @param  array $options
      * @return mixed

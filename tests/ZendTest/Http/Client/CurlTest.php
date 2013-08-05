@@ -254,6 +254,30 @@ class CurlTest extends CommonHttpTests
         );
     }
 
+    /**
+     * @group 4213
+     */
+    public function testSetOptionsMergesCurlOptions()
+    {
+        $adapter = new Adapter\Curl();
+
+        $adapter->setOptions(array(
+            'curloptions' => array(
+                'foo' => 'bar',
+            ),
+        ));
+        $adapter->setOptions(array(
+            'curloptions' => array(
+                'bar' => 'baz',
+            ),
+        ));
+
+        $this->assertEquals(
+            array('curloptions' => array('foo' => 'bar', 'bar' => 'baz')),
+            $this->readAttribute($adapter, 'config')
+        );
+    }
+
     public function testWorkWithProxyConfiguration()
     {
         $adapter = new Adapter\Curl();
@@ -322,5 +346,23 @@ class CurlTest extends CommonHttpTests
         $this->assertArrayHasKey('request_header', $curlInfo, 'Expecting request_header in curl_getinfo() return value');
 
         $this->assertContains($header, $curlInfo['request_header'], 'Expecting valid basic authorization header');
+    }
+
+    /**
+     * @group 4555
+     */
+    public function testResponseDoesNotDoubleDecodeGzippedBody()
+    {
+        $this->client->setUri($this->baseuri . 'testCurlGzipData.php');
+        $adapter = new Adapter\Curl();
+        $adapter->setOptions(array(
+            'curloptions' => array(
+                CURLOPT_ENCODING => '',
+            ),
+        ));
+        $this->client->setAdapter($adapter);
+        $this->client->setMethod('GET');
+        $this->client->send();
+        $this->assertEquals('Success', $this->client->getResponse()->getBody());
     }
 }

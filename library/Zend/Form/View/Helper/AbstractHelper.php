@@ -42,7 +42,8 @@ abstract class AbstractHelper extends BaseAbstractHelper
      * @var array
      */
     protected $translatableAttributes = array(
-        'placeholder' => true
+        'placeholder' => true,
+        'title' => true,
     );
 
     /**
@@ -203,7 +204,6 @@ abstract class AbstractHelper extends BaseAbstractHelper
     public function createAttributesString(array $attributes)
     {
         $attributes = $this->prepareAttributes($attributes);
-
         $escape     = $this->getEscapeHtmlHelper();
         $strings    = array();
         foreach ($attributes as $key => $value) {
