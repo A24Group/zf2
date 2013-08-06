@@ -71,7 +71,7 @@ abstract class Barcode
     }
 
     /**
-     * Factory for Zend_Barcode classes.
+     * Factory for Zend\Barcode classes.
      *
      * First argument may be a string containing the base of the adapter class
      * name, e.g. 'int25' corresponds to class Object\Int25.  This
@@ -128,7 +128,7 @@ abstract class Barcode
             $renderer = static::makeRenderer($renderer, $rendererConfig);
         } catch (Exception\ExceptionInterface $e) {
             if ($automaticRenderError && !($e instanceof Exception\RendererCreationException)) {
-                $barcode  = static::makeBarcode('error', array( 'text' => $e->getMessage() ));
+                $barcode  = static::makeBarcode('error', array('text' => $e->getMessage()));
                 $renderer = static::makeRenderer($renderer, array());
             } else {
                 throw $e;

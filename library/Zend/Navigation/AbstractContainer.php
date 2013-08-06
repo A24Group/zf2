@@ -16,7 +16,7 @@ use Traversable;
 use Zend\Stdlib\ErrorHandler;
 
 /**
- * Zend_Navigation_Container
+ * Zend\Navigation\Container
  *
  * AbstractContainer class for Zend\Navigation\Page classes.
  */
@@ -159,6 +159,9 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
         }
 
         foreach ($pages as $page) {
+            if (null === $page) {
+                continue;
+            }
             $this->addPage($page);
         }
 
@@ -350,7 +353,7 @@ abstract class AbstractContainer implements Countable, RecursiveIterator
         if (!$result) {
             throw new Exception\BadMethodCallException(sprintf(
                 'Bad method call: Unknown method %s::%s',
-                get_called_class(),
+                get_class($this),
                 $method
             ), 0, $error);
         }

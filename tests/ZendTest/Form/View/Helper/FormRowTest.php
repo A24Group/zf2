@@ -347,6 +347,39 @@ class FormRowTest extends TestCase
 
         $this->helper->setLabelPosition('append');
         $markup = $this->helper->render($element);
-        $this->assertEquals('<input name="foo" id="bar" type="text" value=""/><label for="bar">Baz</label>', $markup);
+        $this->assertRegexp('#^<input name="foo" id="bar" type="text" value=""\/?><label for="bar">Baz</label>$#', $markup);
+    }
+
+    public function testUsePartialView()
+    {
+        $element = new Element('fooname');
+        $element->setLabel('foolabel');
+        $partial = 'formrow-partial.phtml';
+
+        $this->renderer->resolver()->addPath(__DIR__ . '/_templates');
+        $markup = $this->helper->__invoke($element, null, null, $partial);
+        $this->assertContains('fooname', $markup);
+        $this->assertContains('foolabel', $markup);
+
+        $this->assertSame($partial, $this->helper->getPartial());
+    }
+
+    public function testAssertButtonElementDoesNotRenderLabelTwice()
+    {
+        $element = new Element\Button('button');
+        $element->setLabel('foo');
+
+        $markup = $this->helper->render($element);
+        $this->assertRegexp('#^<button type="button" name="button" value=""\/?>foo</button>$#', $markup);
+    }
+
+    public function testCanSetLabelPositionBeforeInvoke()
+    {
+        $element = new Element('foo');
+
+        $this->helper->setLabelPosition('append');
+        $this->helper->__invoke($element);
+
+        $this->assertSame('append', $this->helper->getLabelPosition());
     }
 }

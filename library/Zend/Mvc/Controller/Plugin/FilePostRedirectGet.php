@@ -39,8 +39,8 @@ class FilePostRedirectGet extends AbstractPlugin
     /**
      * @param  FormInterface $form
      * @param  string        $redirect      Route or URL string (default: current route)
-     * @param  boolean       $redirectToUrl Use $redirect as a URL string (default: false)
-     * @return boolean|array|Response
+     * @param  bool          $redirectToUrl Use $redirect as a URL string (default: false)
+     * @return bool|array|Response
      */
     public function __invoke(FormInterface $form, $redirect = null, $redirectToUrl = false)
     {
@@ -55,7 +55,7 @@ class FilePostRedirectGet extends AbstractPlugin
     /**
      * @param  FormInterface $form
      * @param  string        $redirect      Route or URL string (default: current route)
-     * @param  boolean       $redirectToUrl Use $redirect as a URL string (default: false)
+     * @param  bool          $redirectToUrl Use $redirect as a URL string (default: false)
      * @return Response
      */
     protected function handlePostRequest(FormInterface $form, $redirect, $redirectToUrl)
@@ -109,7 +109,7 @@ class FilePostRedirectGet extends AbstractPlugin
 
     /**
      * @param  FormInterface $form
-     * @return boolean|array
+     * @return bool|array
      */
     protected function handleGetRequest(FormInterface $form)
     {
@@ -246,7 +246,8 @@ class FilePostRedirectGet extends AbstractPlugin
                 $messages = $input->getMessages();
                 if (is_array($value) && $input instanceof FileInput && empty($messages)) {
                     $rawValue = $input->getRawValue();
-                    if (   (isset($rawValue['error'])    && $rawValue['error']    !== UPLOAD_ERR_NO_FILE)
+                    if (
+                        (isset($rawValue['error']) && $rawValue['error'] !== UPLOAD_ERR_NO_FILE)
                         || (isset($rawValue[0]['error']) && $rawValue[0]['error'] !== UPLOAD_ERR_NO_FILE)
                     ) {
                         return $value;
@@ -288,20 +289,23 @@ class FilePostRedirectGet extends AbstractPlugin
      * TODO: Good candidate for traits method in PHP 5.4 with PostRedirectGet plugin
      *
      * @param  string  $redirect
-     * @param  boolean $redirectToUrl
+     * @param  bool    $redirectToUrl
      * @return Response
      * @throws \Zend\Mvc\Exception\RuntimeException
      */
     protected function redirect($redirect, $redirectToUrl)
     {
-        $controller = $this->getController();
-        $params     = array();
+        $controller         = $this->getController();
+        $params             = array();
+        $options            = array();
+        $reuseMatchedParams = false;
 
         if (null === $redirect) {
             $routeMatch = $controller->getEvent()->getRouteMatch();
 
             $redirect = $routeMatch->getMatchedRouteName();
-            $params   = $routeMatch->getParams();
+            //null indicates to redirect for self.
+            $reuseMatchedParams = true;
         }
 
         if (method_exists($controller, 'getPluginManager')) {
@@ -320,7 +324,7 @@ class FilePostRedirectGet extends AbstractPlugin
         }
 
         if ($redirectToUrl === false) {
-            $response = $redirector->toRoute($redirect, $params);
+            $response = $redirector->toRoute($redirect, $params, $options, $reuseMatchedParams);
             $response->setStatusCode(303);
             return $response;
         }

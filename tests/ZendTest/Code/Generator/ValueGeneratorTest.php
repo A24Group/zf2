@@ -72,12 +72,15 @@ class ValueGeneratorTest extends \PHPUnit_Framework_TestCase
             5,
             'one' => 1,
             'two' => '2',
+            'constant1' => '__DIR__ . \'/anydir1/anydir2\'',
             array(
+                'baz' => true,
                 'foo',
                 'bar',
                 array(
                     'baz1',
                     'baz2',
+                    'constant2' => 'ArrayObject::STD_PROP_LIST',
                 )
             ),
             new ValueGenerator('PHP_EOL', 'constant')
@@ -88,12 +91,15 @@ array(
         5,
         'one' => 1,
         'two' => '2',
+        'constant1' => __DIR__ . '/anydir1/anydir2',
         array(
+            'baz' => true,
             'foo',
             'bar',
             array(
                 'baz1',
-                'baz2'
+                'baz2',
+                'constant2' => ArrayObject::STD_PROP_LIST
                 )
             ),
         PHP_EOL
@@ -101,8 +107,34 @@ array(
 EOS;
 
         $valueGenerator = new ValueGenerator();
+        $valueGenerator->initEnvironmentConstants();
         $valueGenerator->setValue($targetValue);
         $generatedTargetSource = $valueGenerator->generate();
         $this->assertEquals($expectedSource, $generatedTargetSource);
+    }
+
+    public function testPropertyDefaultValueCanHandleArrayWithUnsortedKeys()
+    {
+        $value = array(
+            1 => 'a',
+            0 => 'b',
+            'c',
+            7 => 'd',
+            3 => 'e'
+        );
+
+        $valueGenerator = new ValueGenerator();
+        $valueGenerator->setValue($value);
+$expectedSource = <<<EOS
+array(
+        1 => 'a',
+        0 => 'b',
+        'c',
+        7 => 'd',
+        3 => 'e'
+        )
+EOS;
+
+        $this->assertEquals($expectedSource, $valueGenerator->generate());
     }
 }

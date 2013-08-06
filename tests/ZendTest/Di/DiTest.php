@@ -10,12 +10,11 @@
 
 namespace ZendTest\Di;
 
-use Zend\Di\Di;
-use Zend\Di\DefinitionList;
-use Zend\Di\InstanceManager;
 use Zend\Di\Config;
 use Zend\Di\Definition;
-
+use Zend\Di\DefinitionList;
+use Zend\Di\Di;
+use Zend\Di\InstanceManager;
 
 class DiTest extends \PHPUnit_Framework_TestCase
 {
@@ -456,7 +455,13 @@ class DiTest extends \PHPUnit_Framework_TestCase
      */
     public function testNewInstanceWillUsePreferredClassForInterfaceHints()
     {
-        $di = new Di();
+        $definitionList = new DefinitionList(array(
+            $classdef = new Definition\ClassDefinition('ZendTest\Di\TestAsset\PreferredImplClasses\C'),
+            new Definition\RuntimeDefinition()
+        ));
+        $classdef->addMethod('setA', Di::METHOD_IS_EAGER);
+        $di = new Di($definitionList);
+
         $di->instanceManager()->addTypePreference(
             'ZendTest\Di\TestAsset\PreferredImplClasses\A',
             'ZendTest\Di\TestAsset\PreferredImplClasses\BofA'
@@ -467,6 +472,70 @@ class DiTest extends \PHPUnit_Framework_TestCase
         $this->assertInstanceOf('ZendTest\Di\TestAsset\PreferredImplClasses\BofA', $a);
         $d = $di->get('ZendTest\Di\TestAsset\PreferredImplClasses\D');
         $this->assertSame($a, $d->a);
+    }
+
+    public function testNewInstanceWillThrowAnClassNotFoundExceptionWhenClassIsAnInterface()
+    {
+        $definitionArray = array (
+            'ZendTest\Di\TestAsset\ConstructorInjection\D' => array(
+                'supertypes' => array(),
+                'instantiator' => '__construct',
+                'methods' => array('__construct' => 3),
+                'parameters' => array(
+                    '__construct' =>
+                    array (
+                        'ZendTest\Di\TestAsset\ConstructorInjection\D::__construct:0' => array(
+                            0 => 'd',
+                            1 => 'ZendTest\Di\TestAsset\DummyInterface',
+                            2 => true,
+                            3 => NULL,
+                        ),
+                    ),
+                ),
+            ),
+            'ZendTest\Di\TestAsset\DummyInterface' => array(
+                'supertypes' => array(),
+                'instantiator' => NULL,
+                'methods' => array(),
+                'parameters' => array(),
+            ),
+        );
+        $definitionList = new DefinitionList(array(
+            new Definition\ArrayDefinition($definitionArray)
+        ));
+        $di = new Di($definitionList);
+
+        $this->setExpectedException('Zend\Di\Exception\ClassNotFoundException', 'Cannot instantiate interface');
+        $di->get('ZendTest\Di\TestAsset\ConstructorInjection\D');
+    }
+
+    public function testMatchPreferredClassWithAwareInterface()
+    {
+        $di = new Di();
+
+        $di->instanceManager()->addTypePreference(
+            'ZendTest\Di\TestAsset\PreferredImplClasses\A',
+            'ZendTest\Di\TestAsset\PreferredImplClasses\BofA'
+        );
+
+        $e = $di->get('ZendTest\Di\TestAsset\PreferredImplClasses\E');
+        $this->assertInstanceOf('ZendTest\Di\TestAsset\PreferredImplClasses\BofA', $e->a);
+    }
+
+    public function testWillNotUsePreferredClassForInterfaceHints()
+    {
+        $di = new Di();
+
+        $di->instanceManager()->addTypePreference(
+            'ZendTest\Di\TestAsset\PreferredImplClasses\A',
+            'ZendTest\Di\TestAsset\PreferredImplClasses\BofA'
+        );
+
+        $c = $di->get('ZendTest\Di\TestAsset\PreferredImplClasses\C');
+        $a = $c->a;
+        $this->assertNull($a);
+        $d = $di->get('ZendTest\Di\TestAsset\PreferredImplClasses\D');
+        $this->assertNull($d->a);
     }
 
     public function testInjectionInstancesCanBeInjectedMultipleTimes()

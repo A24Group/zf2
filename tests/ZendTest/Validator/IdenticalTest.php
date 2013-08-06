@@ -182,35 +182,33 @@ class IdenticalTest extends \PHPUnit_Framework_TestCase
         ));
     }
 
-    public function testSetStringTokenNonExistentInContext()
+    public function testCanSetLiteralParameterThroughConstructor()
     {
-        $this->validator->setToken('email');
-        $this->setExpectedException(
-            'Zend\Validator\Exception\RuntimeException',
-            "The token doesn't exist in the context"
-        );
-
-        $this->validator->isValid(
-            'john@doe.com',
-            array('name' => 'john') // There's no 'email' key here, must throw an exception
-        );
+        $validator = new Identical(array('token' => 'foo', 'literal' => true));
+        // Default is false
+        $validator->setLiteral(true);
+        $this->assertTrue($validator->getLiteral());
     }
 
-    public function testSetArrayTokenNonExistentInContext()
+    public function testLiteralParameterDoesNotAffectValidationWhenNoContextIsProvided()
     {
-        $this->validator->setToken(array('user' => 'email'));
-        $this->setExpectedException(
-            'Zend\Validator\Exception\RuntimeException',
-            "The token doesn't exist in the context"
-        );
+        $this->validator->setToken(array('foo' => 'bar'));
 
-        $this->validator->isValid(
-            'john@doe.com',
-            array(
-                'admin' => array( // Here is 'admin' instead of 'user', must throw an exception
-                    'email' => 'john@doe.com'
-                )
-            )
-        );
+        $this->validator->setLiteral(false);
+        $this->assertTrue($this->validator->isValid(array('foo' => 'bar')));
+
+        $this->validator->setLiteral(true);
+        $this->assertTrue($this->validator->isValid(array('foo' => 'bar')));
+    }
+
+    public function testLiteralParameterWorksWhenContextIsProvided()
+    {
+        $this->validator->setToken(array('foo' => 'bar'));
+        $this->validator->setLiteral(true);
+
+        $this->assertTrue($this->validator->isValid(
+            array('foo' => 'bar'),
+            array('foo' => 'baz') // Provide a context to make sure the literal parameter will work
+        ));
     }
 }

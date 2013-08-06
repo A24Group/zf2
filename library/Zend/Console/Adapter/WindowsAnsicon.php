@@ -9,9 +9,9 @@
 
 namespace Zend\Console\Adapter;
 
+use Zend\Console\Charset;
 use Zend\Console\Charset\CharsetInterface;
 use Zend\Console\Exception;
-use Zend\Console\Charset;
 
 /**
  * MS Windows with ANSICON console adapter
@@ -209,7 +209,7 @@ class WindowsAnsicon extends Posix
 
                 // Fetch the char from mask
                 $char = substr($mask, $return - 1, 1);
-            } while (!$char || ($mask !== null && !stristr($mask, $char)));
+            } while ("" === $char || ($mask !== null && false === strstr($mask, $char)));
 
             return $char;
         }
