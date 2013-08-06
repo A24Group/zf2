@@ -209,7 +209,7 @@ class AbstractRenderer
     }
 
     /**
-     * Load extensions from Zend_Feed_Writer
+     * Load extensions from Zend\Feed\Writer\Writer
      *
      * @return void
      */
@@ -218,7 +218,7 @@ class AbstractRenderer
         Writer\Writer::registerCoreExtensions();
         $manager = Writer\Writer::getExtensionManager();
         $all = Writer\Writer::getExtensions();
-        if (stripos(get_called_class(), 'entry')) {
+        if (stripos(get_class($this), 'entry')) {
             $exts = $all['entryRenderer'];
         } else {
             $exts = $all['feedRenderer'];

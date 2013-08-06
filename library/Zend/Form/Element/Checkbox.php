@@ -1,17 +1,8 @@
 <?php
 /**
- * Zend Framework
+ * Zend Framework (http://framework.zend.com/)
  *
- * LICENSE
- *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
- *
+ * @link      http://github.com/zendframework/zf2 for the canonical source repository
  * @copyright  Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
  * @license    http://framework.zend.com/license/new-bsd     New BSD License
  */
@@ -23,10 +14,6 @@ use Zend\Form\Element;
 use Zend\InputFilter\InputProviderInterface;
 use Zend\Validator\InArray as InArrayValidator;
 
-/**
- * @copyright  Copyright (c) 2005-2013 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
- */
 class Checkbox extends Element implements InputProviderInterface
 {
     /**
@@ -195,7 +182,7 @@ class Checkbox extends Element implements InputProviderInterface
      */
     public function isChecked()
     {
-        return (bool) $this->value;
+        return $this->value === $this->getCheckedValue();
     }
 
     /**
@@ -206,7 +193,7 @@ class Checkbox extends Element implements InputProviderInterface
      */
     public function setChecked($value)
     {
-        $this->value = (bool) $value;
+        $this->value = $value ? $this->getCheckedValue() : $this->getUncheckedValue();
         return $this;
     }
 
@@ -218,11 +205,9 @@ class Checkbox extends Element implements InputProviderInterface
      */
     public function setValue($value)
     {
-        if (is_bool($value)) {
-            $this->value = $value;
-        } else {
-            $this->value = $value === $this->getCheckedValue();
-        }
+        // Cast to strings because POST data comes in string form
+        $checked = (string) $value === (string) $this->getCheckedValue();
+        $this->value = $checked ? $this->getCheckedValue() : $this->getUncheckedValue();
         return $this;
     }
 }

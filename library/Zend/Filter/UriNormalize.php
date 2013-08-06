@@ -11,9 +11,9 @@ namespace Zend\Filter;
 
 use Zend\Filter\AbstractFilter;
 use Zend\Filter\Exception\InvalidArgumentException;
+use Zend\Uri\Exception\ExceptionInterface as UriException;
 use Zend\Uri\UriFactory;
 use Zend\Uri\Uri;
-use Zend\Uri\Exception\ExceptionInterface as UriException;
 
 class UriNormalize extends AbstractFilter
 {
@@ -34,8 +34,7 @@ class UriNormalize extends AbstractFilter
     /**
      * Sets filter options
      *
-     * @param  array|\Traversable|null $options
-     * @return void
+     * @param array|\Traversable|null $options
      */
     public function __construct($options = null)
     {
@@ -51,7 +50,7 @@ class UriNormalize extends AbstractFilter
      * normalize the URI and thus may affect the resulting normalize URI.
      *
      * @param  string $defaultScheme
-     * @return \Zend\Filter\UriNormalize
+     * @return self
      */
     public function setDefaultScheme($defaultScheme)
     {
@@ -71,7 +70,7 @@ class UriNormalize extends AbstractFilter
      * real-world user mishaps, it may yield unexpected results at times.
      *
      * @param  string $enforcedScheme
-     * @return \Zend\Filter\UriNormalize
+     * @return self
      */
     public function setEnforcedScheme($enforcedScheme)
     {

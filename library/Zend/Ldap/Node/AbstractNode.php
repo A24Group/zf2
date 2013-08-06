@@ -9,13 +9,15 @@
 
 namespace Zend\Ldap\Node;
 
+use ArrayAccess;
+use Countable;
 use Zend\Ldap;
 use Zend\Ldap\Exception;
 
 /**
  * This class provides a base implementation for LDAP nodes
  */
-abstract class AbstractNode implements \ArrayAccess, \Countable
+abstract class AbstractNode implements ArrayAccess, Countable
 {
     protected static $systemAttributes = array('createtimestamp', 'creatorsname',
                                                'entrycsn', 'entrydn', 'entryuuid', 'hassubordinates', 'modifiersname',
@@ -304,7 +306,7 @@ abstract class AbstractNode implements \ArrayAccess, \Countable
      * This is an offline method.
      *
      * @param  string  $name
-     * @param  integer $index
+     * @param  int $index
      * @return mixed
      * @throws \Zend\Ldap\Exception\LdapException
      */
@@ -323,8 +325,8 @@ abstract class AbstractNode implements \ArrayAccess, \Countable
      * This is an offline method.
      *
      * @param  string  $name
-     * @param  integer $index
-     * @return array|integer
+     * @param  int $index
+     * @return array|int
      * @throws \Zend\Ldap\Exception\LdapException
      */
     public function getDateTimeAttribute($name, $index = null)

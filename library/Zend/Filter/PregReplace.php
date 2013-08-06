@@ -52,7 +52,7 @@ class PregReplace extends AbstractFilter
      * @see preg_replace()
      *
      * @param  string|array $pattern - same as the first argument of preg_replace
-     * @return PregReplace
+     * @return self
      * @throws Exception\InvalidArgumentException
      */
     public function setPattern($pattern)
@@ -94,7 +94,7 @@ class PregReplace extends AbstractFilter
      * @see preg_replace()
      *
      * @param  array|string $replacement - same as the second argument of preg_replace
-     * @return PregReplace
+     * @return self
      * @throws Exception\InvalidArgumentException
      */
     public function setReplacement($replacement)
@@ -132,7 +132,7 @@ class PregReplace extends AbstractFilter
         if ($this->options['pattern'] === null) {
             throw new Exception\RuntimeException(sprintf(
                 'Filter %s does not have a valid pattern set',
-                get_called_class()
+                get_class($this)
             ));
         }
 

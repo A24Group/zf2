@@ -19,10 +19,11 @@ class RenameUpload extends AbstractFilter
      * @var array
      */
     protected $options = array(
-        'target'          => null,
-        'use_upload_name' => false,
-        'overwrite'       => false,
-        'randomize'       => false,
+        'target'               => null,
+        'use_upload_name'      => false,
+        'use_upload_extension' => false,
+        'overwrite'            => false,
+        'randomize'            => false,
     );
 
     /**
@@ -50,7 +51,7 @@ class RenameUpload extends AbstractFilter
 
     /**
      * @param  string $target Target file path or directory
-     * @return RenameUpload
+     * @return self
      */
     public function setTarget($target)
     {
@@ -72,19 +73,19 @@ class RenameUpload extends AbstractFilter
     }
 
     /**
-     * @param  boolean $flag When true, this filter will use the $_FILES['name']
+     * @param  bool $flag When true, this filter will use the $_FILES['name']
      *                       as the target filename.
      *                       Otherwise, it uses the default 'target' rules.
-     * @return RenameUpload
+     * @return self
      */
     public function setUseUploadName($flag = true)
     {
-        $this->options['use_upload_name'] = (boolean) $flag;
+        $this->options['use_upload_name'] = (bool) $flag;
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getUseUploadName()
     {
@@ -92,17 +93,36 @@ class RenameUpload extends AbstractFilter
     }
 
     /**
-     * @param  boolean $flag Shall existing files be overwritten?
-     * @return RenameUpload
+     * @param  bool $flag When true, this filter will use the original file
+     *                    extension for the target filename
+     * @return self
      */
-    public function setOverwrite($flag = true)
+    public function setUseUploadExtension($flag = true)
     {
-        $this->options['overwrite'] = (boolean) $flag;
+        $this->options['use_upload_extension'] = (bool) $flag;
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
+     */
+    public function getUseUploadExtension()
+    {
+        return $this->options['use_upload_extension'];
+    }
+
+    /**
+     * @param  bool $flag Shall existing files be overwritten?
+     * @return self
+     */
+    public function setOverwrite($flag = true)
+    {
+        $this->options['overwrite'] = (bool) $flag;
+        return $this;
+    }
+
+    /**
+     * @return bool
      */
     public function getOverwrite()
     {
@@ -110,17 +130,17 @@ class RenameUpload extends AbstractFilter
     }
 
     /**
-     * @param  boolean $flag Shall target files have a random postfix attached?
-     * @return RenameUpload
+     * @param  bool $flag Shall target files have a random postfix attached?
+     * @return self
      */
     public function setRandomize($flag = true)
     {
-        $this->options['randomize'] = (boolean) $flag;
+        $this->options['randomize'] = (bool) $flag;
         return $this;
     }
 
     /**
-     * @return boolean
+     * @return bool
      */
     public function getRandomize()
     {
@@ -178,8 +198,8 @@ class RenameUpload extends AbstractFilter
     /**
      * @param  string $sourceFile Source file path
      * @param  string $targetFile Target file path
-     * @throws \Zend\Filter\Exception\RuntimeException
-     * @return boolean
+     * @throws Exception\RuntimeException
+     * @return bool
      */
     protected function moveUploadedFile($sourceFile, $targetFile)
     {
@@ -198,7 +218,7 @@ class RenameUpload extends AbstractFilter
 
     /**
      * @param  string $targetFile Target file path
-     * @throws \Zend\Filter\Exception\InvalidArgumentException
+     * @throws Exception\InvalidArgumentException
      */
     protected function checkFileExists($targetFile)
     {
@@ -242,28 +262,43 @@ class RenameUpload extends AbstractFilter
             $targetFile = basename($uploadData['name']);
         } elseif (!is_dir($target)) {
             $targetFile = basename($target);
+            if ($this->getUseUploadExtension() && !$this->getRandomize()) {
+                $targetInfo = pathinfo($targetFile);
+                $sourceinfo = pathinfo($uploadData['name']);
+                if (isset($sourceinfo['extension'])) {
+                    $targetFile = $targetInfo['filename'] . '.' . $sourceinfo['extension'];
+                }
+            }
         } else {
             $targetFile = basename($source);
         }
 
         if ($this->getRandomize()) {
-            $targetFile = $this->applyRandomToFilename($targetFile);
+            $targetFile = $this->applyRandomToFilename($uploadData['name'], $targetFile);
         }
 
         return $targetDir . $targetFile;
     }
 
     /**
+     * @param  string $source
      * @param  string $filename
      * @return string
      */
-    protected function applyRandomToFilename($filename)
+    protected function applyRandomToFilename($source, $filename)
     {
         $info = pathinfo($filename);
         $filename = $info['filename'] . uniqid('_');
-        if (isset($info['extension'])) {
-            $filename .= '.' . $info['extension'];
+
+        $sourceinfo = pathinfo($source);
+
+        $extension = '';
+        if ($this->getUseUploadExtension() === true && isset($sourceinfo['extension'])) {
+            $extension .= '.' . $sourceinfo['extension'];
+        } elseif (isset($info['extension'])) {
+            $extension .= '.' . $info['extension'];
         }
-        return $filename;
+
+        return $filename . $extension;
     }
 }

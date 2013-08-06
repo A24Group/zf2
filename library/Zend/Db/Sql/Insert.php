@@ -10,10 +10,10 @@
 namespace Zend\Db\Sql;
 
 use Zend\Db\Adapter\AdapterInterface;
-use Zend\Db\Adapter\StatementContainerInterface;
 use Zend\Db\Adapter\ParameterContainer;
 use Zend\Db\Adapter\Platform\PlatformInterface;
 use Zend\Db\Adapter\Platform\Sql92;
+use Zend\Db\Adapter\StatementContainerInterface;
 
 class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 {
@@ -168,13 +168,17 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
 
         foreach ($this->columns as $cIndex => $column) {
             $columns[$cIndex] = $platform->quoteIdentifier($column);
-            if ($this->values[$cIndex] instanceof Expression) {
+            if (isset($this->values[$cIndex]) && $this->values[$cIndex] instanceof Expression) {
                 $exprData = $this->processExpression($this->values[$cIndex], $platform, $driver);
                 $values[$cIndex] = $exprData->getSql();
                 $parameterContainer->merge($exprData->getParameterContainer());
             } else {
                 $values[$cIndex] = $driver->formatParameterName($column);
-                $parameterContainer->offsetSet($column, $this->values[$cIndex]);
+                if (isset($this->values[$cIndex])) {
+                    $parameterContainer->offsetSet($column, $this->values[$cIndex]);
+                } else {
+                    $parameterContainer->offsetSet($column, null);
+                }
             }
         }
 

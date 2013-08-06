@@ -10,12 +10,12 @@
 namespace Zend\XmlRpc\Request;
 
 use Zend\XmlRpc\Request as XmlRpcRequest;
-use Zend\XmlRpc\Server\Exception as ServerException;
+use Zend\XmlRpc\Fault;
 
 /**
  * XmlRpc Request object -- Request via STDIN
  *
- * Extends {@link Zend_XmlRpc_Request} to accept a request via STDIN. Request is
+ * Extends {@link Zend\XmlRpc\Request} to accept a request via STDIN. Request is
  * built at construction time using data from STDIN; if no data is available, the
  * request is declared a fault.
  */
@@ -39,7 +39,7 @@ class Stdin extends XmlRpcRequest
     {
         $fh = fopen('php://stdin', 'r');
         if (!$fh) {
-            $this->fault = new ServerException(630);
+            $this->fault = new Fault(630);
             return;
         }
 

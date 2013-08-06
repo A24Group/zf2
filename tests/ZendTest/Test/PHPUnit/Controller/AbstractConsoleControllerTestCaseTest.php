@@ -19,7 +19,7 @@ use Zend\Test\PHPUnit\Controller\AbstractConsoleControllerTestCase;
  */
 class AbstractConsoleControllerTestCaseTest extends AbstractConsoleControllerTestCase
 {
-    public function setUp()
+    protected function setUp()
     {
         $this->setApplicationConfig(
             include __DIR__ . '/../../_files/application.config.php'
@@ -93,5 +93,23 @@ class AbstractConsoleControllerTestCaseTest extends AbstractConsoleControllerTes
 
         $this->setExpectedException('PHPUnit_Framework_ExpectationFailedException');
         $this->assertNotConsoleOutputContains('foo');
+    }
+
+    public function testAssertMatchedArgumentsWithValue()
+    {
+        $this->dispatch('filter --date="2013-03-07 00:00:00" --id=10 --text="custom text"');
+        $routeMatch = $this->getApplication()->getMvcEvent()->getRouteMatch();
+        $this->assertEquals("2013-03-07 00:00:00", $routeMatch->getParam('date'));
+        $this->assertEquals("10", $routeMatch->getParam('id'));
+        $this->assertEquals("custom text", $routeMatch->getParam('text'));
+    }
+
+    public function testAssertMatchedArgumentsWithValueWithoutEqualsSign()
+    {
+        $this->dispatch('filter --date "2013-03-07 00:00:00" --id=10 --text="custom text"');
+        $routeMatch = $this->getApplication()->getMvcEvent()->getRouteMatch();
+        $this->assertEquals("2013-03-07 00:00:00", $routeMatch->getParam('date'));
+        $this->assertEquals("10", $routeMatch->getParam('id'));
+        $this->assertEquals("custom text", $routeMatch->getParam('text'));
     }
 }

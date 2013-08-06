@@ -65,7 +65,7 @@ class Decode
      *
      * @param  string $message  raw message content
      * @param  string $boundary boundary as found in content-type
-     * @param  string $EOL EOL string; defaults to {@link Zend_Mime::LINEEND}
+     * @param  string $EOL EOL string; defaults to {@link Zend\Mime\Mime::LINEEND}
      * @return array|null parts as array('header' => array(name => value), 'body' => content), null if no parts found
      * @throws Exception\RuntimeException
      */
@@ -95,7 +95,7 @@ class Decode
      * @param  string|Headers  $message raw message with header and optional content
      * @param  Headers         $headers output param, headers container
      * @param  string          $body    output param, content of message
-     * @param  string          $EOL EOL string; defaults to {@link Zend_Mime::LINEEND}
+     * @param  string          $EOL EOL string; defaults to {@link Zend\Mime\Mime::LINEEND}
      * @param  bool         $strict  enable strict mode for parsing message
      * @return null
      */
@@ -115,7 +115,7 @@ class Decode
 
         // see @ZF2-372, pops the first line off a message if it doesn't contain a header
         if (!$strict) {
-            $parts = explode(': ', $firstline, 2);
+            $parts = explode(':', $firstline, 2);
             if (count($parts) != 2) {
                 $message = substr($message, strpos($message, $EOL)+1);
             }
