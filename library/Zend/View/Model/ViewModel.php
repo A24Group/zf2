@@ -225,7 +225,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface
     public function getVariable($name, $default = null)
     {
         $name = (string) $name;
-        if (array_key_exists($name, $this->variables)) {
+        if (is_array($this->variables) && array_key_exists($name, $this->variables)) {
             return $this->variables[$name];
         }
 
