@@ -227,8 +227,9 @@ class ViewModel implements ModelInterface, ClearableModelInterface
         $name = (string) $name;
         if (is_array($this->variables) && array_key_exists($name, $this->variables)) {
             return $this->variables[$name];
+        } else if (is_object($this->variables) && property_exists($this->variables, $name)) {
+            return $this->variables[$name];
         }
-
         return $default;
     }
 
