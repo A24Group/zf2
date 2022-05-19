@@ -316,12 +316,15 @@ class StandardAutoloader implements SplAutoloader
      */
     protected function normalizeDirectory($directory)
     {
-        $last = $directory[strlen($directory) - 1];
-        if (in_array($last, array('/', '\\'))) {
-            $directory[strlen($directory) - 1] = DIRECTORY_SEPARATOR;
-            return $directory;
+        // This value is sometimes false and then you get an error for trying access an array element on a bool value
+        if ($directory) {
+            $last = $directory[strlen($directory) - 1];
+            if (in_array($last, array('/', '\\'))) {
+                $directory[strlen($directory) - 1] = DIRECTORY_SEPARATOR;
+                return $directory;
+            }
+            $directory .= DIRECTORY_SEPARATOR;
         }
-        $directory .= DIRECTORY_SEPARATOR;
         return $directory;
     }
 }
