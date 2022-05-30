@@ -355,15 +355,20 @@ class SessionManager extends AbstractManager
         if (!$config->getUseCookies()) {
             return;
         }
-        setcookie(
-            $this->getName(),                 // session name
-            '',                               // value
-            $_SERVER['REQUEST_TIME'] - 42000, // TTL for cookie
-            $config->getCookiePath(),
-            $config->getCookieDomain(),
-            $config->getCookieSecure(),
-            $config->getCookieHttpOnly()
-        );
+
+        $options = [
+            'expires' => $_SERVER['REQUEST_TIME'] - 42000,
+            'path' => explode(";", $config->getCookiePath())[0],
+            'domain' => $config->getCookieDomain(),
+            'secure' => $config->getCookieSecure(),
+            'httponly' => $config->getCookieHttpOnly(),
+        ];
+
+        if (str_contains($config->getCookiePath(), "SameSite=")) {
+            $options['samesite'] = explode("SameSite=", $config->getCookiePath())[1];
+        }
+
+        setcookie($this->getName(), '', $options);
     }
 
     /**
