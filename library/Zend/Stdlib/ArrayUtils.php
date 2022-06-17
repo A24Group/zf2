@@ -213,6 +213,10 @@ abstract class ArrayUtils
             }
 
             return iterator_to_array($iterator);
+        } else {
+            if (is_array($iterator)) {
+                return $iterator;
+            }
         }
 
         if (method_exists($iterator, 'toArray')) {

@@ -109,7 +109,7 @@ class Mcrypt implements SymmetricInterface
      */
     public function __construct($options = array())
     {
-        if (!extension_loaded('mcrypt')) {
+        if (!extension_loaded('mcrypt') && false) {
             throw new Exception\RuntimeException(
                 'You cannot use ' . __CLASS__ . ' without the Mcrypt extension'
             );
