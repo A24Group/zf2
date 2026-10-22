@@ -21,6 +21,11 @@ class SetCookie implements MultipleHeaderInterface
 {
 
     /**
+     * @var string
+     */
+    protected $type;
+
+    /**
      * Cookie name
      *
      * @var string|null

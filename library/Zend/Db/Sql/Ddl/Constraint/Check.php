@@ -19,6 +19,11 @@ class Check extends AbstractConstraint
     /**
      * @var string
      */
+    protected $name;
+
+    /**
+     * @var string
+     */
     protected $specification = 'CONSTRAINT %s CHECK (%s)';
 
     /**

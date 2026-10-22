@@ -31,6 +31,11 @@ class Response extends HttpResponse
     protected $contentSent = false;
 
     /**
+     * @var bool
+     */
+    protected $headersSent = false;
+
+    /**
      * Return the HTTP version for this response
      *
      * @return string
