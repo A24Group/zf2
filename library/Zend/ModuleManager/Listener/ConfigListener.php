@@ -64,7 +64,7 @@ class ConfigListener extends AbstractListener implements
      *
      * @param  ListenerOptions $options
      */
-    public function __construct(ListenerOptions $options = null)
+    public function __construct(?ListenerOptions $options = null)
     {
         parent::__construct($options);
         if ($this->hasCachedConfig()) {

@@ -37,7 +37,7 @@ class Request extends Message implements RequestInterface
      * @param array|null $env Environment data. If not supplied, $_ENV will be used
      * @throws Exception\RuntimeException
      */
-    public function __construct(array $args = null, array $env = null)
+    public function __construct(?array $args = null, ?array $env = null)
     {
         if ($args === null) {
             if (!isset($_SERVER['argv'])) {

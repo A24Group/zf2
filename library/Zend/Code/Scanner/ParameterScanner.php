@@ -92,7 +92,7 @@ class ParameterScanner
      * @param  array $parameterTokens
      * @param  NameInformation $nameInformation
      */
-    public function __construct(array $parameterTokens, NameInformation $nameInformation = null)
+    public function __construct(array $parameterTokens, ?NameInformation $nameInformation = null)
     {
         $this->tokens          = $parameterTokens;
         $this->nameInformation = $nameInformation;

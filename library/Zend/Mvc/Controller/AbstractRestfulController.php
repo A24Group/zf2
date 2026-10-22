@@ -290,7 +290,7 @@ abstract class AbstractRestfulController extends AbstractController
      * @return mixed|Response
      * @throws Exception\InvalidArgumentException
      */
-    public function dispatch(Request $request, Response $response = null)
+    public function dispatch(Request $request, ?Response $response = null)
     {
         if (! $request instanceof HttpRequest) {
             throw new Exception\InvalidArgumentException(

@@ -69,6 +69,13 @@ class Simple implements RouteInterface
     protected $filters;
 
     /**
+     * Regular expression constraints for parameter values, keyed by parameter name.
+     *
+     * @var array
+     */
+    protected $constraints = array();
+
+    /**
      * Create a new simple console route.
      *
      * @param  string                                   $route

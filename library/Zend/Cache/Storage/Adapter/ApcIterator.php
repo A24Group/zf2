@@ -96,6 +96,7 @@ class ApcIterator implements IteratorInterface
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->mode == IteratorInterface::CURRENT_AS_SELF) {
@@ -118,6 +119,7 @@ class ApcIterator implements IteratorInterface
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         $key = $this->baseIterator->key();
@@ -131,6 +133,7 @@ class ApcIterator implements IteratorInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->baseIterator->next();
@@ -141,6 +144,7 @@ class ApcIterator implements IteratorInterface
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return $this->baseIterator->valid();
@@ -151,6 +155,7 @@ class ApcIterator implements IteratorInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         return $this->baseIterator->rewind();

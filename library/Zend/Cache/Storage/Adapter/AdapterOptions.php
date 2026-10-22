@@ -71,7 +71,7 @@ class AdapterOptions extends AbstractOptions
      * @param  StorageInterface|null $adapter
      * @return AdapterOptions
      */
-    public function setAdapter(StorageInterface $adapter = null)
+    public function setAdapter(?StorageInterface $adapter = null)
     {
         $this->adapter = $adapter;
         return $this;

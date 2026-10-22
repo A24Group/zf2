@@ -82,6 +82,7 @@ class FilterIterator extends SplPriorityQueue
      * @param  FilterIterator $chain
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function next($context = null, array $params = array(), $chain = null)
     {
         if (empty($context) || $chain->isEmpty()) {

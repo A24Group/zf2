@@ -57,7 +57,7 @@ abstract class AbstractPluginManager extends ServiceManager implements ServiceLo
      *
      * @param  null|ConfigInterface $configuration
      */
-    public function __construct(ConfigInterface $configuration = null)
+    public function __construct(?ConfigInterface $configuration = null)
     {
         parent::__construct($configuration);
         $self = $this;

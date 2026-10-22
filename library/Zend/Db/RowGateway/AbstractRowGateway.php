@@ -220,6 +220,7 @@ abstract class AbstractRowGateway implements ArrayAccess, Countable, RowGatewayI
      * @param  string $offset
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->data);
@@ -231,6 +232,7 @@ abstract class AbstractRowGateway implements ArrayAccess, Countable, RowGatewayI
      * @param  string $offset
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->data[$offset];
@@ -243,6 +245,7 @@ abstract class AbstractRowGateway implements ArrayAccess, Countable, RowGatewayI
      * @param  mixed $value
      * @return RowGateway
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->data[$offset] = $value;
@@ -255,6 +258,7 @@ abstract class AbstractRowGateway implements ArrayAccess, Countable, RowGatewayI
      * @param  string $offset
      * @return AbstractRowGateway
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->data[$offset] = null;
@@ -264,6 +268,7 @@ abstract class AbstractRowGateway implements ArrayAccess, Countable, RowGatewayI
     /**
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->data);

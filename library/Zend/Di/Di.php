@@ -105,7 +105,7 @@ class Di implements DependencyInjectionInterface
      * @param null|InstanceManager $instanceManager
      * @param null|Config   $config
      */
-    public function __construct(DefinitionList $definitions = null, InstanceManager $instanceManager = null, Config $config = null)
+    public function __construct(?DefinitionList $definitions = null, ?InstanceManager $instanceManager = null, ?Config $config = null)
     {
         $this->definitions = ($definitions) ?: new DefinitionList(new Definition\RuntimeDefinition());
         $this->instanceManager = ($instanceManager) ?: new InstanceManager();

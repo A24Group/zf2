@@ -74,6 +74,7 @@ class Session extends AbstractAdapter implements
      *
      * @return KeyListIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $cntr = $this->getSessionContainer();

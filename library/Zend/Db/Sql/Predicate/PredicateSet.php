@@ -28,7 +28,7 @@ class PredicateSet implements PredicateInterface, Countable
      * @param  null|array $predicates
      * @param  string $defaultCombination
      */
-    public function __construct(array $predicates = null, $defaultCombination = self::COMBINED_BY_AND)
+    public function __construct(?array $predicates = null, $defaultCombination = self::COMBINED_BY_AND)
     {
         $this->defaultCombination = $defaultCombination;
         if ($predicates) {
@@ -129,6 +129,7 @@ class PredicateSet implements PredicateInterface, Countable
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->predicates);

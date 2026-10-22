@@ -349,6 +349,7 @@ class Filesystem extends AbstractAdapter implements
      *
      * @return FilesystemIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $options   = $this->getOptions();

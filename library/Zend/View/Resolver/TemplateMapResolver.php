@@ -40,6 +40,7 @@ class TemplateMapResolver implements IteratorAggregate, ResolverInterface
      *
      * @return Traversable
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->map);
@@ -174,7 +175,7 @@ class TemplateMapResolver implements IteratorAggregate, ResolverInterface
      * @param  null|Renderer $renderer
      * @return string
      */
-    public function resolve($name, Renderer $renderer = null)
+    public function resolve($name, ?Renderer $renderer = null)
     {
         return $this->get($name);
     }

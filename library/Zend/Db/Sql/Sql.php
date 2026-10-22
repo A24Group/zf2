@@ -24,7 +24,7 @@ class Sql
     /** @var Platform\Platform */
     protected $sqlPlatform = null;
 
-    public function __construct(AdapterInterface $adapter, $table = null, Platform\AbstractPlatform $sqlPlatform = null)
+    public function __construct(AdapterInterface $adapter, $table = null, ?Platform\AbstractPlatform $sqlPlatform = null)
     {
         $this->adapter = $adapter;
         if ($table) {
@@ -115,7 +115,7 @@ class Sql
      * @param StatementInterface|null $statement
      * @return StatementInterface
      */
-    public function prepareStatementForSqlObject(PreparableSqlInterface $sqlObject, StatementInterface $statement = null)
+    public function prepareStatementForSqlObject(PreparableSqlInterface $sqlObject, ?StatementInterface $statement = null)
     {
         $statement = ($statement) ?: $this->adapter->getDriver()->createStatement();
 
@@ -129,7 +129,7 @@ class Sql
         return $statement;
     }
 
-    public function getSqlStringForSqlObject(SqlInterface $sqlObject, PlatformInterface $platform = null)
+    public function getSqlStringForSqlObject(SqlInterface $sqlObject, ?PlatformInterface $platform = null)
     {
         $platform = ($platform) ?: $this->adapter->getPlatform();
 

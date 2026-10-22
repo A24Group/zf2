@@ -40,7 +40,7 @@ class CompilerDefinition implements DefinitionInterface
      *
      * @param null|IntrospectionStrategy $introspectionStrategy
      */
-    public function __construct(IntrospectionStrategy $introspectionStrategy = null)
+    public function __construct(?IntrospectionStrategy $introspectionStrategy = null)
     {
         $this->introspectionStrategy = ($introspectionStrategy) ?: new IntrospectionStrategy();
         $this->directoryScanner = new AggregateDirectoryScanner();

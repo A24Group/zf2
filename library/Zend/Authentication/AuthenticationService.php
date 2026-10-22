@@ -31,7 +31,7 @@ class AuthenticationService
      * @param  Storage\StorageInterface $storage
      * @param  Adapter\AdapterInterface $adapter
      */
-    public function __construct(Storage\StorageInterface $storage = null, Adapter\AdapterInterface $adapter = null)
+    public function __construct(?Storage\StorageInterface $storage = null, ?Adapter\AdapterInterface $adapter = null)
     {
         if (null !== $storage) {
             $this->setStorage($storage);
@@ -100,7 +100,7 @@ class AuthenticationService
      * @return Result
      * @throws Exception\RuntimeException
      */
-    public function authenticate(Adapter\AdapterInterface $adapter = null)
+    public function authenticate(?Adapter\AdapterInterface $adapter = null)
     {
         if (!$adapter) {
             if (!$adapter = $this->getAdapter()) {

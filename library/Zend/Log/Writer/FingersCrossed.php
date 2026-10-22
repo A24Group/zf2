@@ -107,7 +107,7 @@ class FingersCrossed extends AbstractWriter
      * @return self
      * @throws Exception\InvalidArgumentException
      */
-    public function setWriter($writer, array $options = null)
+    public function setWriter($writer, ?array $options = null)
     {
         if (is_string($writer)) {
             $writer = $this->writerPlugin($writer, $options);
@@ -169,7 +169,7 @@ class FingersCrossed extends AbstractWriter
      * @param array|null $options
      * @return WriterInterface
      */
-    public function writerPlugin($name, array $options = null)
+    public function writerPlugin($name, ?array $options = null)
     {
         return $this->getWriterPluginManager()->get($name, $options);
     }

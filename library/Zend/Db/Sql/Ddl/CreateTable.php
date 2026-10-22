@@ -134,7 +134,7 @@ class CreateTable extends AbstractSql implements SqlInterface
      * @param  PlatformInterface $adapterPlatform
      * @return string
      */
-    public function getSqlString(PlatformInterface $adapterPlatform = null)
+    public function getSqlString(?PlatformInterface $adapterPlatform = null)
     {
         // get platform, or create default
         $adapterPlatform = ($adapterPlatform) ?: new AdapterSql92Platform;
@@ -183,7 +183,7 @@ class CreateTable extends AbstractSql implements SqlInterface
         return $sql;
     }
 
-    protected function processTable(PlatformInterface $adapterPlatform = null)
+    protected function processTable(?PlatformInterface $adapterPlatform = null)
     {
         $ret = array();
         if ($this->isTemporary) {
@@ -193,7 +193,7 @@ class CreateTable extends AbstractSql implements SqlInterface
         return $ret;
     }
 
-    protected function processColumns(PlatformInterface $adapterPlatform = null)
+    protected function processColumns(?PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
         foreach ($this->columns as $column) {
@@ -202,7 +202,7 @@ class CreateTable extends AbstractSql implements SqlInterface
         return array($sqls);
     }
 
-    protected function processConstraints(PlatformInterface $adapterPlatform = null)
+    protected function processConstraints(?PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
         foreach ($this->constraints as $constraint) {

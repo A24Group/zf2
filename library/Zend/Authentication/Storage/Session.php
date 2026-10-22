@@ -52,7 +52,7 @@ class Session implements StorageInterface
      * @param  mixed $member
      * @param  SessionManager $manager
      */
-    public function __construct($namespace = null, $member = null, SessionManager $manager = null)
+    public function __construct($namespace = null, $member = null, ?SessionManager $manager = null)
     {
         if ($namespace !== null) {
             $this->namespace = $namespace;

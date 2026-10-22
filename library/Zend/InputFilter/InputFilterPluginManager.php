@@ -40,7 +40,7 @@ class InputFilterPluginManager extends AbstractPluginManager
     /**
      * @param ConfigInterface $configuration
      */
-    public function __construct(ConfigInterface $configuration = null)
+    public function __construct(?ConfigInterface $configuration = null)
     {
         parent::__construct($configuration);
 

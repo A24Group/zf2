@@ -20,5 +20,5 @@ interface ResolverInterface
      * @param  null|Renderer $renderer
      * @return mixed
      */
-    public function resolve($name, Renderer $renderer = null);
+    public function resolve($name, ?Renderer $renderer = null);
 }

@@ -42,7 +42,7 @@ class ModuleLoaderListener extends AbstractListener implements ListenerAggregate
      *
      * @param  ListenerOptions $options
      */
-    public function __construct(ListenerOptions $options = null)
+    public function __construct(?ListenerOptions $options = null)
     {
         parent::__construct($options);
 

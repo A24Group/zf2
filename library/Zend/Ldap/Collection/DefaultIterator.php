@@ -174,6 +174,7 @@ class DefaultIterator implements Iterator, Countable
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->itemCount;
@@ -186,6 +187,7 @@ class DefaultIterator implements Iterator, Countable
      * @return array|null
      * @throws \Zend\Ldap\Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (!is_resource($this->current)) {
@@ -253,6 +255,7 @@ class DefaultIterator implements Iterator, Countable
      * @throws \Zend\Ldap\Exception\LdapException
      * @return string|null
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if (!is_resource($this->current)) {
@@ -280,6 +283,7 @@ class DefaultIterator implements Iterator, Countable
      *
      * @throws \Zend\Ldap\Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $code = 0;
@@ -310,6 +314,7 @@ class DefaultIterator implements Iterator, Countable
      *
      * @throws \Zend\Ldap\Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if (is_resource($this->resultId)) {
@@ -332,6 +337,7 @@ class DefaultIterator implements Iterator, Countable
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (is_resource($this->current));

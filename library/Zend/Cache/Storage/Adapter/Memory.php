@@ -112,6 +112,7 @@ class Memory extends AbstractAdapter implements
      *
      * @return KeyListIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $ns   = $this->getOptions()->getNamespace();

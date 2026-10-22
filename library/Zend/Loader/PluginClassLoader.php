@@ -210,6 +210,7 @@ class PluginClassLoader implements PluginClassLocator
      *
      * @return ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->plugins);

@@ -19,7 +19,7 @@ interface CallbackInterface
      * @param array $httpData GET/POST data if available and not in $_GET/POST
      * @param bool $sendResponseNow Whether to send response now or when asked
      */
-    public function handle(array $httpData = null, $sendResponseNow = false);
+    public function handle(?array $httpData = null, $sendResponseNow = false);
 
     /**
      * Send the response, including all headers.

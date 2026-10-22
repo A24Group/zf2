@@ -182,7 +182,7 @@ class AlterTable extends AbstractSql implements SqlInterface
      * @param  PlatformInterface $adapterPlatform
      * @return string
      */
-    public function getSqlString(PlatformInterface $adapterPlatform = null)
+    public function getSqlString(?PlatformInterface $adapterPlatform = null)
     {
         // get platform, or create default
         $adapterPlatform = ($adapterPlatform) ?: new AdapterSql92Platform;
@@ -208,12 +208,12 @@ class AlterTable extends AbstractSql implements SqlInterface
         return $sql;
     }
 
-    protected function processTable(PlatformInterface $adapterPlatform = null)
+    protected function processTable(?PlatformInterface $adapterPlatform = null)
     {
         return array($adapterPlatform->quoteIdentifier($this->table));
     }
 
-    protected function processAddColumns(PlatformInterface $adapterPlatform = null)
+    protected function processAddColumns(?PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
         foreach ($this->addColumns as $column) {
@@ -223,7 +223,7 @@ class AlterTable extends AbstractSql implements SqlInterface
         return array($sqls);
     }
 
-    protected function processChangeColumns(PlatformInterface $adapterPlatform = null)
+    protected function processChangeColumns(?PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
         foreach ($this->changeColumns as $name => $column) {
@@ -236,7 +236,7 @@ class AlterTable extends AbstractSql implements SqlInterface
         return array($sqls);
     }
 
-    protected function processDropColumns(PlatformInterface $adapterPlatform = null)
+    protected function processDropColumns(?PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
         foreach ($this->dropColumns as $column) {
@@ -246,7 +246,7 @@ class AlterTable extends AbstractSql implements SqlInterface
         return array($sqls);
     }
 
-    protected function processAddConstraints(PlatformInterface $adapterPlatform = null)
+    protected function processAddConstraints(?PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
         foreach ($this->addConstraints as $constraint) {
@@ -256,7 +256,7 @@ class AlterTable extends AbstractSql implements SqlInterface
         return array($sqls);
     }
 
-    protected function processDropConstraints(PlatformInterface $adapterPlatform = null)
+    protected function processDropConstraints(?PlatformInterface $adapterPlatform = null)
     {
         $sqls = array();
         foreach ($this->dropConstraints as $constraint) {

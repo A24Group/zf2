@@ -131,6 +131,7 @@ class Apc extends AbstractAdapter implements
      *
      * @return ApcIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $options   = $this->getOptions();

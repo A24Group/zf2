@@ -65,7 +65,7 @@ class AcceptableViewModelSelector extends AbstractPlugin
      * @return ModelInterface|null
      */
     public function __invoke(
-        array $matchAgainst = null,
+        ?array $matchAgainst = null,
         $returnDefault = true,
         & $resultReference = null
     ) {
@@ -82,7 +82,7 @@ class AcceptableViewModelSelector extends AbstractPlugin
      * @return ModelInterface|null
      */
     public function getViewModel(
-        array $matchAgainst = null,
+        ?array $matchAgainst = null,
         $returnDefault = true,
         & $resultReference = null
     ) {
@@ -108,7 +108,7 @@ class AcceptableViewModelSelector extends AbstractPlugin
      * @return ModelInterface|null Returns null if $returnDefault = false and no match could be made
      */
     public function getViewModelName(
-        array $matchAgainst = null,
+        ?array $matchAgainst = null,
         $returnDefault = true,
         & $resultReference = null
     ) {
@@ -129,7 +129,7 @@ class AcceptableViewModelSelector extends AbstractPlugin
      * @param array $matchAgainst (optional) The Array to match against
      * @return AbstractFieldValuePart|null The object that was matched
      */
-    public function match(array $matchAgainst = null)
+    public function match(?array $matchAgainst = null)
     {
         $request        = $this->getRequest();
         $headers        = $request->getHeaders();
@@ -184,7 +184,7 @@ class AcceptableViewModelSelector extends AbstractPlugin
      * @param array $matchAgainst (optional) The Array to match against
      * @return AcceptableViewModelSelector provides fluent interface
      */
-    public function setDefaultMatchAgainst(array $matchAgainst = null)
+    public function setDefaultMatchAgainst(?array $matchAgainst = null)
     {
         $this->defaultMatchAgainst = $matchAgainst;
         return $this;

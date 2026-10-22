@@ -44,6 +44,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->data);
@@ -55,6 +56,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      *
      * @return \Zend\Ldap\Node
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->data);
@@ -66,6 +68,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->data);
@@ -75,6 +78,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      * Move forward to next child.
      * Implements Iterator
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->data);
@@ -84,6 +88,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      * Rewind the Iterator to the first child.
      * Implements Iterator
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->data);
@@ -96,6 +101,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (current($this->data) !== false);
@@ -107,6 +113,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         if ($this->current() instanceof Ldap\Node) {
@@ -121,6 +128,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      *
      * @return ChildrenIterator
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         if ($this->current() instanceof Ldap\Node) {
@@ -137,6 +145,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      * @param  string $rdn
      * @return array|null
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($rdn)
     {
         if ($this->offsetExists($rdn)) {
@@ -153,6 +162,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      * @param  string $rdn
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($rdn)
     {
         return (array_key_exists($rdn, $this->data));
@@ -164,6 +174,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      *
      * @param $name
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($name)
     {
     }
@@ -175,6 +186,7 @@ class ChildrenIterator implements Iterator, Countable, RecursiveIterator, ArrayA
      * @param  string $name
      * @param         $value
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($name, $value)
     {
     }

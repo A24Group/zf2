@@ -81,7 +81,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * @param  Ldap    $ldap
      * @throws Exception\LdapException
      */
-    protected function __construct(Dn $dn, array $data, $fromDataSource, Ldap $ldap = null)
+    protected function __construct(Dn $dn, array $data, $fromDataSource, ?Ldap $ldap = null)
     {
         parent::__construct($dn, $data, $fromDataSource);
         if ($ldap !== null) {
@@ -412,7 +412,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * @trigger pre-update
      * @trigger post-update
      */
-    public function update(Ldap $ldap = null)
+    public function update(?Ldap $ldap = null)
     {
         if ($ldap !== null) {
             $this->attachLdap($ldap);
@@ -886,7 +886,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * @return bool
      * @throws Exception\LdapException
      */
-    public function exists(Ldap $ldap = null)
+    public function exists(?Ldap $ldap = null)
     {
         if ($ldap !== null) {
             $this->attachLdap($ldap);
@@ -905,7 +905,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * @return Node Provides a fluid interface
      * @throws Exception\LdapException
      */
-    public function reload(Ldap $ldap = null)
+    public function reload(?Ldap $ldap = null)
     {
         if ($ldap !== null) {
             $this->attachLdap($ldap);
@@ -987,6 +987,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * @return bool
      * @throws Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         if (!is_array($this->children)) {
@@ -1006,6 +1007,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * @return Node\ChildrenIterator
      * @throws Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         if (!is_array($this->children)) {
@@ -1028,7 +1030,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * @return Node
      * @throws Exception\LdapException
      */
-    public function getParent(Ldap $ldap = null)
+    public function getParent(?Ldap $ldap = null)
     {
         if ($ldap !== null) {
             $this->attachLdap($ldap);
@@ -1045,6 +1047,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      *
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this;
@@ -1056,6 +1059,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->getRdnString();
@@ -1065,6 +1069,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * Move forward to next attribute.
      * Implements Iterator
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->iteratorRewind = false;
@@ -1074,6 +1079,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      * Rewind the Iterator to the first attribute.
      * Implements Iterator
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->iteratorRewind = true;
@@ -1086,6 +1092,7 @@ class Node extends Node\AbstractNode implements Iterator, RecursiveIterator
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return $this->iteratorRewind;

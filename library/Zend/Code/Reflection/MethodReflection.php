@@ -64,6 +64,7 @@ class MethodReflection extends PhpReflectionMethod implements ReflectionInterfac
      * @param  bool $includeDocComment
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function getStartLine($includeDocComment = false)
     {
         if ($includeDocComment) {
@@ -80,6 +81,7 @@ class MethodReflection extends PhpReflectionMethod implements ReflectionInterfac
      *
      * @return ClassReflection
      */
+    #[\ReturnTypeWillChange]
     public function getDeclaringClass()
     {
         $phpReflection  = parent::getDeclaringClass();
@@ -94,6 +96,7 @@ class MethodReflection extends PhpReflectionMethod implements ReflectionInterfac
      *
      * @return ParameterReflection[]
      */
+    #[\ReturnTypeWillChange]
     public function getParameters()
     {
         $phpReflections  = parent::getParameters();

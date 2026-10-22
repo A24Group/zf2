@@ -45,7 +45,7 @@ class SessionManager extends AbstractManager
      * @param  SaveHandler\SaveHandlerInterface|null $saveHandler
      * @throws Exception\RuntimeException
      */
-    public function __construct(Config\ConfigInterface $config = null, Storage\StorageInterface $storage = null, SaveHandler\SaveHandlerInterface $saveHandler = null)
+    public function __construct(?Config\ConfigInterface $config = null, ?Storage\StorageInterface $storage = null, ?SaveHandler\SaveHandlerInterface $saveHandler = null)
     {
         parent::__construct($config, $storage, $saveHandler);
         register_shutdown_function(array($this, 'writeClose'));
@@ -118,7 +118,7 @@ class SessionManager extends AbstractManager
      * @param  array $options See {@link $defaultDestroyOptions}
      * @return void
      */
-    public function destroy(array $options = null)
+    public function destroy(?array $options = null)
     {
         if (!$this->sessionExists()) {
             return;

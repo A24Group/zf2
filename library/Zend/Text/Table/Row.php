@@ -37,7 +37,7 @@ class Row
      * @param  array  $options
      * @return Row
      */
-    public function createColumn($content, array $options = null)
+    public function createColumn($content, ?array $options = null)
     {
         $align    = null;
         $colSpan  = null;

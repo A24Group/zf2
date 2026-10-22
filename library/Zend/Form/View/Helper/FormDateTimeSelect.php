@@ -48,7 +48,7 @@ class FormDateTimeSelect extends FormDateSelectHelper
      * @return string
      */
     public function __invoke(
-        ElementInterface $element = null,
+        ?ElementInterface $element = null,
         $dateType = IntlDateFormatter::LONG,
         $timeType = IntlDateFormatter::LONG,
         $locale = null

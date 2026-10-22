@@ -46,7 +46,7 @@ abstract class AbstractTranslatorHelper extends AbstractHelper implements
      *                                 Default is null, which skips setTranslatorTextDomain
      * @return AbstractTranslatorHelper
      */
-    public function setTranslator(Translator $translator = null, $textDomain = null)
+    public function setTranslator(?Translator $translator = null, $textDomain = null)
     {
         $this->translator = $translator;
         if (null !== $textDomain) {

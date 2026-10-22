@@ -26,7 +26,7 @@ class Util
      * @return void
      * @throws Exception\InvalidArgumentException
      */
-    public static function resolveImports(&$value, $key = null, stdClass $data = null)
+    public static function resolveImports(&$value, $key = null, ?stdClass $data = null)
     {
         if (!is_object($data)
             || !property_exists($data, 'uses')

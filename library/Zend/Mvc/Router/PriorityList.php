@@ -143,6 +143,7 @@ class PriorityList implements Iterator, Countable
      * @see    Iterator::rewind()
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if (!$this->sorted) {
@@ -158,6 +159,7 @@ class PriorityList implements Iterator, Countable
      * @see    Iterator::current()
      * @return RouteInterface
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $node = current($this->routes);
@@ -170,6 +172,7 @@ class PriorityList implements Iterator, Countable
      * @see    Iterator::key()
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->routes);
@@ -181,6 +184,7 @@ class PriorityList implements Iterator, Countable
      * @see    Iterator::next()
      * @return RouteInterface
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $node = next($this->routes);
@@ -193,6 +197,7 @@ class PriorityList implements Iterator, Countable
      * @see    Iterator::valid()
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return ($this->current() !== false);
@@ -204,6 +209,7 @@ class PriorityList implements Iterator, Countable
      * @see    Countable::count()
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->count;

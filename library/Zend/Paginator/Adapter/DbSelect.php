@@ -51,7 +51,7 @@ class DbSelect implements AdapterInterface
      * @param null|ResultSetInterface $resultSetPrototype
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct(Select $select, $adapterOrSqlObject, ResultSetInterface $resultSetPrototype = null)
+    public function __construct(Select $select, $adapterOrSqlObject, ?ResultSetInterface $resultSetPrototype = null)
     {
         $this->select = $select;
 
@@ -96,6 +96,7 @@ class DbSelect implements AdapterInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if ($this->rowCount !== null) {

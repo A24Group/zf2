@@ -21,5 +21,5 @@ interface DispatchableInterface
      * @param null|Response $response
      * @return Response|mixed
      */
-    public function dispatch(Request $request, Response $response = null);
+    public function dispatch(Request $request, ?Response $response = null);
 }

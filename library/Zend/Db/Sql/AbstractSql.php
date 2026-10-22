@@ -31,7 +31,7 @@ abstract class AbstractSql
      */
     protected $instanceParameterIndex = array();
 
-    protected function processExpression(ExpressionInterface $expression, PlatformInterface $platform, DriverInterface $driver = null, $namedParameterPrefix = null)
+    protected function processExpression(ExpressionInterface $expression, PlatformInterface $platform, ?DriverInterface $driver = null, $namedParameterPrefix = null)
     {
         // static counter for the number of times this method was invoked across the PHP runtime
         static $runtimeExpressionPrefix = 0;
@@ -162,7 +162,7 @@ abstract class AbstractSql
         return vsprintf($specificationString, $topParameters);
     }
 
-    protected function processSubSelect(Select $subselect, PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processSubSelect(Select $subselect, PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($driver) {
             $stmtContainer = new StatementContainer;
