@@ -21,7 +21,7 @@ class Parameters extends PhpArrayObject implements ParametersInterface
      *
      * @param  array $values
      */
-    public function __construct(array $values = null)
+    public function __construct(?array $values = null)
     {
         if (null === $values) {
             $values = array();
@@ -81,6 +81,7 @@ class Parameters extends PhpArrayObject implements ParametersInterface
      * @param  string $name
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($name)
     {
         if (isset($this[$name])) {

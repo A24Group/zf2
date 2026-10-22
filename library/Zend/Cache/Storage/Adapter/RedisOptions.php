@@ -92,7 +92,7 @@ class RedisOptions extends AdapterOptions
      * @param null|RedisResourceManager $resourceManager
      * @return RedisOptions
      */
-    public function setResourceManager(RedisResourceManager $resourceManager = null)
+    public function setResourceManager(?RedisResourceManager $resourceManager = null)
     {
         if ($this->resourceManager !== $resourceManager) {
             $this->triggerOptionEvent('resource_manager', $resourceManager);

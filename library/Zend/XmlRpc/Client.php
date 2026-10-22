@@ -68,7 +68,7 @@ class Client implements ServerClient
      *                             (e.g. http://time.xmlrpc.com/RPC2)
      * @param  \Zend\Http\Client $httpClient HTTP Client to use for requests
      */
-    public function __construct($server, Http\Client $httpClient = null)
+    public function __construct($server, ?Http\Client $httpClient = null)
     {
         if ($httpClient === null) {
             $this->httpClient = new Http\Client();

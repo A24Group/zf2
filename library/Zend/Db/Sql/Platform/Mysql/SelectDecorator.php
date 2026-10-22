@@ -49,7 +49,7 @@ class SelectDecorator extends Select implements PlatformDecoratorInterface
      * @param PlatformInterface $platform
      * @return string
      */
-    public function getSqlString(PlatformInterface $platform = null)
+    public function getSqlString(?PlatformInterface $platform = null)
     {
         // localize variables
         foreach (get_object_vars($this->select) as $name => $value) {
@@ -58,7 +58,7 @@ class SelectDecorator extends Select implements PlatformDecoratorInterface
         return parent::getSqlString($platform);
     }
 
-    protected function processLimit(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processLimit(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->limit === null) {
             return null;
@@ -73,7 +73,7 @@ class SelectDecorator extends Select implements PlatformDecoratorInterface
         return array($sql);
     }
 
-    protected function processOffset(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processOffset(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->offset === null) {
             return null;

@@ -171,6 +171,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->storage);
@@ -227,6 +228,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      *
      * @return \Iterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $class = $this->iteratorClass;
@@ -280,6 +282,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      * @param  mixed $key
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($key)
     {
         return isset($this->storage[$key]);
@@ -291,6 +294,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      * @param  mixed $key
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function &offsetGet($key)
     {
         $ret = null;
@@ -309,6 +313,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      * @param  mixed $value
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         $this->storage[$key] = $value;
@@ -320,6 +325,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      * @param  mixed $key
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($key)
     {
         if ($this->offsetExists($key)) {

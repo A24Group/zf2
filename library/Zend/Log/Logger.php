@@ -48,7 +48,6 @@ class Logger implements LoggerInterface
         E_USER_ERROR        => self::ERR,
         E_CORE_ERROR        => self::ERR,
         E_RECOVERABLE_ERROR => self::ERR,
-        E_STRICT            => self::DEBUG,
         E_DEPRECATED        => self::DEBUG,
         E_USER_DEPRECATED   => self::DEBUG,
     );
@@ -123,7 +122,7 @@ class Logger implements LoggerInterface
      * @return Logger
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct(array $options = null)
+    public function __construct(?array $options = null)
     {
         $this->writers = new SplPriorityQueue();
 
@@ -217,7 +216,7 @@ class Logger implements LoggerInterface
      * @param array|null $options
      * @return Writer\WriterInterface
      */
-    public function writerPlugin($name, array $options = null)
+    public function writerPlugin($name, ?array $options = null)
     {
         return $this->getWriterPluginManager()->get($name, $options);
     }
@@ -231,7 +230,7 @@ class Logger implements LoggerInterface
      * @return Logger
      * @throws Exception\InvalidArgumentException
      */
-    public function addWriter($writer, $priority = 1, array $options = null)
+    public function addWriter($writer, $priority = 1, ?array $options = null)
     {
         if (is_string($writer)) {
             $writer = $this->writerPlugin($writer, $options);
@@ -319,7 +318,7 @@ class Logger implements LoggerInterface
      * @param array|null $options
      * @return Processor\ProcessorInterface
      */
-    public function processorPlugin($name, array $options = null)
+    public function processorPlugin($name, ?array $options = null)
     {
         return $this->getProcessorPluginManager()->get($name, $options);
     }
@@ -333,7 +332,7 @@ class Logger implements LoggerInterface
      * @return Logger
      * @throws Exception\InvalidArgumentException
      */
-    public function addProcessor($processor, $priority = 1, array $options = null)
+    public function addProcessor($processor, $priority = 1, ?array $options = null)
     {
         if (is_string($processor)) {
             $processor = $this->processorPlugin($processor, $options);

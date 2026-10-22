@@ -66,7 +66,7 @@ class ConstantScanner implements ScannerInterface
      * @param array $constantTokens
      * @param NameInformation $nameInformation
      */
-    public function __construct(array $constantTokens, NameInformation $nameInformation = null)
+    public function __construct(array $constantTokens, ?NameInformation $nameInformation = null)
     {
         $this->tokens = $constantTokens;
         $this->nameInformation = $nameInformation;

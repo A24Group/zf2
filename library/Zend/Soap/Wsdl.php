@@ -88,7 +88,7 @@ class Wsdl
     public function __construct(
         $name,
         $uri,
-        ComplexTypeStrategy $strategy = null,
+        ?ComplexTypeStrategy $strategy = null,
         array $classMap = array()
     ) {
         if ($uri instanceof Uri) {

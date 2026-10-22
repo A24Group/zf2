@@ -57,6 +57,7 @@ class Result implements ResultInterface
      * @link http://php.net/manual/en/iterator.current.php
      * @return mixed Can return any type.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->currentComplete) {
@@ -70,6 +71,7 @@ class Result implements ResultInterface
     /**
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->currentData = db2_fetch_assoc($this->resource);
@@ -81,6 +83,7 @@ class Result implements ResultInterface
     /**
      * @return int|string
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -89,6 +92,7 @@ class Result implements ResultInterface
     /**
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return ($this->currentData !== false);
@@ -100,6 +104,7 @@ class Result implements ResultInterface
      * @link http://php.net/manual/en/iterator.rewind.php
      * @return void Any returned value is ignored.
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if ($this->position > 0) {
@@ -185,6 +190,7 @@ class Result implements ResultInterface
     /**
      * @return null|int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return null;

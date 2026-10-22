@@ -33,7 +33,7 @@ class CreateTableDecorator extends CreateTable implements PlatformDecoratorInter
      * @param  null|PlatformInterface $platform
      * @return string
      */
-    public function getSqlString(PlatformInterface $platform = null)
+    public function getSqlString(?PlatformInterface $platform = null)
     {
         // localize variables
         foreach (get_object_vars($this->createTable) as $name => $value) {
@@ -42,7 +42,7 @@ class CreateTableDecorator extends CreateTable implements PlatformDecoratorInter
         return parent::getSqlString($platform);
     }
 
-    protected function processColumns(PlatformInterface $platform = null)
+    protected function processColumns(?PlatformInterface $platform = null)
     {
         $sqls = array();
         foreach ($this->columns as $i => $column) {

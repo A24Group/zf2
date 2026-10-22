@@ -198,7 +198,7 @@ class Insert extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @param  null|PlatformInterface $adapterPlatform Defaults to Sql92 if none provided
      * @return string
      */
-    public function getSqlString(PlatformInterface $adapterPlatform = null)
+    public function getSqlString(?PlatformInterface $adapterPlatform = null)
     {
         $adapterPlatform = ($adapterPlatform) ?: new Sql92;
         $table = $this->table;

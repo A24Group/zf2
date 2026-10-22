@@ -39,7 +39,7 @@ class FormLabel extends AbstractHelper
      * @throws Exception\DomainException
      * @return string|FormLabel
      */
-    public function __invoke(ElementInterface $element = null, $labelContent = null, $position = null)
+    public function __invoke(?ElementInterface $element = null, $labelContent = null, $position = null)
     {
         if (!$element) {
             return $this;

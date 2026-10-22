@@ -337,6 +337,7 @@ class Paginator implements Countable, IteratorAggregate
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if (!$this->pageCount) {
@@ -629,6 +630,7 @@ class Paginator implements Countable, IteratorAggregate
      * @throws Exception\RuntimeException
      * @return Traversable
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         try {
@@ -743,7 +745,7 @@ class Paginator implements Countable, IteratorAggregate
      * @param  \Zend\View\Renderer\RendererInterface $view
      * @return Paginator
      */
-    public function setView(View\Renderer\RendererInterface $view = null)
+    public function setView(?View\Renderer\RendererInterface $view = null)
     {
         $this->view = $view;
 
@@ -800,7 +802,7 @@ class Paginator implements Countable, IteratorAggregate
      * @param  \Zend\View\Renderer\RendererInterface $view
      * @return string
      */
-    public function render(View\Renderer\RendererInterface $view = null)
+    public function render(?View\Renderer\RendererInterface $view = null)
     {
         if (null !== $view) {
             $this->setView($view);

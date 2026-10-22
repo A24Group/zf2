@@ -70,7 +70,7 @@ class HtmlTag extends AbstractTag
      * @throws InvalidArgumentException When the classlist contains an invalid classname
      * @return HTMLTag
      */
-    public function setClassList(array $classList = null)
+    public function setClassList(?array $classList = null)
     {
         if (is_array($classList)) {
             if (count($classList) === 0) {

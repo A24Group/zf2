@@ -58,6 +58,7 @@ class Folder implements RecursiveIterator
      *
      * @return bool current element has children
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         $current = $this->current();
@@ -69,6 +70,7 @@ class Folder implements RecursiveIterator
      *
      * @return \Zend\Mail\Storage\Folder same as self::current()
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         return $this->current();
@@ -79,6 +81,7 @@ class Folder implements RecursiveIterator
      *
      * @return bool check if there's a current element
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return key($this->folders) !== null;
@@ -87,6 +90,7 @@ class Folder implements RecursiveIterator
     /**
      * implements Iterator::next()
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->folders);
@@ -97,6 +101,7 @@ class Folder implements RecursiveIterator
      *
      * @return string key/local name of current element
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->folders);
@@ -107,6 +112,7 @@ class Folder implements RecursiveIterator
      *
      * @return \Zend\Mail\Storage\Folder current folder
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->folders);
@@ -115,6 +121,7 @@ class Folder implements RecursiveIterator
     /**
      * implements Iterator::rewind()
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->folders);

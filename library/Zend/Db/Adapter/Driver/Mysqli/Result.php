@@ -161,6 +161,7 @@ class Result implements
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->currentComplete) {
@@ -249,6 +250,7 @@ class Result implements
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->currentComplete = false;
@@ -265,6 +267,7 @@ class Result implements
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -276,6 +279,7 @@ class Result implements
      * @throws Exception\RuntimeException
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if ($this->position !== 0) {
@@ -293,6 +297,7 @@ class Result implements
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if ($this->currentComplete) {
@@ -312,6 +317,7 @@ class Result implements
      * @throws Exception\RuntimeException
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if ($this->isBuffered === false) {

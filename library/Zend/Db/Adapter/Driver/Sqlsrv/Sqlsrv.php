@@ -41,7 +41,7 @@ class Sqlsrv implements DriverInterface, Profiler\ProfilerAwareInterface
      * @param null|Statement $statementPrototype
      * @param null|Result $resultPrototype
      */
-    public function __construct($connection, Statement $statementPrototype = null, Result $resultPrototype = null)
+    public function __construct($connection, ?Statement $statementPrototype = null, ?Result $resultPrototype = null)
     {
         if (!$connection instanceof Connection) {
             $connection = new Connection($connection);

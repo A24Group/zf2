@@ -46,7 +46,7 @@ class RuntimeDefinition implements DefinitionInterface
      * @param null|IntrospectionStrategy $introspectionStrategy
      * @param array|null                 $explicitClasses
      */
-    public function __construct(IntrospectionStrategy $introspectionStrategy = null, array $explicitClasses = null)
+    public function __construct(?IntrospectionStrategy $introspectionStrategy = null, ?array $explicitClasses = null)
     {
         $this->introspectionStrategy = ($introspectionStrategy) ?: new IntrospectionStrategy();
         if ($explicitClasses) {

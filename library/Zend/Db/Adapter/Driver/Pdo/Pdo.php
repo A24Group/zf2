@@ -49,7 +49,7 @@ class Pdo implements DriverInterface, DriverFeatureInterface, Profiler\ProfilerA
      * @param null|Result $resultPrototype
      * @param string $features
      */
-    public function __construct($connection, Statement $statementPrototype = null, Result $resultPrototype = null, $features = self::FEATURES_DEFAULT)
+    public function __construct($connection, ?Statement $statementPrototype = null, ?Result $resultPrototype = null, $features = self::FEATURES_DEFAULT)
     {
         if (!$connection instanceof Connection) {
             $connection = new Connection($connection);

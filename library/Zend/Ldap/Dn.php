@@ -377,6 +377,7 @@ class Dn implements ArrayAccess
      * @param  int $offset
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         $offset = (int) $offset;
@@ -393,6 +394,7 @@ class Dn implements ArrayAccess
      * @param  int $offset
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->get($offset, 1, null);
@@ -405,6 +407,7 @@ class Dn implements ArrayAccess
      * @param int   $offset
      * @param array $value
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
         $this->set($offset, $value);
@@ -416,6 +419,7 @@ class Dn implements ArrayAccess
      *
      * @param int $offset
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         $this->remove($offset, 1);
@@ -545,7 +549,7 @@ class Dn implements ArrayAccess
      * @throws Exception\LdapException
      */
     public static function explodeDn(
-        $dn, array &$keys = null, array &$vals = null,
+        $dn, ?array &$keys = null, ?array &$vals = null,
         $caseFold = self::ATTR_CASEFOLD_NONE
     ) {
         $k = array();
@@ -584,7 +588,7 @@ class Dn implements ArrayAccess
      * @return bool True if the DN was successfully parsed or false if the string is not a valid DN.
      */
     public static function checkDn(
-        $dn, array &$keys = null, array &$vals = null,
+        $dn, ?array &$keys = null, ?array &$vals = null,
         $caseFold = self::ATTR_CASEFOLD_NONE
     ) {
         /* This is a classic state machine parser. Each iteration of the

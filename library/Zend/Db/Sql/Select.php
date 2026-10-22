@@ -575,7 +575,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @param  null|PlatformInterface $adapterPlatform If null, defaults to Sql92
      * @return string
      */
-    public function getSqlString(PlatformInterface $adapterPlatform = null)
+    public function getSqlString(?PlatformInterface $adapterPlatform = null)
     {
         // get platform, or create default
         $adapterPlatform = ($adapterPlatform) ?: new AdapterSql92Platform;
@@ -621,14 +621,14 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return $sql;
     }
 
-    protected function processStatementStart(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processStatementStart(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->combine !== array()) {
             return array('(');
         }
     }
 
-    protected function processStatementEnd(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processStatementEnd(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->combine !== array()) {
             return array(')');
@@ -643,7 +643,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
      * @param ParameterContainer $parameterContainer
      * @return null|array
      */
-    protected function processSelect(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processSelect(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         $expr = 1;
 
@@ -775,7 +775,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         }
     }
 
-    protected function processJoins(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processJoins(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if (!$this->joins) {
             return null;
@@ -826,7 +826,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return array($joinSpecArgArray);
     }
 
-    protected function processWhere(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processWhere(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->where->count() == 0) {
             return null;
@@ -838,7 +838,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return array($whereParts->getSql());
     }
 
-    protected function processGroup(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processGroup(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->group === null) {
             return null;
@@ -861,7 +861,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return array($groups);
     }
 
-    protected function processHaving(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processHaving(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->having->count() == 0) {
             return null;
@@ -873,7 +873,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return array($whereParts->getSql());
     }
 
-    protected function processOrder(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processOrder(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if (empty($this->order)) {
             return null;
@@ -906,7 +906,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return array($orders);
     }
 
-    protected function processLimit(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processLimit(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->limit === null) {
             return null;
@@ -924,7 +924,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return array($sql);
     }
 
-    protected function processOffset(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processOffset(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->offset === null) {
             return null;
@@ -940,7 +940,7 @@ class Select extends AbstractSql implements SqlInterface, PreparableSqlInterface
         return array($platform->quoteValue($offset));
     }
 
-    protected function processCombine(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null)
+    protected function processCombine(PlatformInterface $platform, ?DriverInterface $driver = null, ?ParameterContainer $parameterContainer = null)
     {
         if ($this->combine == array()) {
             return null;

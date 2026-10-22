@@ -73,7 +73,7 @@ class Mail extends AbstractWriter
      * @param  Transport\TransportInterface $transport Optional
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($mail, Transport\TransportInterface $transport = null)
+    public function __construct($mail, ?Transport\TransportInterface $transport = null)
     {
         if ($mail instanceof Traversable) {
             $mail = iterator_to_array($mail);

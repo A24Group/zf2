@@ -42,7 +42,7 @@ class PaginationControl extends AbstractHelper
      * @throws Exception\InvalidArgumentException if partial is invalid array
      * @return string
      */
-    public function __invoke(Paginator\Paginator $paginator = null, $scrollingStyle = null, $partial = null, $params = null)
+    public function __invoke(?Paginator\Paginator $paginator = null, $scrollingStyle = null, $partial = null, $params = null)
     {
         if ($paginator === null) {
             if (isset($this->view->paginator) and $this->view->paginator !== null and $this->view->paginator instanceof Paginator\Paginator) {

@@ -50,7 +50,7 @@ class Pgsql implements DriverInterface, Profiler\ProfilerAwareInterface
      * @param null|Result $resultPrototype
      * @param array $options
      */
-    public function __construct($connection, Statement $statementPrototype = null, Result $resultPrototype = null, $options = null)
+    public function __construct($connection, ?Statement $statementPrototype = null, ?Result $resultPrototype = null, $options = null)
     {
         if (!$connection instanceof Connection) {
             $connection = new Connection($connection);

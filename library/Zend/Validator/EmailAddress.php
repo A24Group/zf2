@@ -147,7 +147,7 @@ class EmailAddress extends AbstractValidator
      * @param Hostname $hostnameValidator OPTIONAL
      * @return EmailAddress Provides a fluent interface
      */
-    public function setHostnameValidator(Hostname $hostnameValidator = null)
+    public function setHostnameValidator(?Hostname $hostnameValidator = null)
     {
         $this->options['hostnameValidator'] = $hostnameValidator;
 

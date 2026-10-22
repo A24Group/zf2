@@ -56,7 +56,7 @@ abstract class AbstractManager implements Manager
      * @param  SaveHandler|null $saveHandler
      * @throws Exception\RuntimeException
      */
-    public function __construct(Config $config = null, Storage $storage = null, SaveHandler $saveHandler = null)
+    public function __construct(?Config $config = null, ?Storage $storage = null, ?SaveHandler $saveHandler = null)
     {
         // init config
         if ($config === null) {

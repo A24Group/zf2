@@ -112,6 +112,7 @@ class FeedSet extends ArrayObject
      * @param string $offset
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         if ($offset == 'feed' && !$this->offsetExists('feed')) {

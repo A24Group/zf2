@@ -105,7 +105,7 @@ class PhoneNumber extends AbstractValidator
      * @param  array|null $types
      * @return self|array
      */
-    public function allowedTypes(array $types = null)
+    public function allowedTypes(?array $types = null)
     {
         if (null !== $types) {
             $this->allowedTypes = $types;

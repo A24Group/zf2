@@ -159,7 +159,7 @@ class Capabilities
         StorageInterface $storage,
         stdClass $marker,
         array $capabilities = array(),
-        Capabilities $baseCapabilities = null
+        ?Capabilities $baseCapabilities = null
     ) {
         $this->storage = $storage;
         $this->marker  = $marker;

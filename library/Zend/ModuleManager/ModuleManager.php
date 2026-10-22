@@ -58,7 +58,7 @@ class ModuleManager implements ModuleManagerInterface
      * @param  array|Traversable $modules
      * @param  EventManagerInterface $eventManager
      */
-    public function __construct($modules, EventManagerInterface $eventManager = null)
+    public function __construct($modules, ?EventManagerInterface $eventManager = null)
     {
         $this->setModules($modules);
         if ($eventManager instanceof EventManagerInterface) {

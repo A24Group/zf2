@@ -100,7 +100,7 @@ class LdapException extends \Exception implements ExceptionInterface
      * @param string $str  Informative exception message
      * @param int    $code LDAP error code
      */
-    public function __construct(Ldap $ldap = null, $str = null, $code = 0)
+    public function __construct(?Ldap $ldap = null, $str = null, $code = 0)
     {
         $errorMessages = array();
         $message       = '';

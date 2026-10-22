@@ -94,6 +94,7 @@ abstract class AbstractItem implements ArrayAccess, Countable
      * @param  mixed  $value
      * @throws \Zend\Ldap\Exception\BadMethodCallException
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($name, $value)
     {
         throw new Exception\BadMethodCallException();
@@ -105,6 +106,7 @@ abstract class AbstractItem implements ArrayAccess, Countable
      * @param  string $name
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($name)
     {
         return $this->__get($name);
@@ -119,6 +121,7 @@ abstract class AbstractItem implements ArrayAccess, Countable
      * @param  string $name
      * @throws \Zend\Ldap\Exception\BadMethodCallException
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($name)
     {
         throw new Exception\BadMethodCallException();
@@ -130,6 +133,7 @@ abstract class AbstractItem implements ArrayAccess, Countable
      * @param  string $name
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($name)
     {
         return $this->__isset($name);
@@ -141,6 +145,7 @@ abstract class AbstractItem implements ArrayAccess, Countable
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->data);

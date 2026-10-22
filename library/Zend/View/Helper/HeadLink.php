@@ -66,7 +66,7 @@ class HeadLink extends Placeholder\Container\AbstractStandalone
      * @param  string $placement
      * @return HeadLink
      */
-    public function headLink(array $attributes = null, $placement = Placeholder\Container\AbstractContainer::APPEND)
+    public function headLink(?array $attributes = null, $placement = Placeholder\Container\AbstractContainer::APPEND)
     {
         return call_user_func_array(array($this, '__invoke'), func_get_args());
     }
@@ -81,7 +81,7 @@ class HeadLink extends Placeholder\Container\AbstractStandalone
      * @param  string $placement
      * @return HeadLink
      */
-    public function __invoke(array $attributes = null, $placement = Placeholder\Container\AbstractContainer::APPEND)
+    public function __invoke(?array $attributes = null, $placement = Placeholder\Container\AbstractContainer::APPEND)
     {
         if (null !== $attributes) {
             $item = $this->createData($attributes);

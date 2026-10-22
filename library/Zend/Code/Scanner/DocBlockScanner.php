@@ -58,7 +58,7 @@ class DocBlockScanner implements ScannerInterface
      * @param  string $docComment
      * @param null|NameInformation $nameInformation
      */
-    public function __construct($docComment, NameInformation $nameInformation = null)
+    public function __construct($docComment, ?NameInformation $nameInformation = null)
     {
         $this->docComment      = $docComment;
         $this->nameInformation = $nameInformation;

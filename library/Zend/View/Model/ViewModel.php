@@ -452,6 +452,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->children);
@@ -462,6 +463,7 @@ class ViewModel implements ModelInterface, ClearableModelInterface
      *
      * @return ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->children);

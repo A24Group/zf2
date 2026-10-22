@@ -43,7 +43,7 @@ class IntrospectionStrategy
      *
      * @param null|AnnotationManager $annotationManager
      */
-    public function __construct(AnnotationManager $annotationManager = null)
+    public function __construct(?AnnotationManager $annotationManager = null)
     {
         $this->annotationManager = ($annotationManager) ?: $this->createDefaultAnnotationManager();
     }

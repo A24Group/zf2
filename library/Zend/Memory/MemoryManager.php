@@ -125,7 +125,7 @@ class MemoryManager
      *
      * @param  CacheStorage $cache
      */
-    public function __construct(CacheStorage $cache = null)
+    public function __construct(?CacheStorage $cache = null)
     {
         if ($cache === null) {
             return;

@@ -134,7 +134,7 @@ class Ldap
      * @param  array $errorMessages
      * @return string
      */
-    public function getLastError(&$errorCode = null, array &$errorMessages = null)
+    public function getLastError(&$errorCode = null, ?array &$errorMessages = null)
     {
         $errorCode     = $this->getLastErrorCode();
         $errorMessages = array();
@@ -591,7 +591,7 @@ class Ldap
      * @return array  An array of the attributes representing the account
      * @throws Exception\LdapException
      */
-    protected function getAccount($acctname, array $attrs = null)
+    protected function getAccount($acctname, ?array $attrs = null)
     {
         $baseDn = $this->getBaseDn();
         if (!$baseDn) {

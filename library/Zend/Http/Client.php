@@ -306,7 +306,7 @@ class Client implements Stdlib\DispatchableInterface
             // reasons, see #4215 for a discussion - currently authentication is also
             // cleared for peer subdomains due to technical limits
             $nextHost = $this->getRequest()->getUri()->getHost();
-            if (!preg_match('/' . preg_quote($lastHost, '/') . '$/i', $nextHost)) {
+            if (!preg_match('/' . preg_quote((string) $lastHost, '/') . '$/i', (string) $nextHost)) {
                 $this->clearAuth();
             }
 
@@ -789,7 +789,7 @@ class Client implements Stdlib\DispatchableInterface
      * @param Stdlib\ResponseInterface $response
      * @return Stdlib\ResponseInterface
      */
-    public function dispatch(Stdlib\RequestInterface $request, Stdlib\ResponseInterface $response = null)
+    public function dispatch(Stdlib\RequestInterface $request, ?Stdlib\ResponseInterface $response = null)
     {
         $response = $this->send($request);
         return $response;
@@ -803,7 +803,7 @@ class Client implements Stdlib\DispatchableInterface
      * @throws Exception\RuntimeException
      * @throws Client\Exception\RuntimeException
      */
-    public function send(Request $request = null)
+    public function send(?Request $request = null)
     {
         if ($request !== null) {
             $this->setRequest($request);

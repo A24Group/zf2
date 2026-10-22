@@ -131,7 +131,7 @@ class Sitemap extends AbstractHelper
      *                                               validators are used and the
      *                                               loc element fails validation
      */
-    public function getDomSitemap(AbstractContainer $container = null)
+    public function getDomSitemap(?AbstractContainer $container = null)
     {
         // Reset the urls
         $this->urls = array();

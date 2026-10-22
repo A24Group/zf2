@@ -55,7 +55,7 @@ class SelectDecorator extends Select implements PlatformDecoratorInterface
      * @param PlatformInterface $platform
      * @return string
      */
-    public function getSqlString(PlatformInterface $platform = null)
+    public function getSqlString(?PlatformInterface $platform = null)
     {
         // localize variables
         foreach (get_object_vars($this->select) as $name => $value) {
@@ -78,7 +78,7 @@ class SelectDecorator extends Select implements PlatformDecoratorInterface
      * @param $parameters
      * @return null
      */
-    protected function processLimitOffset(PlatformInterface $platform, DriverInterface $driver = null, ParameterContainer $parameterContainer = null, &$sqls, &$parameters)
+    protected function processLimitOffset(PlatformInterface $platform, ?DriverInterface $driver, ?ParameterContainer $parameterContainer, &$sqls, &$parameters)
     {
         if ($this->limit === null && $this->offset === null) {
             return null;
