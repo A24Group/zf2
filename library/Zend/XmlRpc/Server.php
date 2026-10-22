@@ -125,6 +125,12 @@ class Server extends AbstractServer
     protected $response;
 
     /**
+     * System methods object, registered under the system.* namespace.
+     * @var Server\System
+     */
+    protected $system;
+
+    /**
      * Constructor
      *
      * Creates system.* methods.

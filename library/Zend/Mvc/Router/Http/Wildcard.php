@@ -20,6 +20,13 @@ use Zend\Stdlib\RequestInterface as Request;
 class Wildcard implements RouteInterface
 {
     /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
+
+    /**
      * Delimiter between keys and values.
      *
      * @var string

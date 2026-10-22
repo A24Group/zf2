@@ -34,6 +34,13 @@ class Posix extends AbstractAdapter
     protected $charset;
 
     /**
+     * Results of mode command
+     *
+     * @var mixed
+     */
+    protected $modeResult;
+
+    /**
      * Map of colors to ANSI codes
      *
      * @var array
