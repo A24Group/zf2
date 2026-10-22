@@ -120,10 +120,10 @@ class Date extends AbstractValidator
                     : DateTime::createFromFormat($format, $value);
 
             // Invalid dates can show up as warnings (ie. "2007-02-99")
-            // and still return a DateTime object
+            // and still return a DateTime object. PHP 8.2+ returns false when there are none.
             $errors = DateTime::getLastErrors();
 
-            if ($errors['warning_count'] > 0) {
+            if ($errors !== false && $errors['warning_count'] > 0) {
                 $this->error(self::INVALID_DATE);
                 return false;
             }
