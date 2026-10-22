@@ -67,7 +67,7 @@ class TagManager
      */
     public function addTagPrototype(TagInterface $tag)
     {
-        $tagName = str_replace(array('-', '_'), '', $tag->getName());
+        $tagName = str_replace(array('-', '_'), '', (string) $tag->getName());
 
         if (in_array($tagName, $this->tagNames)) {
             throw new Exception\InvalidArgumentException('A tag with this name already exists in this manager');
