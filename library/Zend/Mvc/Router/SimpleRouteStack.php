@@ -19,6 +19,13 @@ use Zend\Stdlib\RequestInterface as Request;
 class SimpleRouteStack implements RouteStackInterface
 {
     /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
+
+    /**
      * Stack containing all routes.
      *
      * @var PriorityList

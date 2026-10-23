@@ -15,6 +15,12 @@ namespace Zend\Http\Header;
  */
 class Vary implements HeaderInterface
 {
+    /**
+     * Value of this header
+     *
+     * @var string
+     */
+    protected $value;
 
     public static function fromString($headerLine)
     {

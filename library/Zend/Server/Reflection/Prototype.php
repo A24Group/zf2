@@ -16,6 +16,9 @@ namespace Zend\Server\Reflection;
  */
 class Prototype
 {
+    /** @var ReflectionReturnValue */
+    protected $return;
+
     /** @var ReflectionParameter[] */
     protected $params;
 

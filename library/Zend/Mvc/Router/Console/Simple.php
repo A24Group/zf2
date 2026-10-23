@@ -31,6 +31,13 @@ use Zend\Validator\ValidatorChain;
 class Simple implements RouteInterface
 {
     /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
+
+    /**
      * Parts of the route.
      *
      * @var array

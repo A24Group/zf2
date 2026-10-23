@@ -556,9 +556,9 @@ class Uri implements UriInterface
             return $this;
         }
 
-        $pathParts = preg_split('|(/)|', $this->getPath(), null,
+        $pathParts = preg_split('|(/)|', (string) $this->getPath(), -1,
                                 PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
-        $baseParts = preg_split('|(/)|', $baseUri->getPath(), null,
+        $baseParts = preg_split('|(/)|', (string) $baseUri->getPath(), -1,
                                 PREG_SPLIT_DELIM_CAPTURE | PREG_SPLIT_NO_EMPTY);
 
         // Get the intersection of existing path parts and those from the

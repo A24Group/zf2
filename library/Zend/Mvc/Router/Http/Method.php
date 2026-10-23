@@ -20,6 +20,13 @@ use Zend\Stdlib\RequestInterface as Request;
 class Method implements RouteInterface
 {
     /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
+
+    /**
      * Verb to match.
      *
      * @var string
