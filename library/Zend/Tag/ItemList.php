@@ -29,6 +29,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->items);
@@ -101,6 +102,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      * @throws OutOfBoundsException When the seek position is invalid
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function seek($index)
     {
         $this->rewind();
@@ -121,6 +123,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->items);
@@ -131,6 +134,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         return next($this->items);
@@ -141,6 +145,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->items);
@@ -151,6 +156,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return ($this->current() !== false);
@@ -161,6 +167,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->items);
@@ -172,6 +179,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      * @param  mixed $offset
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         return array_key_exists($offset, $this->items);
@@ -183,6 +191,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      * @param  mixed $offset
      * @return TaggableInterface
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         return $this->items[$offset];
@@ -196,6 +205,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      * @throws OutOfBoundsException When item does not implement Zend\Tag\TaggableInterface
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $item)
     {
         // We need to make that check here, as the method signature must be
@@ -217,6 +227,7 @@ class ItemList implements Countable, SeekableIterator, ArrayAccess
      * @param  mixed $offset
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
         unset($this->items[$offset]);

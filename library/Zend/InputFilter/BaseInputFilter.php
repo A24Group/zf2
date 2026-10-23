@@ -43,6 +43,7 @@ class BaseInputFilter implements InputFilterInterface, UnknownInputsCapableInter
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->inputs);

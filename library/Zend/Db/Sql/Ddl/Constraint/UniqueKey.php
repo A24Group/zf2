@@ -14,6 +14,11 @@ class UniqueKey extends AbstractConstraint
     /**
      * @var string
      */
+    protected $name;
+
+    /**
+     * @var string
+     */
     protected $specification = 'CONSTRAINT UNIQUE KEY %s(...)';
 
     /**

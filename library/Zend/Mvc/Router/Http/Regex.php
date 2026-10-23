@@ -20,6 +20,13 @@ use Zend\Stdlib\RequestInterface as Request;
 class Regex implements RouteInterface
 {
     /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
+
+    /**
      * Regex to match.
      *
      * @var string
@@ -111,7 +118,7 @@ class Regex implements RouteInterface
         $path = $uri->getPath();
 
         if ($pathOffset !== null) {
-            $result = preg_match('(\G' . $this->regex . ')', $path, $matches, null, $pathOffset);
+            $result = preg_match('(\G' . $this->regex . ')', $path, $matches, 0, $pathOffset);
         } else {
             $result = preg_match('(^' . $this->regex . '$)', $path, $matches);
         }

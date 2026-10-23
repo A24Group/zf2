@@ -23,6 +23,7 @@ class ParameterReflection extends ReflectionParameter implements ReflectionInter
      *
      * @return ClassReflection
      */
+    #[\ReturnTypeWillChange]
     public function getDeclaringClass()
     {
         $phpReflection  = parent::getDeclaringClass();
@@ -37,6 +38,7 @@ class ParameterReflection extends ReflectionParameter implements ReflectionInter
      *
      * @return ClassReflection
      */
+    #[\ReturnTypeWillChange]
     public function getClass()
     {
         $phpReflection = parent::getClass();
@@ -55,6 +57,7 @@ class ParameterReflection extends ReflectionParameter implements ReflectionInter
      *
      * @return FunctionReflection|MethodReflection
      */
+    #[\ReturnTypeWillChange]
     public function getDeclaringFunction()
     {
         $phpReflection = parent::getDeclaringFunction();
@@ -73,6 +76,7 @@ class ParameterReflection extends ReflectionParameter implements ReflectionInter
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function getType()
     {
         if ($this->isArray()) {

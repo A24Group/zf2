@@ -411,6 +411,7 @@ class Fieldset extends Element implements FieldsetInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->iterator->count();
@@ -421,6 +422,7 @@ class Fieldset extends Element implements FieldsetInterface
      *
      * @return PriorityQueue
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return $this->iterator;

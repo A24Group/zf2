@@ -143,6 +143,7 @@ class Cycle extends AbstractHelper implements Iterator
      *
      * @return Cycle
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $count = count($this->data[$this->name]);
@@ -179,6 +180,7 @@ class Cycle extends AbstractHelper implements Iterator
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if ($this->pointers[$this->name] < 0) {
@@ -193,6 +195,7 @@ class Cycle extends AbstractHelper implements Iterator
      *
      * @return Cycle
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->pointers[$this->name] = -1;
@@ -204,6 +207,7 @@ class Cycle extends AbstractHelper implements Iterator
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->data[$this->name][$this->key()]);
@@ -214,6 +218,7 @@ class Cycle extends AbstractHelper implements Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->data[$this->name][$this->key()];

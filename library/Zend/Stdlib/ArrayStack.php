@@ -25,6 +25,7 @@ class ArrayStack extends PhpArrayObject
      *
      * @return ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         $array = $this->getArrayCopy();

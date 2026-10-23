@@ -28,6 +28,12 @@ use Zend\Validator\ValidatorChain;
  */
 class Catchall implements RouteInterface
 {
+    /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
 
     /**
      * Parts of the route.

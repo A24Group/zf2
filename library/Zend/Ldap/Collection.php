@@ -107,6 +107,7 @@ class Collection implements Iterator, Countable
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->iterator->count();
@@ -119,6 +120,7 @@ class Collection implements Iterator, Countable
      * @return array|null
      * @throws Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->count() > 0) {
@@ -170,6 +172,7 @@ class Collection implements Iterator, Countable
      *
      * @return int|null
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if ($this->count() > 0) {
@@ -187,6 +190,7 @@ class Collection implements Iterator, Countable
      *
      * @throws Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->iterator->next();
@@ -199,6 +203,7 @@ class Collection implements Iterator, Countable
      *
      * @throws Exception\LdapException
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->iterator->rewind();
@@ -212,6 +217,7 @@ class Collection implements Iterator, Countable
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if (isset($this->cache[$this->current])) {

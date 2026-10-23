@@ -21,6 +21,13 @@ use Zend\Stdlib\RequestInterface as Request;
 class Segment implements RouteInterface
 {
     /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
+
+    /**
      * Cache for the encode output.
      *
      * @var array
@@ -367,7 +374,7 @@ class Segment implements RouteInterface
         }
 
         if ($pathOffset !== null) {
-            $result = preg_match('(\G' . $regex . ')', $path, $matches, null, $pathOffset);
+            $result = preg_match('(\G' . $regex . ')', $path, $matches, 0, $pathOffset);
         } else {
             $result = preg_match('(^' . $regex . '$)', $path, $matches);
         }

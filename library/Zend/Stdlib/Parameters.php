@@ -81,6 +81,7 @@ class Parameters extends PhpArrayObject implements ParametersInterface
      * @param  string $name
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($name)
     {
         if (isset($this[$name])) {

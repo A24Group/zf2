@@ -44,6 +44,11 @@ class Pdo implements DriverInterface, DriverFeatureInterface, Profiler\ProfilerA
     protected $features = array();
 
     /**
+     * @var Profiler\ProfilerInterface
+     */
+    protected $profiler = null;
+
+    /**
      * @param array|Connection|\PDO $connection
      * @param null|Statement $statementPrototype
      * @param null|Result $resultPrototype

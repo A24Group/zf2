@@ -151,7 +151,7 @@ class Part extends TreeRouteStack implements RouteInterface
 
             if ($this->mayTerminate && $nextOffset === $pathLength) {
                 $query = $uri->getQuery();
-                if ('' == trim($query) || !$this->hasQueryChild()) {
+                if ('' == trim((string) $query) || !$this->hasQueryChild()) {
                     return $match;
                 }
             }

@@ -51,12 +51,7 @@ class SerializableLimitIterator extends LimitIterator implements Serializable, A
      */
     public function serialize()
     {
-        return serialize(array(
-            'it'     => $this->getInnerIterator(),
-            'offset' => $this->offset,
-            'count'  => $this->count,
-            'pos'    => $this->getPosition(),
-        ));
+        return serialize($this->__serialize());
     }
 
     /**
@@ -65,7 +60,30 @@ class SerializableLimitIterator extends LimitIterator implements Serializable, A
      */
     public function unserialize($data)
     {
-        $dataArr = unserialize($data);
+        $this->__unserialize(unserialize($data));
+    }
+
+    /**
+     * PHP 8.1+ replacement for Serializable
+     *
+     * @return array representation of the instance
+     */
+    public function __serialize()
+    {
+        return array(
+            'it'     => $this->getInnerIterator(),
+            'offset' => $this->offset,
+            'count'  => $this->count,
+            'pos'    => $this->getPosition(),
+        );
+    }
+
+    /**
+     * @param array $dataArr representation of the instance
+     * @return void
+     */
+    public function __unserialize(array $dataArr)
+    {
         $this->__construct($dataArr['it'], $dataArr['offset'], $dataArr['count']);
         $this->seek($dataArr['pos']+$dataArr['offset']);
     }
@@ -76,6 +94,7 @@ class SerializableLimitIterator extends LimitIterator implements Serializable, A
      * @param int $offset
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
         $currentOffset = $this->key();
@@ -92,6 +111,7 @@ class SerializableLimitIterator extends LimitIterator implements Serializable, A
      * @param int $offset
      * @param mixed $value
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($offset, $value)
     {
     }
@@ -102,6 +122,7 @@ class SerializableLimitIterator extends LimitIterator implements Serializable, A
      * @param int $offset
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($offset)
     {
         if ($offset > 0 && $offset < $this->count) {
@@ -126,6 +147,7 @@ class SerializableLimitIterator extends LimitIterator implements Serializable, A
      *
      * @param int $offset
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($offset)
     {
     }

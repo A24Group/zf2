@@ -31,6 +31,13 @@ use Zend\Validator\ValidatorChain;
 class Simple implements RouteInterface
 {
     /**
+     * Priority used for route stacks.
+     *
+     * @var int
+     */
+    public $priority;
+
+    /**
      * Parts of the route.
      *
      * @var array
@@ -67,6 +74,13 @@ class Simple implements RouteInterface
      * @var \Zend\Filter\FilterChain
      */
     protected $filters;
+
+    /**
+     * Regular expression constraints for parameter values, keyed by parameter name.
+     *
+     * @var array
+     */
+    protected $constraints = array();
 
     /**
      * Create a new simple console route.

@@ -22,6 +22,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * @link http://php.net/manual/en/iterator.current.php
      * @return mixed Can return any type.
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->children[$this->index];
@@ -33,6 +34,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * @link http://php.net/manual/en/iterator.next.php
      * @return void Any returned value is ignored.
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->index++;
@@ -44,6 +46,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * @link http://php.net/manual/en/iterator.key.php
      * @return scalar scalar on success, or null on failure.
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->index;
@@ -56,6 +59,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * @return bool The return value will be casted to boolean and then evaluated.
      * Returns true on success or false on failure.
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return isset($this->children[$this->index]);
@@ -67,6 +71,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * @link http://php.net/manual/en/iterator.rewind.php
      * @return void Any returned value is ignored.
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->index = 0;
@@ -78,6 +83,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * @link http://php.net/manual/en/recursiveiterator.haschildren.php
      * @return bool true if the current entry can be iterated over, otherwise returns false.
      */
+    #[\ReturnTypeWillChange]
     public function hasChildren()
     {
         if ($this->valid() && ($this->current() instanceof RecursiveIterator)) {
@@ -93,6 +99,7 @@ abstract class AbstractIterator implements RecursiveIterator
      * @link http://php.net/manual/en/recursiveiterator.getRoles.php
      * @return RecursiveIterator An iterator for the current entry.
      */
+    #[\ReturnTypeWillChange]
     public function getChildren()
     {
         return $this->children[$this->index];

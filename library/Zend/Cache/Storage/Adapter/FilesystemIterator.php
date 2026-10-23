@@ -104,6 +104,7 @@ class FilesystemIterator implements IteratorInterface
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->mode == IteratorInterface::CURRENT_AS_SELF) {
@@ -126,6 +127,7 @@ class FilesystemIterator implements IteratorInterface
      *
      * @return string
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         $filename = $this->globIterator->key();
@@ -139,6 +141,7 @@ class FilesystemIterator implements IteratorInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->globIterator->next();
@@ -149,6 +152,7 @@ class FilesystemIterator implements IteratorInterface
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         try {
@@ -166,6 +170,7 @@ class FilesystemIterator implements IteratorInterface
      *
      * @return bool false if the operation failed.
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         try {

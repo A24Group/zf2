@@ -59,6 +59,7 @@ class Result implements ResultInterface
      *
      * @return array|bool|mixed
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->count === 0) {
@@ -72,6 +73,7 @@ class Result implements ResultInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->position++;
@@ -82,6 +84,7 @@ class Result implements ResultInterface
      *
      * @return int|mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -92,6 +95,7 @@ class Result implements ResultInterface
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return ($this->position < $this->count);
@@ -102,6 +106,7 @@ class Result implements ResultInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
@@ -176,6 +181,7 @@ class Result implements ResultInterface
      * <p>
      * The return value is cast to an integer.
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->count;

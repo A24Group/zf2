@@ -34,6 +34,7 @@ class SplPriorityQueue extends \SplPriorityQueue implements Serializable
      * @param  mixed $priority
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function insert($datum, $priority)
     {
         if (!is_array($priority)) {
@@ -67,15 +68,7 @@ class SplPriorityQueue extends \SplPriorityQueue implements Serializable
      */
     public function serialize()
     {
-        $clone = clone $this;
-        $clone->setExtractFlags(self::EXTR_BOTH);
-
-        $data = array();
-        foreach ($clone as $item) {
-            $data[] = $item;
-        }
-
-        return serialize($data);
+        return serialize($this->__serialize());
     }
 
     /**
@@ -86,7 +79,36 @@ class SplPriorityQueue extends \SplPriorityQueue implements Serializable
      */
     public function unserialize($data)
     {
-        foreach (unserialize($data) as $item) {
+        $this->__unserialize(unserialize($data));
+    }
+
+    /**
+     * Serialize (PHP 8.1+ replacement for Serializable)
+     *
+     * @return array
+     */
+    public function __serialize()
+    {
+        $clone = clone $this;
+        $clone->setExtractFlags(self::EXTR_BOTH);
+
+        $data = array();
+        foreach ($clone as $item) {
+            $data[] = $item;
+        }
+
+        return $data;
+    }
+
+    /**
+     * Restore the queue from {@link __serialize()} data
+     *
+     * @param  array $data
+     * @return void
+     */
+    public function __unserialize(array $data)
+    {
+        foreach ($data as $item) {
             $this->insert($item['data'], $item['priority']);
         }
     }

@@ -105,6 +105,7 @@ class DbaIterator implements IteratorInterface
      * @return mixed
      * @throws Exception\RuntimeException
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->mode == IteratorInterface::CURRENT_AS_SELF) {
@@ -128,6 +129,7 @@ class DbaIterator implements IteratorInterface
      * @return string
      * @throws Exception\RuntimeException
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         if ($this->currentInternalKey === false) {
@@ -144,6 +146,7 @@ class DbaIterator implements IteratorInterface
      * @return void
      * @throws Exception\RuntimeException
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         if ($this->currentInternalKey === false) {
@@ -163,6 +166,7 @@ class DbaIterator implements IteratorInterface
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return ($this->currentInternalKey !== false);
@@ -174,6 +178,7 @@ class DbaIterator implements IteratorInterface
      * @return void
      * @throws Exception\RuntimeException
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if ($this->currentInternalKey === false) {
