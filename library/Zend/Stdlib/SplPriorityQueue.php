@@ -87,7 +87,7 @@ class SplPriorityQueue extends \SplPriorityQueue implements Serializable
      *
      * @return array
      */
-    public function __serialize()
+    public function __serialize(): array
     {
         $clone = clone $this;
         $clone->setExtractFlags(self::EXTR_BOTH);
@@ -106,7 +106,7 @@ class SplPriorityQueue extends \SplPriorityQueue implements Serializable
      * @param  array $data
      * @return void
      */
-    public function __unserialize(array $data)
+    public function __unserialize(array $data): void
     {
         foreach ($data as $item) {
             $this->insert($item['data'], $item['priority']);
