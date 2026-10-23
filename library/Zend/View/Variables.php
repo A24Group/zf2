@@ -129,6 +129,7 @@ class Variables extends ArrayObject
      * @param  mixed $key
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         if (!$this->offsetExists($key)) {

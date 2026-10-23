@@ -114,6 +114,7 @@ abstract class AbstractFeed implements Feed\FeedInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->entries);
@@ -124,6 +125,7 @@ abstract class AbstractFeed implements Feed\FeedInterface
      *
      * @return \Zend\Feed\Reader\AbstractEntry
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if (substr($this->getType(), 0, 3) == 'rss') {
@@ -206,6 +208,7 @@ abstract class AbstractFeed implements Feed\FeedInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->entriesKey;
@@ -215,6 +218,7 @@ abstract class AbstractFeed implements Feed\FeedInterface
      * Move the feed pointer forward
      *
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->entriesKey;
@@ -224,6 +228,7 @@ abstract class AbstractFeed implements Feed\FeedInterface
      * Reset the pointer in the feed object
      *
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->entriesKey = 0;
@@ -234,6 +239,7 @@ abstract class AbstractFeed implements Feed\FeedInterface
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return 0 <= $this->entriesKey && $this->entriesKey < $this->count();

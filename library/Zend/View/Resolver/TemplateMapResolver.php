@@ -40,6 +40,7 @@ class TemplateMapResolver implements IteratorAggregate, ResolverInterface
      *
      * @return Traversable
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         return new ArrayIterator($this->map);

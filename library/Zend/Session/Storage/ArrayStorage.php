@@ -84,6 +84,7 @@ class ArrayStorage extends ArrayObject implements StorageInterface
      * @param  mixed                      $value
      * @throws Exception\RuntimeException
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         if ($this->isImmutable()) {

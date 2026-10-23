@@ -96,6 +96,7 @@ class DbSelect implements AdapterInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if ($this->rowCount !== null) {

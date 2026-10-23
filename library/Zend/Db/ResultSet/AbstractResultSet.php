@@ -167,6 +167,7 @@ abstract class AbstractResultSet implements Iterator, ResultSetInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         if ($this->buffer === null) {
@@ -181,6 +182,7 @@ abstract class AbstractResultSet implements Iterator, ResultSetInterface
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -191,6 +193,7 @@ abstract class AbstractResultSet implements Iterator, ResultSetInterface
      *
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->buffer === null) {
@@ -210,6 +213,7 @@ abstract class AbstractResultSet implements Iterator, ResultSetInterface
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if (is_array($this->buffer) && isset($this->buffer[$this->position])) {
@@ -228,6 +232,7 @@ abstract class AbstractResultSet implements Iterator, ResultSetInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if (!is_array($this->buffer)) {
@@ -245,6 +250,7 @@ abstract class AbstractResultSet implements Iterator, ResultSetInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if ($this->count !== null) {

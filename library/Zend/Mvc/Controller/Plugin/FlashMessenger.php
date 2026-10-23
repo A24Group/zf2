@@ -594,6 +594,7 @@ class FlashMessenger extends AbstractPlugin implements IteratorAggregate, Counta
      *
      * @return ArrayIterator
      */
+    #[\ReturnTypeWillChange]
     public function getIterator()
     {
         if ($this->hasMessages()) {
@@ -608,6 +609,7 @@ class FlashMessenger extends AbstractPlugin implements IteratorAggregate, Counta
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if ($this->hasMessages()) {

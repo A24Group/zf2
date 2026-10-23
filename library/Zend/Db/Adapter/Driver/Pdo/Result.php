@@ -110,6 +110,7 @@ class Result implements Iterator, ResultInterface
      * Get the data
      * @return array
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         if ($this->currentComplete) {
@@ -125,6 +126,7 @@ class Result implements Iterator, ResultInterface
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         $this->currentData = $this->resource->fetch(\PDO::FETCH_ASSOC);
@@ -138,6 +140,7 @@ class Result implements Iterator, ResultInterface
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -147,6 +150,7 @@ class Result implements Iterator, ResultInterface
      * @throws Exception\RuntimeException
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         if ($this->statementMode == self::STATEMENT_MODE_FORWARD && $this->position > 0) {
@@ -164,6 +168,7 @@ class Result implements Iterator, ResultInterface
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return ($this->currentData !== false);
@@ -174,6 +179,7 @@ class Result implements Iterator, ResultInterface
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         if (is_int($this->rowCount)) {

@@ -316,6 +316,7 @@ class Headers implements Countable, Iterator
      * Advance the pointer for this object as an iterator
      *
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         next($this->headers);
@@ -326,6 +327,7 @@ class Headers implements Countable, Iterator
      *
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->headers);
@@ -336,6 +338,7 @@ class Headers implements Countable, Iterator
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         return (current($this->headers) !== false);
@@ -345,6 +348,7 @@ class Headers implements Countable, Iterator
      * Reset the internal pointer for this object as an iterator
      *
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         reset($this->headers);
@@ -355,6 +359,7 @@ class Headers implements Countable, Iterator
      *
      * @return Header\HeaderInterface
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         $current = current($this->headers);
@@ -370,6 +375,7 @@ class Headers implements Countable, Iterator
      *
      * @return int count of currently known headers
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->headers);

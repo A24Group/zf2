@@ -100,6 +100,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      *
      * @return DOMNode
      */
+    #[\ReturnTypeWillChange]
     public function rewind()
     {
         $this->position = 0;
@@ -112,6 +113,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      *
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function valid()
     {
         if (in_array($this->position, range(0, $this->nodeList->length - 1)) && $this->nodeList->length > 0) {
@@ -126,6 +128,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      *
      * @return DOMNode
      */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return $this->nodeList->item($this->position);
@@ -136,6 +139,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return $this->position;
@@ -146,6 +150,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      *
      * @return DOMNode
      */
+    #[\ReturnTypeWillChange]
     public function next()
     {
         ++$this->position;
@@ -158,6 +163,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return $this->nodeList->length;
@@ -169,6 +175,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      * @param int $key
      * @return bool
      */
+    #[\ReturnTypeWillChange]
     public function offsetExists($key)
     {
         if (in_array($key, range(0, $this->nodeList->length - 1)) && $this->nodeList->length > 0) {
@@ -183,6 +190,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      * @param int $key
      * @return mixed
      */
+    #[\ReturnTypeWillChange]
     public function offsetGet($key)
     {
         return $this->nodeList->item($key);
@@ -195,6 +203,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      * @param  mixed $value
      * @throws Exception\BadMethodCallException when attemptingn to write to a read-only item
      */
+    #[\ReturnTypeWillChange]
     public function offsetSet($key, $value)
     {
         throw new Exception\BadMethodCallException('Attempting to write to a read-only list');
@@ -206,6 +215,7 @@ class NodeList implements Iterator, Countable, ArrayAccess
      * @param  mixed $key
      * @throws Exception\BadMethodCallException when attemptingn to unset a read-only item
      */
+    #[\ReturnTypeWillChange]
     public function offsetUnset($key)
     {
         throw new Exception\BadMethodCallException('Attempting to unset on a read-only list');

@@ -94,6 +94,7 @@ class FilterChain extends AbstractFilter implements Countable
      *
      * @return int
      */
+    #[\ReturnTypeWillChange]
     public function count()
     {
         return count($this->filters);

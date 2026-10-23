@@ -306,7 +306,7 @@ class Client implements Stdlib\DispatchableInterface
             // reasons, see #4215 for a discussion - currently authentication is also
             // cleared for peer subdomains due to technical limits
             $nextHost = $this->getRequest()->getUri()->getHost();
-            if (!preg_match('/' . preg_quote($lastHost, '/') . '$/i', $nextHost)) {
+            if (!preg_match('/' . preg_quote((string) $lastHost, '/') . '$/i', (string) $nextHost)) {
                 $this->clearAuth();
             }
 
