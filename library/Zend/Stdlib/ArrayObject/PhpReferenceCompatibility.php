@@ -340,17 +340,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      */
     public function serialize()
     {
-        return serialize($this->__serialize());
-    }
-
-    /**
-     * Serialize an ArrayObject (PHP 8.1+ replacement for Serializable)
-     *
-     * @return array
-     */
-    public function __serialize()
-    {
-        return get_object_vars($this);
+        return serialize(get_object_vars($this));
     }
 
     /**
@@ -424,17 +414,7 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
      */
     public function unserialize($data)
     {
-        $this->__unserialize(unserialize($data));
-    }
-
-    /**
-     * Restore an ArrayObject from {@link __serialize()} data
-     *
-     * @param  array $ar
-     * @return void
-     */
-    public function __unserialize(array $ar)
-    {
+        $ar = unserialize($data);
         $this->setFlags($ar['flag']);
         $this->exchangeArray($ar['storage']);
         $this->setIteratorClass($ar['iteratorClass']);

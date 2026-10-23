@@ -203,7 +203,11 @@ abstract class AbstractSessionArrayStorage implements
      */
     public function __serialize()
     {
-        return isset($_SESSION) ? $_SESSION : array();
+        // init() can leave $_SESSION as an \ArrayObject; __serialize() must return an array
+        if (!isset($_SESSION)) {
+            return array();
+        }
+        return $_SESSION instanceof \ArrayObject ? $_SESSION->getArrayCopy() : $_SESSION;
     }
 
     /**
