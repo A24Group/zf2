@@ -336,6 +336,9 @@ abstract class PhpReferenceCompatibility implements IteratorAggregate, ArrayAcce
     /**
      * Serialize an ArrayObject
      *
+     * No __serialize()/__unserialize() on purpose: they would switch the format from C: to O:,
+     * which servers still on the old code can't read, ending the sessions that hold containers.
+     *
      * @return string
      */
     public function serialize()
