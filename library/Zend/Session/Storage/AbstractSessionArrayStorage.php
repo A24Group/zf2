@@ -203,11 +203,11 @@ abstract class AbstractSessionArrayStorage implements
      */
     public function __serialize()
     {
-        // init() can leave $_SESSION as an \ArrayObject; __serialize() must return an array
+        // init() can leave $_SESSION as an \ArrayObject or Zend\Stdlib\ArrayObject; __serialize() must return an array
         if (!isset($_SESSION)) {
             return array();
         }
-        return $_SESSION instanceof \ArrayObject ? $_SESSION->getArrayCopy() : $_SESSION;
+        return is_object($_SESSION) && method_exists($_SESSION, 'getArrayCopy') ? $_SESSION->getArrayCopy() : (array) $_SESSION;
     }
 
     /**
