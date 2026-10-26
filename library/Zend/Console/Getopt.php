@@ -478,9 +478,9 @@ class Getopt
         $doc->appendChild($optionsNode);
         foreach ($this->options as $flag => $value) {
             $optionNode = $doc->createElement('option');
-            $optionNode->setAttribute('flag', utf8_encode($flag));
+            $optionNode->setAttribute('flag', mb_convert_encoding($flag, 'UTF-8', 'ISO-8859-1'));
             if ($value !== true) {
-                $optionNode->setAttribute('parameter', utf8_encode($value));
+                $optionNode->setAttribute('parameter', mb_convert_encoding($value, 'UTF-8', 'ISO-8859-1'));
             }
             $optionsNode->appendChild($optionNode);
         }

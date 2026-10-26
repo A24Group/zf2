@@ -197,6 +197,32 @@ abstract class AbstractSessionArrayStorage implements
     }
 
     /**
+     * Serialize (PHP 8.1+ replacement for Serializable)
+     *
+     * @return array
+     */
+    public function __serialize()
+    {
+        // init() can leave $_SESSION as an \ArrayObject or Zend\Stdlib\ArrayObject; __serialize() must return an array
+        if (!isset($_SESSION)) {
+            return array();
+        }
+        return is_object($_SESSION) && method_exists($_SESSION, 'getArrayCopy') ? $_SESSION->getArrayCopy() : (array) $_SESSION;
+    }
+
+    /**
+     * Unserialize
+     *
+     * Like {@link unserialize()}, this does not restore state: the data lives in $_SESSION.
+     *
+     * @param  array $session
+     * @return void
+     */
+    public function __unserialize(array $session)
+    {
+    }
+
+    /**
      * Get Iterator
      *
      * @return ArrayIterator
