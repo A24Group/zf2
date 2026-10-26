@@ -45,19 +45,13 @@ class Common extends SoapClient
      * @param  string $action
      * @param  int    $version
      * @param  int    $oneWay
-     * @param  string|null $uriParserClass Added to SoapClient::__doRequest in PHP 8.5
+     * @param  string|null $uriParserClass Only here so the signature matches SoapClient::__doRequest on PHP 8.5; ignored
      * @return mixed
      */
     #[\ReturnTypeWillChange]
     public function __doRequest($request, $location, $action, $version, $oneWay = null, $uriParserClass = null)
     {
         // ltrim is a workaround for https://bugs.php.net/bug.php?id=63780
-        if ($uriParserClass !== null) {
-            return call_user_func(
-                $this->doRequestCallback, $this, ltrim($request), $location, $action, $version, (bool) $oneWay, $uriParserClass
-            );
-        }
-
         if ($oneWay === null) {
             return call_user_func($this->doRequestCallback, $this, ltrim($request), $location, $action, $version);
         }
