@@ -39,7 +39,7 @@ class Node
      * @param \Zend\Server\Reflection\Node $parent Optional
      * @return \Zend\Server\Reflection\Node
      */
-    public function __construct($value, Node $parent = null)
+    public function __construct($value, ?Node $parent = null)
     {
         $this->value = $value;
         if (null !== $parent) {

@@ -116,7 +116,7 @@ abstract class AbstractNavigationFactory implements FactoryInterface
      * @param Router $router
      * @return mixed
      */
-    protected function injectComponents(array $pages, RouteMatch $routeMatch = null, Router $router = null)
+    protected function injectComponents(array $pages, ?RouteMatch $routeMatch = null, ?Router $router = null)
     {
         foreach ($pages as &$page) {
             $hasMvc = isset($page['action']) || isset($page['controller']) || isset($page['route']);

@@ -26,7 +26,7 @@ class ExtensionManager implements ExtensionManagerInterface
      *
      * @param  null|ExtensionPluginManager $pluginManager
      */
-    public function __construct(ExtensionPluginManager $pluginManager = null)
+    public function __construct(?ExtensionPluginManager $pluginManager = null)
     {
         if (null === $pluginManager) {
             $pluginManager = new ExtensionPluginManager();

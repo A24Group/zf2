@@ -42,7 +42,7 @@ class FormTextarea extends AbstractHelper
      * @param  ElementInterface|null $element
      * @return string|FormTextarea
      */
-    public function __invoke(ElementInterface $element = null)
+    public function __invoke(?ElementInterface $element = null)
     {
         if (!$element) {
             return $this;

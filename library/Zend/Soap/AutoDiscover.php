@@ -97,7 +97,7 @@ class AutoDiscover
      * @param null|array $classMap
      */
     public function __construct(
-        ComplexTypeStrategy $strategy = null,
+        ?ComplexTypeStrategy $strategy = null,
         $endpointUri = null,
         $wsdlClass = null,
         array $classMap = array()

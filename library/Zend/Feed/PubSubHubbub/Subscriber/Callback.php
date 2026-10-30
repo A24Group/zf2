@@ -61,7 +61,7 @@ class Callback extends PubSubHubbub\AbstractCallback
      * @param  bool $sendResponseNow Whether to send response now or when asked
      * @return void
      */
-    public function handle(array $httpGetData = null, $sendResponseNow = false)
+    public function handle(?array $httpGetData = null, $sendResponseNow = false)
     {
         if ($httpGetData === null) {
             $httpGetData = $_GET;
@@ -220,7 +220,7 @@ class Callback extends PubSubHubbub\AbstractCallback
      * @param  bool $checkValue
      * @return bool
      */
-    protected function _hasValidVerifyToken(array $httpGetData = null, $checkValue = true)
+    protected function _hasValidVerifyToken(?array $httpGetData = null, $checkValue = true)
     {
         $verifyTokenKey = $this->_detectVerifyTokenKey($httpGetData);
         if (empty($verifyTokenKey)) {
@@ -250,7 +250,7 @@ class Callback extends PubSubHubbub\AbstractCallback
      * @param  null|array $httpGetData
      * @return false|string
      */
-    protected function _detectVerifyTokenKey(array $httpGetData = null)
+    protected function _detectVerifyTokenKey(?array $httpGetData = null)
     {
         /**
          * Available when sub keys encoding in Callback URL path

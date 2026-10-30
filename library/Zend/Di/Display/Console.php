@@ -46,7 +46,7 @@ class Console
      *
      * @param null|Di $di
      */
-    public function __construct(Di $di = null)
+    public function __construct(?Di $di = null)
     {
         $this->di = ($di) ?: new Di;
     }

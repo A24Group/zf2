@@ -55,7 +55,7 @@ class Client implements ServerClient
      * @param string $server Full address of the JSON-RPC service.
      * @param HttpClient $httpClient HTTP Client to use for requests.
      */
-    public function __construct($server, HttpClient $httpClient = null)
+    public function __construct($server, ?HttpClient $httpClient = null)
     {
         $this->httpClient = $httpClient ?: new HttpClient();
         $this->serverAddress = $server;

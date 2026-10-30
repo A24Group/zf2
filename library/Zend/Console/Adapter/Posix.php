@@ -370,7 +370,7 @@ class Posix extends AbstractAdapter
     protected function setTTYMode($mode)
     {
         // Store last mode
-        $this->lastTTYMode = trim(`stty -g`);
+        $this->lastTTYMode = trim((string) shell_exec('stty -g'));
 
         // Set new mode
         shell_exec('stty '.escapeshellcmd($mode));

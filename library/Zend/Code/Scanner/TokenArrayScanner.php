@@ -49,7 +49,7 @@ class TokenArrayScanner implements ScannerInterface
      * @param null|array $tokens
      * @param null|AnnotationManager $annotationManager
      */
-    public function __construct($tokens, AnnotationManager $annotationManager = null)
+    public function __construct($tokens, ?AnnotationManager $annotationManager = null)
     {
         $this->tokens            = $tokens;
         $this->annotationManager = $annotationManager;

@@ -44,7 +44,7 @@ abstract class AbstractWord extends FormInput
      * @param  ElementInterface $element
      * @return string
      */
-    public function __invoke(ElementInterface $element = null)
+    public function __invoke(?ElementInterface $element = null)
     {
         if (!$element) {
             return $this;

@@ -27,7 +27,7 @@ class MetadataFeature extends AbstractFeature
      *
      * @param MetadataInterface $metadata
      */
-    public function __construct(MetadataInterface $metadata = null)
+    public function __construct(?MetadataInterface $metadata = null)
     {
         if ($metadata) {
             $this->metadata = $metadata;

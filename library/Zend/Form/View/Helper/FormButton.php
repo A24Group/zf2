@@ -53,7 +53,7 @@ class FormButton extends FormInput
      * @param  null|string           $buttonContent
      * @return string|FormButton
      */
-    public function __invoke(ElementInterface $element = null, $buttonContent = null)
+    public function __invoke(?ElementInterface $element = null, $buttonContent = null)
     {
         if (!$element) {
             return $this;

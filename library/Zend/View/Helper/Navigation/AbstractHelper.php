@@ -444,7 +444,7 @@ abstract class AbstractHelper extends View\Helper\AbstractHtmlElement implements
      * @param  Acl\AclInterface $acl ACL object.
      * @return AbstractHelper
      */
-    public function setAcl(Acl\AclInterface $acl = null)
+    public function setAcl(?Acl\AclInterface $acl = null)
     {
         $this->acl = $acl;
         return $this;
@@ -767,7 +767,7 @@ abstract class AbstractHelper extends View\Helper\AbstractHtmlElement implements
      *                                 Default is null, which skips setTranslatorTextDomain
      * @return AbstractHelper
      */
-    public function setTranslator(Translator $translator = null, $textDomain = null)
+    public function setTranslator(?Translator $translator = null, $textDomain = null)
     {
         $this->translator = $translator;
         if (null !== $textDomain) {
@@ -880,7 +880,7 @@ abstract class AbstractHelper extends View\Helper\AbstractHtmlElement implements
      *                      sets no ACL object.
      * @return void
      */
-    public static function setDefaultAcl(Acl\AclInterface $acl = null)
+    public static function setDefaultAcl(?Acl\AclInterface $acl = null)
     {
         static::$defaultAcl = $acl;
     }

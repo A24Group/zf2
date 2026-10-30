@@ -92,7 +92,7 @@ class FormInput extends AbstractHelper
      * @param  ElementInterface|null $element
      * @return string|FormInput
      */
-    public function __invoke(ElementInterface $element = null)
+    public function __invoke(?ElementInterface $element = null)
     {
         if (!$element) {
             return $this;

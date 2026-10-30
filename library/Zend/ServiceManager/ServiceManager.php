@@ -122,7 +122,7 @@ class ServiceManager implements ServiceLocatorInterface
      *
      * @param ConfigInterface $config
      */
-    public function __construct(ConfigInterface $config = null)
+    public function __construct(?ConfigInterface $config = null)
     {
         if ($config) {
             $config->configureServiceManager($this);

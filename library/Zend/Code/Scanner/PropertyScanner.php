@@ -86,7 +86,7 @@ class PropertyScanner implements ScannerInterface
      * @param array $propertyTokens
      * @param NameInformation $nameInformation
      */
-    public function __construct(array $propertyTokens, NameInformation $nameInformation = null)
+    public function __construct(array $propertyTokens, ?NameInformation $nameInformation = null)
     {
         $this->tokens = $propertyTokens;
         $this->nameInformation = $nameInformation;

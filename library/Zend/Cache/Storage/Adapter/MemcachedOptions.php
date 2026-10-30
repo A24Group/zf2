@@ -93,7 +93,7 @@ class MemcachedOptions extends AdapterOptions
      * @return MemcachedOptions
      * @deprecated Please use the resource manager instead
      */
-    public function setMemcachedResource(MemcachedResource $memcachedResource = null)
+    public function setMemcachedResource(?MemcachedResource $memcachedResource = null)
     {
         trigger_error(
             'This method is deprecated and will be removed in the feature'
@@ -133,7 +133,7 @@ class MemcachedOptions extends AdapterOptions
      * @param null|MemcachedResourceManager $resourceManager
      * @return MemcachedOptions
      */
-    public function setResourceManager(MemcachedResourceManager $resourceManager = null)
+    public function setResourceManager(?MemcachedResourceManager $resourceManager = null)
     {
         if ($this->resourceManager !== $resourceManager) {
             $this->triggerOptionEvent('resource_manager', $resourceManager);

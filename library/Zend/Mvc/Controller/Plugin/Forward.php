@@ -110,7 +110,7 @@ class Forward extends AbstractPlugin
      * @throws Exception\DomainException if composed controller does not define InjectApplicationEventInterface
      *         or Locator aware; or if the discovered controller is not dispatchable
      */
-    public function dispatch($name, array $params = null)
+    public function dispatch($name, ?array $params = null)
     {
         $event   = clone($this->getEvent());
 

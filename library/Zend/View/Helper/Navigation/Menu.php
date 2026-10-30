@@ -442,7 +442,7 @@ class Menu extends AbstractHelper
      * @return string
      */
     public function renderSubMenu(
-        AbstractContainer $container = null,
+        ?AbstractContainer $container = null,
         $ulClass = null,
         $indent = null
     ) {

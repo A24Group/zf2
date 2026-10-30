@@ -82,7 +82,7 @@ class DocBlockReflection implements ReflectionInterface
      * @throws Exception\InvalidArgumentException
      * @return DocBlockReflection
      */
-    public function __construct($commentOrReflector, DocBlockTagManager $tagManager = null)
+    public function __construct($commentOrReflector, ?DocBlockTagManager $tagManager = null)
     {
         $this->tagManager = $tagManager ? : new DocBlockTagManager(DocBlockTagManager::USE_DEFAULT_PROTOTYPES);
 

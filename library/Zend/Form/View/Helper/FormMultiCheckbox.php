@@ -76,7 +76,7 @@ class FormMultiCheckbox extends FormInput
      * @param  null|string           $labelPosition
      * @return string|FormMultiCheckbox
      */
-    public function __invoke(ElementInterface $element = null, $labelPosition = null)
+    public function __invoke(?ElementInterface $element = null, $labelPosition = null)
     {
         if (!$element) {
             return $this;

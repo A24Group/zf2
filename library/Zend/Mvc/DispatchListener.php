@@ -172,7 +172,7 @@ class DispatchListener implements ListenerAggregateInterface
         $controllerName,
         MvcEvent $event,
         Application $application,
-        \Exception $exception = null
+        ?\Exception $exception = null
     ) {
         $event->setError($type)
               ->setController($controllerName)
