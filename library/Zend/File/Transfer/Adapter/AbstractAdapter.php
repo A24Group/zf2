@@ -534,7 +534,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
                             break;
 
                         default:
-                            continue;
+                            break;
                     }
                 }
             }
@@ -1010,7 +1010,7 @@ abstract class AbstractAdapter implements TranslatorAwareInterface
      *                                 Default is null, which skips setTranslatorTextDomain
      * @return AbstractAdapter
      */
-    public function setTranslator(Translator $translator = null, $textDomain = null)
+    public function setTranslator(?Translator $translator = null, $textDomain = null)
     {
         $this->translator = $translator;
         if (null !== $textDomain) {

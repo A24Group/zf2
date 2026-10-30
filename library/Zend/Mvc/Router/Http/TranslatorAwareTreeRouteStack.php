@@ -92,7 +92,7 @@ class TranslatorAwareTreeRouteStack extends TreeRouteStack implements Translator
      * @param  string     $textDomain
      * @return TreeRouteStack
      */
-    public function setTranslator(Translator $translator = null, $textDomain = null)
+    public function setTranslator(?Translator $translator = null, $textDomain = null)
     {
         $this->translator = $translator;
 

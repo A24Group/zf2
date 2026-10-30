@@ -121,7 +121,7 @@ class ValidatorPluginManager extends AbstractPluginManager
      *
      * @param  null|ConfigInterface $configuration
      */
-    public function __construct(ConfigInterface $configuration = null)
+    public function __construct(?ConfigInterface $configuration = null)
     {
         parent::__construct($configuration);
         $this->addInitializer(array($this, 'injectTranslator'));

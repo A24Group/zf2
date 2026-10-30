@@ -56,7 +56,7 @@ class Db extends AbstractWriter
      * @param string $separator
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($db, $tableName = null, array $columnMap = null, $separator = null)
+    public function __construct($db, $tableName = null, ?array $columnMap = null, $separator = null)
     {
         if ($db instanceof Traversable) {
             $db = iterator_to_array($db);
@@ -152,7 +152,7 @@ class Db extends AbstractWriter
      * @param  array $columnMap
      * @return array
      */
-    protected function mapEventIntoColumn(array $event, array $columnMap = null)
+    protected function mapEventIntoColumn(array $event, ?array $columnMap = null)
     {
         if (empty($event)) {
             return array();

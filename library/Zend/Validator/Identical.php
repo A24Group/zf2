@@ -150,7 +150,7 @@ class Identical extends AbstractValidator
      * @return bool
      * @throws Exception\RuntimeException if the token doesn't exist in the context array
      */
-    public function isValid($value, array $context = null)
+    public function isValid($value, ?array $context = null)
     {
         $this->setValue($value);
 

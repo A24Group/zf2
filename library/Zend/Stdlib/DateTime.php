@@ -31,7 +31,7 @@ class DateTime extends \DateTime
      * @param  DateTimeZone $timezone
      * @return mixed
      */
-    public static function createFromISO8601($time, DateTimeZone $timezone = null)
+    public static function createFromISO8601($time, ?DateTimeZone $timezone = null)
     {
         $format = self::ISO8601;
         if (isset($time[19]) && $time[19] === '.') {

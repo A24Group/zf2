@@ -20,7 +20,7 @@ interface TranslatorAwareInterface
      *                                 Default is null, which skips setTranslatorTextDomain
      * @return TranslatorAwareInterface
      */
-    public function setTranslator(Translator $translator = null, $textDomain = null);
+    public function setTranslator(?Translator $translator = null, $textDomain = null);
 
     /**
      * Returns translator used in object

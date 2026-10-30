@@ -84,7 +84,7 @@ class Smtp extends AbstractProtocol
      * @param  null|array   $config
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($host = '127.0.0.1', $port = null, array $config = null)
+    public function __construct($host = '127.0.0.1', $port = null, ?array $config = null)
     {
         // Did we receive a configuration array?
         if (is_array($host)) {

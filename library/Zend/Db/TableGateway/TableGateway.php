@@ -28,7 +28,7 @@ class TableGateway extends AbstractTableGateway
      * @param Sql $sql
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($table, AdapterInterface $adapter, $features = null, ResultSetInterface $resultSetPrototype = null, Sql $sql = null)
+    public function __construct($table, AdapterInterface $adapter, $features = null, ?ResultSetInterface $resultSetPrototype = null, ?Sql $sql = null)
     {
         // table
         if (!(is_string($table) || $table instanceof TableIdentifier)) {

@@ -142,7 +142,7 @@ class Server implements ZendServerServer
      * @param  array $options
      * @throws Exception\ExtensionNotLoadedException
      */
-    public function __construct($wsdl = null, array $options = null)
+    public function __construct($wsdl = null, ?array $options = null)
     {
         if (!extension_loaded('soap')) {
             throw new Exception\ExtensionNotLoadedException('SOAP extension is not loaded.');
@@ -1041,7 +1041,7 @@ class Server implements ZendServerServer
      * @param  array $errcontext
      * @throws SoapFault
      */
-    public function handlePhpErrors($errno, $errstr, $errfile = null, $errline = null, array $errcontext = null)
+    public function handlePhpErrors($errno, $errstr, $errfile = null, $errline = null, ?array $errcontext = null)
     {
         throw $this->fault($errstr, 'Receiver');
     }

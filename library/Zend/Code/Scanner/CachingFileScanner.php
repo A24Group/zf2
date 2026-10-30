@@ -30,7 +30,7 @@ class CachingFileScanner extends FileScanner
      * @param  AnnotationManager $annotationManager
      * @throws Exception\InvalidArgumentException
      */
-    public function __construct($file, AnnotationManager $annotationManager = null)
+    public function __construct($file, ?AnnotationManager $annotationManager = null)
     {
         if (!file_exists($file)) {
             throw new Exception\InvalidArgumentException(sprintf(

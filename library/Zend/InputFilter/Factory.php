@@ -35,7 +35,7 @@ class Factory
     /**
      * @param InputFilterPluginManager $inputFilterManager
      */
-    public function __construct(InputFilterPluginManager $inputFilterManager = null)
+    public function __construct(?InputFilterPluginManager $inputFilterManager = null)
     {
         if ($inputFilterManager) {
             $this->setInputFilterManager($inputFilterManager);

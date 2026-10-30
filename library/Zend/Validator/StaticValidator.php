@@ -22,7 +22,7 @@ class StaticValidator
      * @param  ValidatorPluginManager|null $plugins
      * @return void
      */
-    public static function setPluginManager(ValidatorPluginManager $plugins = null)
+    public static function setPluginManager(?ValidatorPluginManager $plugins = null)
     {
         // Don't share by default to allow different arguments on subsequent calls
         if ($plugins instanceof ValidatorPluginManager) {

@@ -47,7 +47,7 @@ class AnnotationScanner extends AnnotationCollection implements ScannerInterface
      * @return AnnotationScanner
      */
     public function __construct(AnnotationManager $annotationManager, $docComment,
-                                NameInformation $nameInformation = null)
+                                ?NameInformation $nameInformation = null)
     {
         $this->annotationManager = $annotationManager;
         $this->docComment        = $docComment;

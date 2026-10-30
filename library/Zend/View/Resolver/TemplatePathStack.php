@@ -282,7 +282,7 @@ class TemplatePathStack implements ResolverInterface
      * @return string
      * @throws Exception\DomainException
      */
-    public function resolve($name, Renderer $renderer = null)
+    public function resolve($name, ?Renderer $renderer = null)
     {
         $this->lastLookupFailure = false;
 

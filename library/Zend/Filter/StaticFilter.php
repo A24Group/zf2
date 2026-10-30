@@ -22,7 +22,7 @@ class StaticFilter
      * @param  FilterPluginManager $manager
      * @return void
      */
-    public static function setPluginManager(FilterPluginManager $manager = null)
+    public static function setPluginManager(?FilterPluginManager $manager = null)
     {
         // Don't share by default to allow different arguments on subsequent calls
         if ($manager instanceof FilterPluginManager) {

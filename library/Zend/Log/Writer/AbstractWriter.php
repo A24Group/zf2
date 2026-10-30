@@ -119,7 +119,7 @@ abstract class AbstractWriter implements WriterInterface
      * @return AbstractWriter
      * @throws Exception\InvalidArgumentException
      */
-    public function addFilter($filter, array $options = null)
+    public function addFilter($filter, ?array $options = null)
     {
         if (is_int($filter)) {
             $filter = new Filter\Priority($filter);
@@ -185,7 +185,7 @@ abstract class AbstractWriter implements WriterInterface
      * @param array|null $options
      * @return Filter\FilterInterface
      */
-    public function filterPlugin($name, array $options = null)
+    public function filterPlugin($name, ?array $options = null)
     {
         return $this->getFilterPluginManager()->get($name, $options);
     }
@@ -235,7 +235,7 @@ abstract class AbstractWriter implements WriterInterface
      * @param array|null $options
      * @return Formatter\FormatterInterface
      */
-    public function formatterPlugin($name, array $options = null)
+    public function formatterPlugin($name, ?array $options = null)
     {
         return $this->getFormatterPluginManager()->get($name, $options);
     }
@@ -288,7 +288,7 @@ abstract class AbstractWriter implements WriterInterface
      * @return self
      * @throws Exception\InvalidArgumentException
      */
-    public function setFormatter($formatter, array $options = null)
+    public function setFormatter($formatter, ?array $options = null)
     {
         if (is_string($formatter)) {
             $formatter = $this->formatterPlugin($formatter, $options);

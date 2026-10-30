@@ -13,5 +13,5 @@ use Zend\Db\Adapter\Platform\PlatformInterface;
 
 interface SqlInterface
 {
-    public function getSqlString(PlatformInterface $adapterPlatform = null);
+    public function getSqlString(?PlatformInterface $adapterPlatform = null);
 }

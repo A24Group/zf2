@@ -31,7 +31,7 @@ class GlobalEventManager
      * @param  null|EventManagerInterface $events
      * @return void
      */
-    public static function setEventCollection(EventManagerInterface $events = null)
+    public static function setEventCollection(?EventManagerInterface $events = null)
     {
         static::$events = $events;
     }

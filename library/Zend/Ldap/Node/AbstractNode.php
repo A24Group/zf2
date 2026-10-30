@@ -76,7 +76,7 @@ abstract class AbstractNode implements ArrayAccess, Countable
      * @param  \Zend\Ldap\Ldap $ldap
      * @return AbstractNode Provides a fluid interface
      */
-    public function reload(Ldap\Ldap $ldap = null)
+    public function reload(?Ldap\Ldap $ldap = null)
     {
         if ($ldap !== null) {
             $data = $ldap->getEntry($this->_getDn(), array('*', '+'), true);

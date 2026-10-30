@@ -26,7 +26,7 @@ class AbstractModel
      *
      * @param null|TableGatewayInterface $tableGateway
      */
-    public function __construct(TableGatewayInterface $tableGateway = null)
+    public function __construct(?TableGatewayInterface $tableGateway = null)
     {
         if ($tableGateway === null) {
             $parts = explode('\\', get_class($this));

@@ -108,7 +108,7 @@ abstract class AbstractValue
      * @param  null|Generator\GeneratorInterface $generator
      * @return void
      */
-    public static function setGenerator(Generator\GeneratorInterface $generator = null)
+    public static function setGenerator(?Generator\GeneratorInterface $generator = null)
     {
         static::$generator = $generator;
     }

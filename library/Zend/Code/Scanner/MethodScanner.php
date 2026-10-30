@@ -104,7 +104,7 @@ class MethodScanner implements ScannerInterface
      * @param  array $methodTokens
      * @param NameInformation $nameInformation
      */
-    public function __construct(array $methodTokens, NameInformation $nameInformation = null)
+    public function __construct(array $methodTokens, ?NameInformation $nameInformation = null)
     {
         $this->tokens          = $methodTokens;
         $this->nameInformation = $nameInformation;

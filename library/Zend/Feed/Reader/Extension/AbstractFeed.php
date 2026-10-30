@@ -122,7 +122,7 @@ abstract class AbstractFeed
      * @param  DOMXPath $xpath
      * @return AbstractEntry
      */
-    public function setXpath(DOMXPath $xpath = null)
+    public function setXpath(?DOMXPath $xpath = null)
     {
         if (null === $xpath) {
             $this->xpath = null;
